@@ -1281,13 +1281,21 @@
         if (logoutBtn) {
             logoutBtn.addEventListener('click', async () => {
                 try {
+                    // Clear all local storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Sign out from Supabase globally
                     const supabaseClient = await getSupabaseClient();
-                    await supabaseClient.auth.signOut();
-                    localStorage.removeItem('userEmail');
-                    window.location.href = 'index.html';
+                    const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
+                    if (error) {
+                        console.error('Supabase signOut error:', error);
+                    }
                 } catch (error) {
                     console.error('Logout error:', error);
-                    alert('Logout failed: ' + error.message);
+                } finally {
+                    // Force redirect to index after clearing everything
+                    window.location.href = 'index.html';
                 }
             });
         }

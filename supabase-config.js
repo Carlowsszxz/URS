@@ -49,6 +49,7 @@ if (window.supabaseClient) {
         } else {
             window.currentUser = null;
             localStorage.removeItem('userEmail');
+            // Don't redirect on signOut - let the logout button handler do it
         }
     });
 }

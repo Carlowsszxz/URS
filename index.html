@@ -74,29 +74,29 @@
         <div class="login-background"></div>
     </div>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script>
-        // Check if user is already logged in
-        async function checkExistingSession() {
-            try {
-                // Wait a bit for Supabase to initialize
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                if (!window.supabaseClient) return;
-                
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                if (session) {
-                    // Already logged in, redirect to home
-                    window.location.href = 'home.html';
+        // On index.html load, clear any Supabase session if no userEmail in localStorage
+        async function clearOrphanedSession() {
+            if (!localStorage.getItem('userEmail') && window.supabaseClient) {
+                try {
+                    // Sign out globally to clear any persisted Supabase session
+                    await window.supabaseClient.auth.signOut({ scope: 'global' });
+                } catch (err) {
+                    console.log('Clear session:', err.message);
                 }
-            } catch (error) {
-                console.error('Session check error:', error);
             }
         }
         
-        checkExistingSession();
+        // Check if user is already logged in (use localStorage as source of truth)
+        if (localStorage.getItem('userEmail')) {
+            // User has valid session in localStorage, redirect to home
+            window.location.href = 'home.html';
+        } else {
+            // No valid session, clear any orphaned Supabase session
+            clearOrphanedSession();
+        }
     </script>
     <script src="script.js"></script>
 </body>

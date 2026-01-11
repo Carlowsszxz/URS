@@ -1,6 +1,11 @@
 // Database Operations Helper
 // This file contains helper functions for common Supabase operations
 
+// Helper function to get Supabase client (global access)
+async function getSupabaseClient() {
+    return window.supabaseClient;
+}
+
 const DB = {
     // Helper function to get client
     getClient() {
