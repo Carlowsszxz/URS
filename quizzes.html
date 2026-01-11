@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes - Readings in Philippine History</title>
+    <link rel="stylesheet" href="course.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="db-helpers.js"></script>
+    <style>
+        main.main-content {
+            padding: 40px 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Header */
+        .page-title {
+            margin-bottom: 40px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page-title h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #51513E;
+            margin: 0 0 8px 0;
+            letter-spacing: -1px;
+        }
+
+        .page-title p {
+            font-size: 18px;
+            color: #7A5B47;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #D6DCE1 0%, #ffffff 100%);
+            border: 1px solid #D6DCE1;
+            border-radius: 12px;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 12px 40px rgba(68, 41, 19, 0.1);
+            transform: translateY(-4px);
+            background: linear-gradient(135deg, #ffffff 0%, #D6DCE1 100%);
+        }
+
+        .stat-info h3 {
+            font-size: 13px;
+            color: #7A5B47;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-info .number {
+            font-size: 32px;
+            color: #51513E;
+            margin: 8px 0 0 0;
+            font-weight: 700;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        /* Controls Section */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+        }
+
+        .controls-left h2 {
+            font-size: 22px;
+            color: #51513E;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #7A5B47;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-chip:hover {
+            border-color: #7A5B47;
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(135deg, #006666 0%, #00a8a8 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0, 102, 102, 0.3);
+        }
+
+        /* Quizzes Grid */
+        .quizzes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 26px;
+            margin-bottom: 40px;
+        }
+
+        .quiz-card {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: 0 2px 8px rgba(68, 41, 19, 0.05);
+        }
+
+        .quiz-card:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 12px 40px rgba(68, 41, 19, 0.12);
+            transform: translateY(-8px);
+        }
+
+        /* Quiz Card Header */
+        .quiz-card-header {
+            padding: 24px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-card-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .badge-type {
+            background: rgba(59, 130, 246, 0.15);
+            color: #1e40af;
+        }
+
+        .badge-difficulty {
+            margin-left: auto;
+        }
+
+        .badge-easy {
+            background: rgba(34, 197, 94, 0.15);
+            color: #15803d;
+        }
+
+        .badge-medium {
+            background: rgba(249, 115, 22, 0.15);
+            color: #92400e;
+        }
+
+        .badge-hard {
+            background: rgba(239, 68, 68, 0.15);
+            color: #7f1d1d;
+        }
+
+        .quiz-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #51513E;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .quiz-card-topic {
+            display: none;
+        }
+
+        /* Quiz Card Body */
+        .quiz-card-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .quiz-info {
+            display: flex;
+            gap: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #f5f5f5;
+            margin-bottom: 20px;
+        }
+
+        .quiz-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #7A5B47;
+            font-weight: 500;
+        }
+
+        .quiz-info-label {
+            font-size: 11px;
+            color: #7A5B47;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-weight: 600;
+            display: inline;
+        }
+
+        .quiz-info-value {
+            font-size: 13px;
+            color: #51513E;
+            font-weight: 600;
+            display: inline;
+        }
+
+        .quiz-description {
+            font-size: 14px;
+            color: #7A5B47;
+            margin: 0 0 22px 0;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .quiz-difficulty {
+            display: none;
+        }
+
+        .difficulty-easy {
+            display: none;
+        }
+
+        .difficulty-medium {
+            display: none;
+        }
+
+        .difficulty-hard {
+            display: none;
+        }
+
+        /* Quiz Footer */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.15);
+            color: #15803d;
+        }
+
+        .status-in-progress {
+            background: rgba(59, 130, 246, 0.15);
+            color: #1e40af;
+        }
+
+        .status-not-started {
+            background: rgba(107, 114, 128, 0.15);
+            color: #374151;
+        }
+
+        .quiz-action-btn {
+            padding: 8px 16px;
+            border: none;
+            background: #f0f0f0;
+            color: #51513E;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .quiz-action-btn:hover {
+            background: #51513E;
+            color: white;
+            transform: translateX(2px);
+        }
+
+        .quiz-action-btn.primary {
+            background: #51513E;
+            color: white;
+        }
+
+        .quiz-action-btn.primary:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 0 32px;
+        }
+
+        .sidebar-section {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(68, 41, 19, 0.05);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #51513E;
+            margin: 0 0 16px 0;
+        }
+
+        /* Progress Circle */
+        .progress-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+        }
+
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle .progress-bg {
+            fill: none;
+            stroke: #f0f0f0;
+            stroke-width: 6;
+        }
+
+        .progress-circle .progress-fill {
+            fill: none;
+            stroke: #006666;
+            stroke-width: 6;
+            stroke-dasharray: 282.7;
+            stroke-dashoffset: 106;
+            transition: stroke-dashoffset 0.4s ease;
+            stroke-linecap: round;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 700;
+            color: #51513E;
+            margin: 0;
+        }
+
+        .sidebar-text {
+            text-align: center;
+            font-size: 13px;
+            color: #7A5B47;
+            margin: 0;
+        }
+
+        /* Tips List */
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tips-list li {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .tips-list strong {
+            color: #51513E;
+            font-weight: 700;
+        }
+
+        /* Learning Path Steps */
+        .path-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .step-done {
+            background: #e8f5e9;
+        }
+
+        .step-current {
+            background: linear-gradient(135deg, rgba(0, 102, 102, 0.1) 0%, rgba(0, 168, 168, 0.05) 100%);
+            border: 1px solid rgba(0, 102, 102, 0.2);
+        }
+
+        .step-num {
+            min-width: 32px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ddd;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step-done .step-num {
+            background: #4caf50;
+        }
+
+        .step-current .step-num {
+            background: #006666;
+        }
+
+        .step p {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 500;
+            color: #51513E;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .quizzes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            main.main-content {
+                padding: 24px 16px;
+            }
+
+            .page-title h1 {
+                font-size: 28px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filters {
+                width: 100%;
+            }
+
+            .quizzes-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .quiz-card {
+                height: auto;
+            }
+
+            .right-sidebar {
+                padding: 0;
+            }
+
+            .stats-grid {
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
+            <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
+
+            <div class="header-actions">
+                <div class="search-box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" placeholder="Search" />
+                </div>
+
+                <button class="notification-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">2</span>
+                </button>
+                <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="15" y1="3" x2="15" y2="21"></line>
+                        <line x1="9" y1="9" x2="9" y2="9.01"></line>
+                        <line x1="9" y1="15" x2="9" y2="15.01"></line>
+                    </svg>
+                </button>
+                <button class="logout-btn" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Left Sidebar Navigation -->
+        <aside class="left-sidebar" id="leftSidebar">
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
+                <div class="profile-info">
+                    <h4 class="profile-name" id="profileName">Loading...</h4>
+                    <p class="profile-email" id="profileEmail">Loading...</p>
+                </div>
+                <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item-dropdown">
+                    <div class="nav-item active" data-section="topic">
+                        <svg class="nav-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>Topic</span>
+                        <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+                        <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
+                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                    </div>
+                </div>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item active" data-section="activities">
+                        <svg class="nav-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <line x1="1" y1="3" x2="23" y2="3"></line>
+                            <path d="M10 12v4"></path>
+                            <path d="M14 12v4"></path>
+                            <path d="M6 8v3"></path>
+                            <path d="M18 8v3"></path>
+                        </svg>
+                        <span>Activities</span>
+                        <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="games.html" class="dropdown-item" data-section="games">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="6 6 18 6 18 18 6 18"></polygon>
+                                <polyline points="10 9 10 15 14 15 14 9"></polyline>
+                            </svg>
+                            Games
+                        </a>
+                        <a href="quizzes.html" class="dropdown-item active-dropdown" data-section="quizzes">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4"></path>
+                                <path d="M12 8h.01"></path>
+                            </svg>
+                            Quizzes
+                        </a>
+                        <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Interactive Tasks
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="nav-item" data-section="messages">
+                    <svg class="nav-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Messages</span>
+                </div>
+                <div class="nav-item" data-section="notifications">
+                    <svg class="nav-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Notifications</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-title">
+                <h1>Quizzes</h1>
+                <p>Test your knowledge and master the topics with comprehensive quizzes</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Quizzes</h3>
+                        <p class="number">6</p>
+                    </div>
+                    <div class="stat-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Completed</h3>
+                        <p class="number">3</p>
+                    </div>
+                    <div class="stat-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 10.26 24 10.26 17.55 16.16 19.64 24 12 18.89 4.36 24 6.45 16.16 0 10.26 8.91 10.26 12 2"></polygon></svg></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Average Score</h3>
+                        <p class="number">82%</p>
+                    </div>
+                    <div class="stat-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 10.26 24 10.26 17.55 16.16 19.64 24 12 18.89 4.36 24 6.45 16.16 0 10.26 8.91 10.26 12 2"></polygon></svg></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="controls-left">
+                    <h2>Available Quizzes</h2>
+                </div>
+                <div class="filters">
+                    <button class="filter-chip active" data-filter="all">All</button>
+                    <button class="filter-chip" data-filter="cavite">Cavite Mutiny</button>
+                    <button class="filter-chip" data-filter="rizal">Rizal's Retraction</button>
+                </div>
+            </div>
+
+            <div class="quizzes-grid">
+                <!-- Quiz 1: Cavite Mutiny Basics -->
+                <div class="quiz-card" data-topic="cavite">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-easy badge-difficulty">Easy</span>
+                        </div>
+                        <h3 class="quiz-card-title">Cavite Mutiny Basics</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Test your understanding of the historical facts, key figures, and timeline of the Cavite Mutiny of 1872.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">10</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">15 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-completed">Completed</span>
+                            <button class="quiz-action-btn">Review</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz 2: GomBurZa Analysis -->
+                <div class="quiz-card" data-topic="cavite">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-medium badge-difficulty">Medium</span>
+                        </div>
+                        <h3 class="quiz-card-title">GomBurZa Analysis</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Deep dive into the execution of the three priests and its impact on Filipino nationalism and the independence movement.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">15</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">20 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-in-progress">In Progress</span>
+                            <button class="quiz-action-btn primary">Continue</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz 3: Rizal's Retraction Debate -->
+                <div class="quiz-card" data-topic="rizal">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-hard badge-difficulty">Hard</span>
+                        </div>
+                        <h3 class="quiz-card-title">Rizal's Retraction Debate</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Examine the controversial retraction document and evaluate the competing scholarly interpretations of its authenticity.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">12</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">18 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-not-started">Not Started</span>
+                            <button class="quiz-action-btn">Start</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz 4: Colonial Context -->
+                <div class="quiz-card" data-topic="cavite">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-medium badge-difficulty">Medium</span>
+                        </div>
+                        <h3 class="quiz-card-title">Colonial Context</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Understand the Spanish colonial system, social hierarchies, and the conditions that led to Filipino resistance movements.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">10</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">12 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-completed">Completed</span>
+                            <button class="quiz-action-btn">Review</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz 5: Rizal's Life & Works -->
+                <div class="quiz-card" data-topic="rizal">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-medium badge-difficulty">Medium</span>
+                        </div>
+                        <h3 class="quiz-card-title">Rizal's Life & Works</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Explore Jose Rizal's biographical milestones, literary works, and ideological contributions to the Philippine revolution.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">14</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">20 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-not-started">Not Started</span>
+                            <button class="quiz-action-btn">Start</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz 6: Advanced Historical Analysis -->
+                <div class="quiz-card" data-topic="cavite">
+                    <div class="quiz-card-header">
+                        <div class="quiz-card-badges">
+                            <span class="badge badge-type">Quiz</span>
+                            <span class="badge badge-hard badge-difficulty">Hard</span>
+                        </div>
+                        <h3 class="quiz-card-title">Advanced Historical Analysis</h3>
+                    </div>
+                    <div class="quiz-card-body">
+                        <p class="quiz-description">Synthesize your learning by analyzing primary sources and evaluating different historical perspectives on colonial Philippine history.</p>
+                        <div class="quiz-info">
+                            <div class="quiz-info-item"><span class="quiz-info-label">Questions:</span> <span class="quiz-info-value">18</span></div>
+                            <div class="quiz-info-item"><span class="quiz-info-label">Time:</span> <span class="quiz-info-value">25 min</span></div>
+                        </div>
+                        <div class="quiz-footer">
+                            <span class="quiz-status status-completed">Completed</span>
+                            <button class="quiz-action-btn">Review</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Your Progress</h4>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" class="progress-bg"></circle>
+                        <circle cx="50" cy="50" r="45" class="progress-fill" style="stroke-dashoffset: 106;"></circle>
+                    </svg>
+                    <div class="progress-text">50%</div>
+                </div>
+                <p class="sidebar-text">3 of 6 quizzes completed</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Study Tips</h4>
+                <ul class="tips-list">
+                    <li><strong>Review materials first</strong> - Familiarize yourself with key concepts before taking quizzes</li>
+                    <li><strong>Take your time</strong> - You have sufficient time limits; accuracy matters more than speed</li>
+                    <li><strong>Read carefully</strong> - Pay attention to question wording and all answer options</li>
+                    <li><strong>Learn from mistakes</strong> - Review incorrect answers to improve understanding</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Recommended Sequence</h4>
+                <div class="path-steps">
+                    <div class="step step-done">
+                        <span class="step-num">1</span>
+                        <p>Cavite Basics</p>
+                    </div>
+                    <div class="step step-done">
+                        <span class="step-num">2</span>
+                        <p>Colonial Context</p>
+                    </div>
+                    <div class="step step-current">
+                        <span class="step-num">3</span>
+                        <p>GomBurZa Analysis</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">4</span>
+                        <p>Rizal's Works</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="course.js"></script>
+</body>
+</html>
+                                </div>
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Time Limit</span>
+                                    <span class="quiz-info-value">18 min</span>
+                                </div>
+                            </div>
+                            <p class="quiz-description">Examine the controversial retraction document and evaluate the competing scholarly interpretations of its authenticity.</p>
+                            <span class="quiz-difficulty difficulty-hard">Hard</span>
+                            <div class="quiz-footer">
+                                <span class="quiz-status status-not-started">Not Started</span>
+                                <button class="quiz-action-btn">Start Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz 4: Colonial Context -->
+                    <div class="quiz-card" data-topic="cavite">
+                        <div class="quiz-card-header">
+                            <h3 class="quiz-card-title">Colonial Context</h3>
+                            <p class="quiz-card-topic">Cavite Mutiny</p>
+                        </div>
+                        <div class="quiz-card-body">
+                            <div class="quiz-info">
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Questions</span>
+                                    <span class="quiz-info-value">10</span>
+                                </div>
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Time Limit</span>
+                                    <span class="quiz-info-value">12 min</span>
+                                </div>
+                            </div>
+                            <p class="quiz-description">Understand the Spanish colonial system, social hierarchies, and the conditions that led to Filipino resistance movements.</p>
+                            <span class="quiz-difficulty difficulty-medium">Medium</span>
+                            <div class="quiz-footer">
+                                <span class="quiz-status status-not-started">Not Started</span>
+                                <button class="quiz-action-btn">Start Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz 5: Rizal's Life & Works -->
+                    <div class="quiz-card" data-topic="rizal">
+                        <div class="quiz-card-header">
+                            <h3 class="quiz-card-title">Rizal's Life & Works</h3>
+                            <p class="quiz-card-topic">Rizal's Retraction</p>
+                        </div>
+                        <div class="quiz-card-body">
+                            <div class="quiz-info">
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Questions</span>
+                                    <span class="quiz-info-value">14</span>
+                                </div>
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Time Limit</span>
+                                    <span class="quiz-info-value">20 min</span>
+                                </div>
+                            </div>
+                            <p class="quiz-description">Comprehensive assessment of Jose Rizal's biography, major literary works, and contributions to Philippine nationalism.</p>
+                            <span class="quiz-difficulty difficulty-medium">Medium</span>
+                            <div class="quiz-footer">
+                                <span class="quiz-status status-not-started">Not Started</span>
+                                <button class="quiz-action-btn">Start Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz 6: Synthesis & Critical Thinking -->
+                    <div class="quiz-card" data-topic="all">
+                        <div class="quiz-card-header">
+                            <h3 class="quiz-card-title">Synthesis & Connections</h3>
+                            <p class="quiz-card-topic">Cross-Topic Analysis</p>
+                        </div>
+                        <div class="quiz-card-body">
+                            <div class="quiz-info">
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Questions</span>
+                                    <span class="quiz-info-value">20</span>
+                                </div>
+                                <div class="quiz-info-item">
+                                    <span class="quiz-info-label">Time Limit</span>
+                                    <span class="quiz-info-value">30 min</span>
+                                </div>
+                            </div>
+                            <p class="quiz-description">Comprehensive assessment requiring you to synthesize knowledge across topics and apply critical thinking skills.</p>
+                            <span class="quiz-difficulty difficulty-hard">Hard</span>
+                            <div class="quiz-footer">
+                                <span class="quiz-status status-not-started">Not Started</span>
+                                <button class="quiz-action-btn">Start Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Quiz Statistics Section -->
+            <div class="widget">
+                <div class="widget-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                        <line x1="1" y1="12" x2="1" y2="13"></line>
+                        <line x1="1" y1="6" x2="1" y2="7"></line>
+                        <line x1="1" y1="18" x2="1" y2="19"></line>
+                    </svg>
+                    <h3>Your Statistics</h3>
+                </div>
+
+                <div class="widget-content">
+                    <div class="todo-section">
+                        <h4 class="todo-label">Overall Performance</h4>
+                        <div class="todo-item" style="padding: 8px 0;">
+                            <span style="color: #006666; font-weight: 600; font-size: 20px;">0/6</span>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Quizzes Completed</p>
+                        </div>
+                    </div>
+
+                    <div class="todo-section">
+                        <h4 class="todo-label">Average Score</h4>
+                        <div class="todo-item" style="padding: 8px 0;">
+                            <span style="color: #7A5B47; font-weight: 600; font-size: 16px;">-</span>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">No quizzes attempted yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Tips Section -->
+            <div class="widget">
+                <div class="widget-header">
+                    <span class="notification-dot"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 10.26 24 10.26 17.55 16.16 19.64 24 12 18.89 4.36 24 6.45 16.16 0 10.26 8.91 10.26 12 2"></polygon></svg></span>
+                    <h3>Study Tips</h3>
+                </div>
+
+                <div class="widget-content ideas-list">
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>Read Actively</strong>
+                            <p>Take notes while reading the course material to strengthen memory retention...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>Start Easy</strong>
+                            <p>Begin with easier quizzes to build confidence before attempting harder assessments...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>Review Mistakes</strong>
+                            <p>Always review incorrect answers to understand the concepts better...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Path -->
+            <div class="widget join-section">
+                <h3>Recommended Path</h3>
+                <p>Complete these in order for best results</p>
+                <button class="join-button">View Learning Path</button>
+
+                <div class="class-preview">
+                    <div class="preview-avatars">
+                        <img src="https://i.pravatar.cc/28?img=10" alt="Step 1" />
+                        <img src="https://i.pravatar.cc/28?img=11" alt="Step 2" />
+                    </div>
+                    <p class="preview-text"><strong>6 quizzes</strong> to master the material</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="course.js"></script>
+    <script>
+        // Quiz Management Module
+        class QuizManager {
+            constructor() {
+                this.quizzes = [];
+                this.userAttempts = {};
+                this.currentUser = null;
+                this.init();
+            }
+
+            async init() {
+                try {
+                    // Check authentication
+                    const session = await getCurrentSession();
+                    if (!session) {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    this.currentUser = session.user;
+
+                    // Load quizzes and user attempts
+                    await this.loadQuizzes();
+                    await this.loadUserAttempts();
+                    this.setupEventListeners();
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                }
+            }
+
+            async loadQuizzes() {
+                try {
+                    const result = await DB.getQuizzes();
+                    if (result.success) {
+                        this.quizzes = result.data;
+                        this.renderQuizzes(this.quizzes);
+                    }
+                } catch (error) {
+                    console.error('Error loading quizzes:', error);
+                }
+            }
+
+            async loadUserAttempts() {
+                try {
+                    const result = await DB.getUserQuizAttempts(this.currentUser.id);
+                    if (result.success) {
+                        // Create a map of quiz attempts
+                        result.data.forEach(attempt => {
+                            if (!this.userAttempts[attempt.quiz_id]) {
+                                this.userAttempts[attempt.quiz_id] = [];
+                            }
+                            this.userAttempts[attempt.quiz_id].push(attempt);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading user attempts:', error);
+                }
+            }
+
+            renderQuizzes(quizzesToRender) {
+                const container = document.querySelector('.quizzes-grid');
+                if (!container) return;
+
+                container.innerHTML = quizzesToRender.map(quiz => {
+                    const attempts = this.userAttempts[quiz.id] || [];
+                    const completedAttempts = attempts.filter(a => a.status === 'completed');
+                    
+                    let statusBadge = 'Not Started';
+                    let statusClass = 'status-not-started';
+
+                    if (completedAttempts.length > 0) {
+                        statusBadge = 'Completed';
+                        statusClass = 'status-completed';
+                    } else if (attempts.some(a => a.status === 'in_progress')) {
+                        statusBadge = 'In Progress';
+                        statusClass = 'status-in-progress';
+                    }
+
+                    const highestScore = completedAttempts.length > 0
+                        ? Math.max(...completedAttempts.map(a => a.percentage || 0))
+                        : null;
+
+                    return `
+                        <div class="quiz-card" data-topic="${quiz.topic_name.toLowerCase()}">
+                            <div class="quiz-card-header">
+                                <h3 class="quiz-card-title">${escapeHtml(quiz.title)}</h3>
+                                <p class="quiz-card-topic">${escapeHtml(quiz.topic_name)}</p>
+                            </div>
+                            <div class="quiz-card-body">
+                                <div class="quiz-info">
+                                    <div class="quiz-info-item">
+                                        <span class="quiz-info-label">Questions</span>
+                                        <span class="quiz-info-value">${quiz.num_questions}</span>
+                                    </div>
+                                    <div class="quiz-info-item">
+                                        <span class="quiz-info-label">Time Limit</span>
+                                        <span class="quiz-info-value">${quiz.time_limit_minutes} min</span>
+                                    </div>
+                                </div>
+                                <p class="quiz-description">${escapeHtml(quiz.description)}</p>
+                                ${highestScore ? `<div style="padding: 8px 0; border-top: 1px solid #eee; margin-bottom: 16px; font-size: 12px; color: #7A5B47;"><strong>Your Best Score:</strong> ${highestScore.toFixed(1)}%</div>` : ''}
+                                <span class="quiz-difficulty difficulty-${quiz.difficulty_level}">${quiz.difficulty_level}</span>
+                                <div class="quiz-footer">
+                                    <span class="quiz-status ${statusClass}">${statusBadge}</span>
+                                    <button class="quiz-action-btn" onclick="quizApp.startQuiz('${quiz.id}', '${escapeHtml(quiz.title)}')">Start Quiz</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            async startQuiz(quizId, quizTitle) {
+                try {
+                    const result = await DB.createQuizAttempt(quizId, this.currentUser.id);
+                    if (result.success) {
+                        // Redirect to quiz taking interface
+                        // For now, show an alert with the attempt ID
+                        alert(`Quiz started! Attempt ID: ${result.data.id}\n\nQuiz: ${quizTitle}`);
+                        // TODO: Implement full quiz taking interface
+                    }
+                } catch (error) {
+                    console.error('Error starting quiz:', error);
+                    alert('Failed to start quiz. Please try again.');
+                }
+            }
+
+            setupEventListeners() {
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        // Update active state
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        const filter = btn.dataset.filter;
+                        if (filter === 'all') {
+                            this.renderQuizzes(this.quizzes);
+                        } else if (filter === 'completed') {
+                            const completedQuizzes = this.quizzes.filter(q => {
+                                const attempts = this.userAttempts[q.id] || [];
+                                return attempts.some(a => a.status === 'completed');
+                            });
+                            this.renderQuizzes(completedQuizzes);
+                        } else if (filter === 'in-progress') {
+                            const inProgressQuizzes = this.quizzes.filter(q => {
+                                const attempts = this.userAttempts[q.id] || [];
+                                return attempts.some(a => a.status === 'in_progress');
+                            });
+                            this.renderQuizzes(inProgressQuizzes);
+                        } else {
+                            const filteredQuizzes = this.quizzes.filter(q => q.topic_name.toLowerCase() === filter);
+                            this.renderQuizzes(filteredQuizzes);
+                        }
+                    });
+                });
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Initialize quiz manager when page loads
+        let quizApp;
+        document.addEventListener('DOMContentLoaded', () => {
+            quizApp = new QuizManager();
+        });
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Readings in Philippine History</title>
+    <link rel="stylesheet" href="course.css">
+    <!-- Lucide Icons - Modern Icon Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="db-helpers.js"></script>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
+
+            <div class="header-actions">
+                
+                <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
+                    <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="logout-btn" title="Logout">
+                    <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Left Sidebar Navigation -->
+        <aside class="left-sidebar" id="leftSidebar">
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
+                <div class="profile-info">
+                    <h4 class="profile-name" id="profileName">Loading...</h4>
+                    <p class="profile-email" id="profileEmail">Loading...</p>
+                </div>
+                <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="course.html" class="nav-item active" data-section="feed">
+                    <i data-lucide="radio" class="nav-icon-svg"></i>
+                    <span>Feed</span>
+                </a>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="topic">
+                        <i data-lucide="book-open" class="nav-icon-svg"></i>
+                        <span>Topic</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
+                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                        <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+                        <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
+                    </div>
+                </div>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="activities">
+                        <i data-lucide="calendar" class="nav-icon-svg"></i>
+                        <span>Activities</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="games.html" class="dropdown-item" data-section="games">
+                            <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
+                            Games
+                        </a>
+                        
+                        <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
+                            <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                            Interactive Tasks
+                        </a>
+                    </div>
+                </div>
+
+
+                <a href="videos.html" class="nav-item" data-section="videos">
+                    <i data-lucide="play-circle" class="nav-icon-svg"></i>
+                    <span>Videos</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Discussion/Post Section -->
+            <section class="discussion-section">
+                <!-- Create Post -->
+                <div class="create-post">
+                    <div class="create-post-header">
+                        <img src="https://i.pravatar.cc/40?img=20" alt="Your avatar" class="avatar" id="createPostAvatar" />
+                        <div class="post-input-wrapper">
+                            <strong id="createPostName">Loading...</strong>
+                            <input type="text" placeholder="Share your thoughts..." class="post-input" />
+                        </div>
+                        <button class="send-btn">
+                            <i data-lucide="send" style="width: 20px; height: 20px;"></i>
+                        </button>
+                    </div>
+                    <div class="create-post-footer">
+                        <label class="image-upload-btn" title="Add image">
+                            <i data-lucide="image" style="width: 20px; height: 20px;"></i>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+                        </label>
+
+                        <button class="video-upload-btn" id="videoUrlBtn" title="Add YouTube video">
+                            <i data-lucide="youtube" style="width: 20px; height: 20px; color: #FF0000;"></i>
+                        </button>
+
+                        <label class="file-upload-btn" title="Add file">
+                            <i data-lucide="file" style="width: 20px; height: 20px;"></i>
+                            <input type="file" id="fileInput" style="display: none;" />
+                        </label>
+
+
+                        <button class="poll-btn" title="Create poll" id="pollBtn">
+                            <i data-lucide="bar-chart-3" style="width: 20px; height: 20px;"></i>
+                        </button>
+
+                        <div id="imagePreviewContainer" class="image-preview-container"></div>
+                        <div id="videoPreviewContainer" class="video-preview-container"></div>
+                        <div id="pollPreviewContainer" class="poll-preview-container"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- New Bright Ideas Section -->
+            <div class="widget">
+                <div class="widget-header">
+                    <span class="notification-dot">â—</span>
+                    <h3>New Bright Ideas</h3>
+                </div>
+
+                <div class="widget-content ideas-list">
+                    <div class="idea-card">
+                        <img src="https://i.pravatar.cc/36?img=23" alt="User" class="idea-avatar" />
+                        <div class="idea-info">
+                            <strong>Queen Koding</strong>
+                            <p>Was it really a ferocious or biggest haven?...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <img src="https://i.pravatar.cc/36?img=24" alt="User" class="idea-avatar" />
+                        <div class="idea-info">
+                            <strong>Colby Sai Vallo</strong>
+                            <p>Any thoughts about the primary sources used in Rizalian...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <img src="https://i.pravatar.cc/36?img=25" alt="User" class="idea-avatar" />
+                        <div class="idea-info">
+                            <strong>Princess Nicole Ashley Molantoule Palido</strong>
+                            <p>Do you guys have any book recommendations about the Philipp...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="modal-close" id="closeEditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editName">Full Name</label>
+                    <input type="text" id="editName" placeholder="Your name" />
+                </div>
+                <div class="form-group">
+                    <label for="editBio">Bio</label>
+                    <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video URL Modal -->
+    <div class="modal" id="videoUrlModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add YouTube Video</h2>
+                <button class="modal-close" id="closeVideoModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="videoUrlInput">YouTube URL</label>
+                    <input type="text" id="videoUrlInput" placeholder="Paste YouTube video URL here" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelVideoBtn">Cancel</button>
+                <button class="btn-save" id="confirmVideoBtn">Add Video</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Poll Modal -->
+    <div class="modal" id="pollModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Poll</h2>
+                <button class="modal-close" id="closePollModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pollOption1">Option 1 (Required)</label>
+                    <input type="text" id="pollOption1" placeholder="Enter first poll option" />
+                </div>
+                <div class="form-group">
+                    <label for="pollOption2">Option 2 (Required)</label>
+                    <input type="text" id="pollOption2" placeholder="Enter second poll option" />
+                </div>
+                <div id="pollOptionsContainer">
+                    <div class="form-group">
+                        <label for="pollOption3">Option 3 (Optional)</label>
+                        <input type="text" id="pollOption3" placeholder="Enter third poll option" />
+                    </div>
+                    <div class="form-group">
+                        <label for="pollOption4">Option 4 (Optional)</label>
+                        <input type="text" id="pollOption4" placeholder="Enter fourth poll option" />
+                    </div>
+                </div>
+                <button type="button" class="add-option-btn" id="addOptionBtn">+ Add Another Option</button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelPollBtn">Cancel</button>
+                <button class="btn-save" id="confirmPollBtn">Create Poll</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="course.js"></script>
+    <script>
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
+

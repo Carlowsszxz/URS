@@ -1,0 +1,1122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cavite Mutiny - Readings in Philippine History</title>
+    <link rel="stylesheet" href="course.css">
+    <!-- Lucide Icons - Modern Icon Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Config -->
+    <script src="supabase-config.js"></script>
+    <script src="db-helpers.js"></script>
+    <script src="course.js"></script>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
+
+            <div class="header-actions">
+                <div class="search-box">
+                    <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                    <input type="text" placeholder="Search" />
+                </div>
+
+                <button class="notification-btn">
+                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                    <span class="notification-badge">2</span>
+                </button>
+                <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
+                    <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="logout-btn" title="Logout">
+                    <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Left Sidebar Navigation -->
+        <aside class="left-sidebar" id="leftSidebar">
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
+                <div class="profile-info">
+                    <h4 class="profile-name" id="profileName">Guest User</h4>
+                    <p class="profile-email" id="profileEmail">Not logged in</p>
+                </div>
+                <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="course.html" class="nav-item" data-section="feed">
+                    <i data-lucide="radio" class="nav-icon-svg"></i>
+                    <span>Feed</span>
+                </a>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="topic">
+                        <i data-lucide="book-open" class="nav-icon-svg"></i>
+                        <span>Topic</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
+                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                        <a href="cavite-mutiny.html" class="dropdown-item active">Cavite Mutiny</a>
+                        <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
+                    </div>
+                </div>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="activities">
+                        <i data-lucide="calendar" class="nav-icon-svg"></i>
+                        <span>Activities</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="games.html" class="dropdown-item" data-section="games">
+                            <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
+                            Games
+                        </a>
+                        
+                        <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
+                            <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                            Interactive Tasks
+                        </a>
+                    </div>
+                </div>
+
+
+                <a href="videos.html" class="nav-item" data-section="videos">
+                    <i data-lucide="play-circle" class="nav-icon-svg"></i>
+                    <span>Videos</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Discussion/Post Section -->
+            <section class="discussion-section">
+                <!-- Topic Header -->
+                <div class="topic-header">
+                    <h2>Cavite Mutiny (1872)</h2>
+                    <p class="topic-subtitle">An Important Event in Philippine Colonial History</p>
+                </div>
+
+                <!-- Topic Content with Infographic -->
+                <div class="content-with-infographic">
+                    <!-- Infographic Section - Slideshow (Full Width) -->
+                    <div class="infographic-container">
+                        <div class="infographic-wrapper" id="infographicWrapper">
+                            <div class="slideshow-container">
+                                <div class="slide fade" style="display: block;" data-description="Image 1 - Cavite Mutiny Historical Document">
+                                    <img src="Images/11.png" alt="Cavite Mutiny Image 1" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 2 - Cavite Mutiny Historical Document">
+                                    <img src="Images/12.png" alt="Cavite Mutiny Image 2" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 3 - Cavite Mutiny Historical Document">
+                                    <img src="Images/13.png" alt="Cavite Mutiny Image 3" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 4 - Cavite Mutiny Historical Document">
+                                    <img src="Images/14.png" alt="Cavite Mutiny Image 4" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 5 - Cavite Mutiny Historical Document">
+                                    <img src="Images/15.png" alt="Cavite Mutiny Image 5" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 6 - Cavite Mutiny Historical Document">
+                                    <img src="Images/16.png" alt="Cavite Mutiny Image 6" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 7 - Cavite Mutiny Historical Document">
+                                    <img src="Images/17.png" alt="Cavite Mutiny Image 7" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 8 - Cavite Mutiny Historical Document">
+                                    <img src="Images/18.png" alt="Cavite Mutiny Image 8" class="infographic-image slide-image" />
+                                </div>
+                                <div class="slide fade" data-description="Image 9 - Cavite Mutiny Historical Document">
+                                    <img src="Images/19.png" alt="Cavite Mutiny Image 9" class="infographic-image slide-image" />
+                                </div>
+
+                                <!-- Navigation Arrows -->
+                                <a class="prev" onclick="changeSlide(-1)" title="Previous slide">&#10094;</a>
+                                <a class="next" onclick="changeSlide(1)" title="Next slide">&#10095;</a>
+                                
+                                <!-- Slide Counter -->
+                                <div class="slide-counter">
+                                    <span id="slideNumber">1</span> / 9
+                                </div>
+                            </div>
+
+                            <!-- Image Modal Overlay -->
+                            <div id="imageModal" class="image-modal">
+                                <div class="image-modal-content">
+                                    <img id="modalImage" src="" alt="Full size image" class="modal-image" />
+                                    <button class="modal-close-btn" onclick="closeImageModal()" title="Close (Esc)">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="infographic-caption">
+                                <h4>Timeline of the Cavite Mutiny (1872)</h4>
+                                <p id="slideDescription" class="slide-description">Image 1 - Cavite Mutiny Historical Document</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Educational Content Section -->
+                <div class="educational-content">
+                    <h3>What Happened in the Cavite Mutiny?</h3>
+                    
+                    <section class="content-section">
+                        <h4>The Year 1872: A Historic Turning Point</h4>
+                        <div class="fact-callout">
+                            <strong>Key Historical Event:</strong> <span class="highlight">February 17, 1872</span> – The execution of <span class="key-term">GOMBURZA</span>
+                        </div>
+                        <p>The year <span class="highlight">1872</span> is a historic year marked by two significant events: the <span class="key-term">Cavite Mutiny</span> and the martyrdom of the three priests <strong>Mariano Gómez</strong>, <strong>José Burgos</strong>, and <strong>Jacinto Zamora</strong>, later immortalized as <span class="key-term">GOMBURZA</span>. These events are important milestones in Philippine history and have caused ripples throughout time, directly influencing the decisive events of the <span class="key-term">Philippine Revolution</span> toward the end of the nineteenth century.</p>
+                        <p>While their historical significance is unquestioned, what made this year controversial were the <span class="emphasis">different sides to the story</span>–a battle of perspectives supported by primary sources. In this case study, we zoom in on the events of the <span class="key-term">Cavite Mutiny</span>, a major factor in the awakening of nationalism among Filipinos during this period.</p>
+                    </section>
+
+                    <section class="content-section perspective-section spanish-perspective">
+                        <div class="perspective-label">SPANISH PERSPECTIVE</div>
+                        <h4>Spanish Accounts of the Cavite Mutiny</h4>
+                        <p>The documentation of Spanish historian <strong>José Montero y Vidal</strong> centered on the interpretation that the <span class="key-term">Cavite Mutiny</span> was an <span class="emphasis">attempt to overthrow</span> the Spanish government in the Philippines. Although regarded as a historian, his account of the mutiny was criticized as <strong>woefully biased</strong> and rabid for a scholar.</p>
+                        <p>Another account, taken from the official report of <strong>Governor-General Rafael Izquierdo</strong>, implicated the <span class="emphasis">native clergy</span>, who were then active in the movement toward the <span class="key-term">secularization</span> of parishes. These two Spanish accounts <strong>corroborated each other</strong> in presenting the mutiny as part of a <span class="emphasis">broader revolutionary conspiracy</span>.</p>
+                    </section>
+
+                    <section class="content-section">
+                        <h4>Primary Source: Montero y Vidal's Account</h4>
+                        <blockquote>
+                            <p>"The abolition of privileges enjoyed by the laborers of the <span class="key-term">Cavite arsenal</span> of exemption from the tribute was, according to some, the cause of the insurrection. There were, however, <span class="emphasis">other causes</span>. Spanish revolution which overthrew a secular throne; the propaganda carried on by an unbridled press against monarchical principles... were the <span class="emphasis">determining circumstances</span> which gave rise, among certain Filipinos, to the idea of attaining their independence."</p>
+                            <footer>– José Montero y Vidal, <em>Spanish Version of the Cavite Mutiny of 1872</em></footer>
+                        </blockquote>
+                    </section>
+
+                    <section class="content-section">
+                        <h4>Primary Source: Governor-General Izquierdo's Report</h4>
+                        <blockquote>
+                            <p>"It seems definite that the insurrection was <span class="emphasis">motivated and prepared by the native clergy</span>, by the mestizos and native lawyers, and by those known here as <strong>abogadillos</strong>. The instigators... protested against the injustice of the government in not paying the provinces for their <span class="key-term">tobacco crop</span>... They encouraged the rebellion by protesting what they called the injustice of having obliged the workers in the <span class="key-term">Cavite arsenal</span> to pay tribute."</p>
+                            <footer>– Rafael Izquierdo, <em>Official Report on the Cavite Mutiny</em></footer>
+                        </blockquote>
+                    </section>
+
+                    <section class="content-section">
+                        <h4>Analysis of the Spanish Accounts</h4>
+                        <p>The Spanish accounts underscore the reason for the alleged "revolution": the <span class="emphasis">abolition of privileges</span> enjoyed by the workers of the <span class="key-term">Cavite arsenal</span>, such as exemption from the payment of <span class="key-term">tribute</span> and from <span class="key-term">polos y servicios</span> (forced labor). They also identified <span class="emphasis">other causes</span> which made the issue appear more serious, including the involvement of the <span class="emphasis">native clergy</span>, who–out of spite against the <span class="emphasis">Spanish friars</span>–were said to have conspired and supported the rebels.</p>
+                        <p>In the Spanish narrative, the events of <span class="highlight">1872</span> were <span class="emphasis">premeditated and part of a large conspiracy</span> involving educated Filipinos, mestizos, lawyers, and residents of Manila and Cavite. They allegedly planned to <strong>liquidate high-ranking Spanish officers</strong> and kill the friars. The supposed signal among the conspirators was the firing of <span class="key-term">rockets from Intramuros</span>.</p>
+                    </section>
+
+                    <section class="content-section perspective-section filipino-perspective">
+                        <div class="perspective-label">FILIPINO & FOREIGN PERSPECTIVE</div>
+                        <h4>Differing Accounts: Filipino and Foreign Perspectives</h4>
+                        <p>Two other primary accounts <span class="emphasis">counter</span> the versions presented by Izquierdo and Montero. <strong>Trinidad H. Pardo de Tavera</strong>, a Filipino perspective, argued that the uprising was <span class="emphasis">merely a mutiny</span> by Filipino soldiers and laborers arising from dissatisfaction with <span class="emphasis">Izquierdo's draconian policies</span>, including the abolition of privileges and the prohibition of establishing a <span class="key-term">school of arts and trades</span> for Filipinos.</p>
+                        <p>According to Pardo de Tavera, up to that time there had been <span class="emphasis">no intention of secession from Spain</span>, and the only aspiration of the people was to secure the <span class="emphasis">material and educational advancement</span> of the country. Tavera argued that the <span class="emphasis">Spanish friars and Izquierdo blew the mutiny out of proportion</span> to address other issues, particularly the impending plans of the Spanish central government to deprive friars of power in <span class="key-term">civil governance and education</span>.</p>
+                    </section>
+
+                    <section class="content-section">
+                        <h4>The Martyrdom of GOMBURZA and Its Legacy</h4>
+                        <div class="fact-callout importance-high">
+                            <strong>The Three Martyrs:</strong> <span class="highlight">GOMBURZA</span> – Fathers Mariano Gómez, José Burgos & Jacinto Zamora
+                        </div>
+                        <p><span class="key-term">GOMBURZA</span> refers to Fathers <strong>Mariano Gómez</strong>, <strong>José Burgos</strong>, and <strong>Jacinto Zamora</strong>, who were accused as the <span class="emphasis">masterminds of the Cavite Mutiny</span>. They were prominent Filipino priests charged with <span class="key-term">treason and sedition</span>. It is believed that the Spanish clergy linked them to the mutiny to <span class="emphasis">suppress the secularization movement</span>.</p>
+                        <p>They were publicly executed by <span class="key-term">garrote</span> on <span class="highlight">February 17, 1872</span>, a scene reportedly witnessed by a young <strong>José Rizal</strong>. Their martyrdom is widely regarded as the <span class="emphasis">dawn of Philippine nationalism</span>. Rizal later dedicated <span class="key-term">El Filibusterismo</span> to their memory, affirming the widespread belief in their innocence and the injustice of their trial.</p>
+                    </section>
+
+                    <section class="content-section">
+                        <h4>Conclusion: Understanding Competing Narratives</h4>
+                        <div class="fact-callout conclusion-box">
+                            <strong>Key Takeaway:</strong> The same events told through <span class="emphasis">different perspectives</span> create fundamentally different historical narratives.
+                        </div>
+                        <p>The <span class="key-term">Cavite Mutiny</span> of <span class="highlight">1872</span> demonstrates how historical events are shaped by <span class="emphasis">perspective, power, and purpose</span>. <span class="emphasis">Spanish officials framed</span> the mutiny as a <span class="key-term">revolutionary conspiracy</span>, while <span class="emphasis">Filipino and foreign observers</span> interpreted it as an <span class="emphasis">exaggerated labor dispute</span> exploited for political and ecclesiastical ends. Understanding these <span class="emphasis">competing narratives</span> highlights the importance of <strong>critical analysis of primary sources</strong> and underscores the mutiny's role in the emergence of <span class="key-term">Philippine nationalism</span>.</p>
+                    </section>
+                </div>
+
+            </section>
+        </main>
+
+        <style>
+            .content-with-infographic {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 32px;
+                align-items: center;
+                margin-top: 32px;
+                margin-bottom: 32px;
+                justify-items: center;
+            }
+
+            .infographic-container {
+                grid-column: 1;
+                width: 100%;
+                max-width: 700px;
+                position: relative;
+            }
+
+            .infographic-wrapper {
+                background: #ffffff;
+                border: 3px solid #D6DCE1;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 8px 32px rgba(92, 52, 34, 0.12);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .infographic-wrapper:hover {
+                box-shadow: 0 16px 56px rgba(92, 52, 34, 0.18);
+                border-color: #51513E;
+                transform: translateY(-2px);
+            }
+
+            /* Slideshow Container */
+            .slideshow-container {
+                position: relative;
+                width: 100%;
+                background: #f9f9f9;
+            }
+
+            .slide {
+                display: none;
+                width: 100%;
+            }
+
+            .slide.fade {
+                animation: fade 1s ease-in-out;
+            }
+
+            @keyframes fade {
+                from { opacity: 0.5; }
+                to { opacity: 1; }
+            }
+
+            .infographic-image {
+                width: 100%;
+                height: auto;
+                display: block;
+                background: linear-gradient(135deg, #D6DCE1 0%, #D6DCE1 100%);
+                object-fit: contain;
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .slideshow-container:hover .infographic-image {
+                transform: scale(1.02);
+            }
+
+            /* Navigation Arrows */
+            .prev, .next {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                width: 48px;
+                height: 48px;
+                margin-top: -24px;
+                padding: 0;
+                color: white;
+                font-weight: bold;
+                font-size: 24px;
+                transition: 0.3s ease;
+                border-radius: 50%;
+                background: rgba(0, 0, 0, 0.5);
+                user-select: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                z-index: 10;
+            }
+
+            .next {
+                right: 16px;
+            }
+
+            .prev {
+                left: 16px;
+            }
+
+            .prev:hover, .next:hover {
+                background: rgba(0, 0, 0, 0.8);
+                transform: scale(1.1);
+            }
+
+            /* Fullscreen Button */
+            .fullscreen-btn {
+                position: absolute;
+                bottom: 12px;
+                right: 12px;
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                background: rgba(0, 0, 0, 0.5);
+                border: none;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                z-index: 10;
+            }
+
+            .fullscreen-btn:hover {
+                background: rgba(0, 0, 0, 0.8);
+                transform: scale(1.1);
+            }
+
+            /* Slide Counter */
+            .slide-counter {
+                position: absolute;
+                bottom: 16px;
+                left: 16px;
+            background: rgba(92, 52, 34, 0.8);
+                font-weight: 600;
+                z-index: 10;
+                backdrop-filter: blur(4px);
+            }
+
+            .slide-description {
+                font-style: italic;
+                color: #555 !important;
+                transition: opacity 0.3s ease;
+            }
+
+            /* Slide Dots */
+            .slideshow-dots {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                padding: 16px 0;
+                background: #ffffff;
+            }
+
+            .dot {
+                cursor: pointer;
+                height: 12px;
+                width: 12px;
+                margin: 0 4px;
+                background-color: #ddd;
+                border-radius: 50%;
+                transition: background-color 0.3s ease, transform 0.3s ease;
+                border: none;
+            }
+
+            .dot.active {
+                background-color: #51513E;
+                transform: scale(1.2);
+            }
+
+            .dot:hover {
+                background-color: #999;
+            }
+
+            .infographic-caption {
+                padding: 28px 28px;
+                background: linear-gradient(135deg, #D6DCE1 0%, #ffffff 100%);
+                border-top: 2px solid #D6DCE1;
+                transition: all 0.4s ease;
+            }
+
+            .infographic-caption h4 {
+                font-size: 18px;
+                font-weight: 700;
+                color: #51513E;
+                margin: 0 0 10px 0;
+                letter-spacing: -0.3px;
+            }
+
+            .infographic-caption p {
+                font-size: 14px;
+                color: #423833;
+                margin: 0;
+                line-height: 1.6;
+            }
+
+            /* Image Modal Styles */
+            .image-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.25s ease-out;
+            }
+
+            .image-modal.active {
+                display: flex;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            body.modal-open {
+                overflow: hidden;
+                width: 100%;
+            }
+
+            .image-modal-content {
+                position: relative;
+                max-width: 90vw;
+                max-height: 90vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-image {
+                width: 100%;
+                height: 100%;
+                max-width: 90vw;
+                max-height: 90vh;
+                object-fit: contain;
+                border-radius: 8px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .modal-close-btn {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.15);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+                z-index: 1001;
+                backdrop-filter: blur(4px);
+            }
+
+            .modal-close-btn:hover {
+                background: rgba(255, 255, 255, 0.25);
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+
+            .modal-close-btn:active {
+                transform: scale(0.95);
+            }
+
+            @media (max-width: 768px) {
+                .image-modal-content {
+                    max-width: 95vw;
+                    max-height: 85vh;
+                }
+
+                .modal-image {
+                    max-width: 95vw;
+                    max-height: 85vh;
+                }
+
+                .modal-close-btn {
+                    width: 44px;
+                    height: 44px;
+                    top: 16px;
+                    right: 16px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .content-with-infographic {
+                    grid-template-columns: 1fr;
+                    gap: 24px;
+                }
+
+                .infographic-container {
+                    grid-column: 1;
+                    max-width: 650px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .content-with-infographic {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                    margin-top: 24px;
+                    margin-bottom: 24px;
+                }
+
+                .infographic-container {
+                    grid-column: 1;
+                    max-width: 100%;
+                }
+
+                .infographic-wrapper {
+                    border-radius: 16px;
+                    border-width: 2px;
+                }
+
+                .infographic-image {
+                    height: 300px;
+                }
+
+                .infographic-caption {
+                    padding: 24px 20px;
+                }
+
+                .infographic-caption h4 {
+                    font-size: 16px;
+                    margin-bottom: 8px;
+                }
+
+                .infographic-caption p {
+                    font-size: 13px;
+                }
+
+                .prev, .next {
+                    width: 44px;
+                    height: 44px;
+                    margin-top: -22px;
+                    font-size: 20px;
+                }
+            }
+
+            /* Educational Content Styling */
+            .educational-content {
+                background: linear-gradient(135deg, #E2D5C2 0%, #D4BBAC 100%);
+                border: 2px solid #98755B;
+                border-radius: 12px;
+                padding: 40px;
+                margin-top: 48px;
+                line-height: 1.8;
+                color: #442913;
+            }
+
+            .educational-content h3 {
+                font-size: 28px;
+                font-weight: 700;
+                color: #5C3422;
+                margin-bottom: 32px;
+                text-align: center;
+                border-bottom: 3px solid #5C3422;
+                padding-bottom: 16px;
+            }
+
+            .content-section {
+                margin-bottom: 32px;
+                padding-bottom: 24px;
+                border-bottom: 1px solid #D4BBAC;
+            }
+
+            .content-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .content-section h4 {
+                font-size: 18px;
+                font-weight: 700;
+                color: #442913;
+                margin-bottom: 16px;
+            }
+
+            .content-section p {
+                font-size: 14px;
+                line-height: 1.8;
+                color: #442913;
+                margin-bottom: 12px;
+            }
+
+            .content-section p:last-child {
+                margin-bottom: 0;
+            }
+
+            blockquote {
+                background: #D4BBAC;
+                border-left: 4px solid #5C3422;
+                padding: 20px 24px;
+                margin: 20px 0;
+                border-radius: 6px;
+                font-style: italic;
+                color: #442913;
+            }
+
+            blockquote p {
+                margin-bottom: 12px;
+                color: #442913;
+            }
+
+            blockquote footer {
+                font-size: 12px;
+                color: #98755B;
+                margin-top: 12px;
+                font-style: normal;
+            }
+
+            blockquote em {
+                font-style: italic;
+            }
+
+            /* New Engagement Styles */
+            .highlight {
+                background: #D4BBAC;
+                color: #5C3422;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-weight: 600;
+                display: inline-block;
+            }
+
+            .key-term {
+                color: #5C3422;
+                font-weight: 700;
+                border-bottom: 2px solid #D4BBAC;
+                padding-bottom: 2px;
+            }
+
+            .emphasis {
+                color: #5C3422;
+                font-weight: 600;
+                font-style: italic;
+            }
+
+            .fact-callout {
+                background: linear-gradient(135deg, #E2D5C2 0%, #D4BBAC 100%);
+                border-left: 4px solid #5C3422;
+                border-radius: 6px;
+                padding: 16px 20px;
+                margin: 20px 0;
+                font-size: 14px;
+                color: #442913;
+                box-shadow: 0 2px 8px rgba(92, 52, 34, 0.15);
+            }
+
+            .fact-callout strong {
+                color: #5C3422;
+            }
+
+            .fact-callout.importance-high {
+                background: linear-gradient(135deg, #D4BBAC 0%, #C9A89A 100%);
+                border-left-color: #5C3422;
+                box-shadow: 0 4px 12px rgba(92, 52, 34, 0.25);
+            }
+
+            .fact-callout.conclusion-box {
+                background: linear-gradient(135deg, #E2D5C2 0%, #D4BBAC 100%);
+                border-left-color: #5C3422;
+                text-align: center;
+                font-weight: 600;
+            }
+
+            .perspective-section {
+                position: relative;
+                border-left: 4px solid #D4BBAC;
+                padding-left: 20px;
+                margin-left: 0;
+            }
+
+            .perspective-section.spanish-perspective {
+                border-left-color: #98755B;
+                background: rgba(226, 213, 194, 0.3);
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .perspective-section.filipino-perspective {
+                border-left-color: #5C3422;
+                background: rgba(92, 52, 34, 0.1);
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .perspective-label {
+                font-weight: 700;
+                color: #5C3422;
+                text-transform: uppercase;
+                font-size: 12px;
+                letter-spacing: 1px;
+                margin-bottom: 12px;
+                display: inline-block;
+                padding: 6px 12px;
+                background: rgba(226, 213, 194, 0.8);
+                border-radius: 4px;
+            }
+
+            @media (max-width: 768px) {
+                .educational-content {
+                    padding: 24px;
+                }
+
+                .educational-content h3 {
+                    font-size: 22px;
+                }
+
+                .content-section h4 {
+                    font-size: 16px;
+                }
+
+                blockquote {
+                    padding: 16px 20px;
+                }
+
+                .perspective-section {
+                    padding-left: 16px;
+                }
+
+                .fact-callout {
+                    padding: 14px 16px;
+                }
+            }
+        </style>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Related Content Section -->
+            <div class="widget">
+                <div class="widget-header">
+                    <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
+                    <h3>Learning Path</h3>
+                </div>
+
+                <div class="widget-content">
+                    <div class="todo-section">
+                        <h4 class="todo-label">Related Topics</h4>
+                        <div class="todo-item">
+                            <input type="checkbox" id="related1" />
+                            <label for="related1">Historical Context of Spanish Colonization</label>
+                        </div>
+                        <div class="todo-item">
+                            <input type="checkbox" id="related2" />
+                            <label for="related2">Filipino Resistance Movements</label>
+                        </div>
+                    </div>
+
+                    <div class="todo-section">
+                        <h4 class="todo-label">Key Dates</h4>
+                        <div class="todo-item">
+                            <span style="color: #8B0000; font-weight: 600;">1872</span>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">Cavite Mutiny occurred</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Figures Section -->
+            <div class="widget">
+                <div class="widget-header">
+
+                    <h3>Key Figures</h3>
+                </div>
+
+                <div class="widget-content ideas-list">
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>GomBurZa</strong>
+                            <p>Three Filipino priests executed for the uprising...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>Jose Rizal</strong>
+                            <p>Inspired by GomBurZa's execution to fight for independence...</p>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div class="idea-info">
+                            <strong>Andres Bonifacio</strong>
+                            <p>Continued the fight for Philippine independence...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Resources Section -->
+            
+        </aside>
+    </div>
+
+    <script>
+        // Initialize dropdown menus
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownToggles = document.querySelectorAll('.nav-item-dropdown .nav-item');
+            
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const dropdown = toggle.closest('.nav-item-dropdown');
+                    if (dropdown) {
+                        dropdown.classList.toggle('open');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        // Initialize user profile with debugging
+        async function initializeProfile() {
+            console.log('=== PROFILE INIT START ===');
+            console.log('1. Checking supabaseClient:', !!window.supabaseClient);
+            
+            try {
+                if (!window.supabaseClient) {
+                    console.log('ERROR: Supabase client not available');
+                    return;
+                }
+
+                console.log('2. Getting session...');
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                
+                console.log('3. Session result:', session);
+                console.log('4. User data:', session?.user);
+                
+                if (session && session.user) {
+                    console.log('5. User found, populating profile...');
+                    const user = session.user;
+                    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+                    const email = user.email || 'Not available';
+                    
+                    console.log('Name:', name);
+                    console.log('Email:', email);
+
+                    const nameEl = document.getElementById('profileName');
+                    const emailEl = document.getElementById('profileEmail');
+                    const avatarEl = document.getElementById('profileAvatar');
+
+                    console.log('DOM elements found:', { nameEl: !!nameEl, emailEl: !!emailEl, avatarEl: !!avatarEl });
+
+                    if (nameEl) {
+                        nameEl.textContent = name;
+                        console.log('✓ Name updated');
+                    }
+                    if (emailEl) {
+                        emailEl.textContent = email;
+                        console.log('✓ Email updated');
+                    }
+                    if (avatarEl) {
+                        avatarEl.src = `https://i.pravatar.cc/80?u=${user.id}`;
+                        console.log('✓ Avatar updated');
+                    }
+                } else {
+                    console.log('6. No session found - user not logged in');
+                }
+            } catch (error) {
+                console.error('ERROR in initializeProfile:', error);
+            }
+            console.log('=== PROFILE INIT END ===');
+        }
+
+        console.log('Profile script loaded');
+        
+        // Try after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM Ready - initializing profile');
+                setTimeout(initializeProfile, 500);
+            });
+        } else {
+            console.log('DOM already ready - initializing profile');
+            setTimeout(initializeProfile, 500);
+        }
+
+        // Also set up listener for auth changes
+        setTimeout(() => {
+            console.log('Setting up auth listener');
+            if (window.supabaseClient) {
+                window.supabaseClient.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth state changed:', event, 'Session:', !!session);
+                    if (session && session.user) {
+                        console.log('User logged in via listener:', session.user.email);
+                        initializeProfile();
+                    }
+                });
+            }
+        }, 1000);
+    </script>
+
+    <script>
+        let currentSlideIndex = 0;
+        let autoSlideTimer = null;
+        const SLIDE_INTERVAL = 5000; // 5 seconds
+
+        // Initialize slideshow
+        function initSlideshow() {
+            // Display first slide
+            displaySlide(0);
+            
+            // Start auto-rotation
+            startAutoSlide();
+            
+            // Set up modal event listener
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    // Only close if clicking directly on the overlay, not the image or close button
+                    if (e.target === modal) {
+                        closeImageModal();
+                    }
+                });
+            } else {
+                console.warn('Modal element not found');
+            }
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                const modal = document.getElementById('imageModal');
+                const isModalOpen = modal && modal.classList.contains('active');
+                
+                if (e.key === 'Escape') {
+                    if (isModalOpen) {
+                        closeImageModal();
+                        return;
+                    }
+                }
+                
+                // Only handle arrow keys if modal is NOT open
+                if (!isModalOpen) {
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        changeSlide(-1);
+                    }
+                    if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        changeSlide(1);
+                    }
+                }
+            });
+            
+            // Add touch/swipe support
+            const container = document.querySelector('.slideshow-container');
+            if (container) {
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                container.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    clearTimeout(autoSlideTimer);
+                }, false);
+
+                container.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                    startAutoSlide();
+                }, false);
+
+                function handleSwipe() {
+                    const swipeThreshold = 50;
+                    if (touchStartX - touchEndX > swipeThreshold) {
+                        // Swiped left - next slide
+                        changeSlide(1);
+                    } else if (touchEndX - touchStartX > swipeThreshold) {
+                        // Swiped right - previous slide
+                        changeSlide(-1);
+                    }
+                }
+            }
+        }
+
+        // Display a specific slide
+        function displaySlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            if (!slides.length) return;
+            
+            // Wrap around
+            if (n >= slides.length) {
+                currentSlideIndex = 0;
+            } else if (n < 0) {
+                currentSlideIndex = slides.length - 1;
+            } else {
+                currentSlideIndex = n;
+            }
+            
+            // Hide all slides
+            slides.forEach(slide => slide.style.display = 'none');
+            // Remove active class from all dots
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Show current slide
+            slides[currentSlideIndex].style.display = 'block';
+            if (dots.length > 0) {
+                dots[currentSlideIndex].classList.add('active');
+            }
+            
+            // Update slide counter
+            document.getElementById('slideNumber').textContent = currentSlideIndex + 1;
+            
+            // Update slide description
+            const description = slides[currentSlideIndex].getAttribute('data-description');
+            if (description) {
+                document.getElementById('slideDescription').textContent = description;
+            }
+        }
+
+        // Change slide by offset
+        function changeSlide(n) {
+            clearTimeout(autoSlideTimer);
+            displaySlide(currentSlideIndex + n);
+            startAutoSlide();
+        }
+
+        // Jump to specific slide
+        function currentSlide(n) {
+            clearTimeout(autoSlideTimer);
+            displaySlide(n);
+            startAutoSlide();
+        }
+
+        // Auto-advance slides
+        function startAutoSlide() {
+            clearTimeout(autoSlideTimer);
+            autoSlideTimer = setTimeout(() => {
+                displaySlide(currentSlideIndex + 1);
+                startAutoSlide();
+            }, SLIDE_INTERVAL);
+        }
+
+        function initLucideIcons() {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initSlideshow();
+                setTimeout(initLucideIcons, 100);
+            });
+        } else {
+            initSlideshow();
+            setTimeout(initLucideIcons, 100);
+        }
+
+        window.addEventListener('load', initLucideIcons);
+    </script>
+
+    <script>
+        // Lucide icons are now initialized above
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Readings in Philippine History</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-background"></div>
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Readings in Philippine History</h1>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            <form id="loginForm" class="login-form" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                    />
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                            required
+                            autocomplete="current-password"
+                        />
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="passwordToggle"
+                            aria-label="Toggle password visibility"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember" name="remember" />
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-button">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="register.html">Create one</a></p>
+            </div>
+        </div>
+
+        <div class="login-background"></div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        // Check if user is already logged in
+        async function checkExistingSession() {
+            try {
+                // Wait a bit for Supabase to initialize
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (!window.supabaseClient) return;
+                
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (session) {
+                    // Already logged in, redirect to home
+                    window.location.href = 'home.html';
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+        
+        checkExistingSession();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
+

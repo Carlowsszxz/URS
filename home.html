@@ -1,0 +1,893 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Readings in Philippine History</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: #E2D5C2;
+            color: #5C3422;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2D5C2 100%);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(68, 41, 19, 0.08);
+            border-bottom: 1px solid #D4BBAC;
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #5C3422 0%, #442913 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #5C3422;
+            color: #5C3422;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #5C3422;
+            color: #E2D5C2;
+        }
+        }
+
+        .logout-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: #5C3422;
+            padding: 120px 40px 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: -0.8px;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 14px 32px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-btn.primary {
+            background: #E2D5C2;
+            color: #5C3422;
+            box-shadow: 0 8px 25px rgba(226, 213, 194, 0.25);
+            font-weight: 700;
+        }
+
+        .cta-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(226, 213, 194, 0.35);
+        }
+
+        .cta-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+
+        .cta-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .content-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #5C3422;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        /* FEATURE GRID */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 100px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2D5C2 100%);
+            border-radius: 16px;
+            padding: 40px 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #D4BBAC;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(92, 52, 34, 0.05);
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(92, 52, 34, 0.12);
+            border-color: #5C3422;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .feature-card:nth-child(1) .feature-icon {
+            background: #5C3422;
+        }
+
+        .feature-card:nth-child(2) .feature-icon {
+            background: #E2D5C2;
+        }
+
+        .feature-card:nth-child(2) .feature-icon i {
+            color: #5C3422;
+            opacity: 1 !important;
+            stroke-width: 3 !important;
+        }
+
+        .feature-card:nth-child(3) .feature-icon {
+            background: #442913;
+        }
+
+        .feature-card:nth-child(4) .feature-icon {
+            background: #5C3422;
+        }
+
+        .feature-icon svg {
+            width: 32px;
+            height: 32px;
+            color: #ffffff;
+            stroke-width: 3 !important;
+            opacity: 1 !important;
+        }
+
+        .feature-icon i {
+            color: #ffffff;
+            stroke-width: 3 !important;
+            opacity: 1 !important;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #5C3422;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-link {
+            color: #5C3422;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-link:hover {
+            gap: 10px;
+            color: #442913;
+        }
+
+        /* STATS SECTION */
+        .stats-section {
+            background: #442913;
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-bottom: 100px;
+            color: #ffffff;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(92, 52, 34, 0.25);
+        }
+
+        .stats-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .stat-item {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-weight: 600;
+        }
+
+        /* NAVIGATION GRID */
+        .nav-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 100%;
+        }
+
+        .nav-item-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2D5C2 100%);
+            border-radius: 14px;
+            padding: 32px 24px;
+            text-decoration: none;
+            color: #5C3422;
+            border: 1px solid #D4BBAC;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(92, 52, 34, 0.05);
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .nav-item-card:nth-child(1) { animation-delay: 0.1s; }
+        .nav-item-card:nth-child(2) { animation-delay: 0.2s; }
+        .nav-item-card:nth-child(3) { animation-delay: 0.3s; }
+        .nav-item-card:nth-child(4) { animation-delay: 0.4s; }
+        .nav-item-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .nav-item-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(92, 52, 34, 0.1);
+            border-color: #5C3422;
+        }
+
+        .nav-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            background: #5C3422;
+        }
+
+        .nav-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #ffffff;
+        }
+
+        .nav-item-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #5C3422;
+            margin-bottom: 8px;
+        }
+
+        .nav-item-card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* FACTS SECTION */
+        .facts-section {
+            background: linear-gradient(135deg, #5C3422 0%, #442913 100%);
+            border-radius: 16px;
+            padding: 50px 40px;
+            margin-top: 100px;
+            margin-bottom: 60px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(92, 52, 34, 0.1);
+        }
+
+        .facts-heading {
+            font-size: 28px;
+            font-weight: 800;
+            color: #E2D5C2;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        .facts-carousel {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .fact {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            font-size: 16px;
+            font-weight: 500;
+            color: #E2D5C2;
+            line-height: 1.6;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .fact.active {
+            opacity: 1;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: linear-gradient(135deg, #442913 0%, #5C3422 100%);
+            border-top: 1px solid #5C3422;
+            padding: 50px 40px 30px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 16px 20px;
+            }
+
+            .header-logo {
+                font-size: 18px;
+            }
+
+            .hero {
+                padding: 80px 20px 60px;
+            }
+
+            .hero::before,
+            .hero::after {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .cta-btn {
+                padding: 12px 24px;
+                font-size: 12px;
+            }
+
+            .main-content {
+                padding: 60px 20px;
+            }
+
+            .content-title {
+                font-size: 32px;
+                margin-bottom: 40px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 20px;
+                margin-bottom: 60px;
+            }
+
+            .feature-card {
+                padding: 32px 24px;
+            }
+
+            .stats-section {
+                padding: 40px 20px;
+            }
+
+            .stats-title {
+                font-size: 28px;
+                margin-bottom: 35px;
+            }
+
+            .stats-grid {
+                gap: 30px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
+
+            .nav-menu {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .nav-item-card {
+                padding: 24px 16px;
+            }
+
+            .nav-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .nav-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .nav-item-card h3 {
+                font-size: 14px;
+            }
+
+            .nav-item-card p {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 14px 16px;
+            }
+
+            .header-logo {
+                font-size: 16px;
+            }
+
+            .hero {
+                padding: 60px 16px 40px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .hero-cta {
+                gap: 12px;
+            }
+
+            .cta-btn {
+                padding: 10px 20px;
+                font-size: 11px;
+            }
+
+            .main-content {
+                padding: 40px 16px;
+            }
+
+            .content-title {
+                font-size: 24px;
+                margin-bottom: 28px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-bottom: 40px;
+            }
+
+            .feature-card {
+                padding: 24px 16px;
+            }
+
+            .feature-icon {
+                width: 52px;
+                height: 52px;
+                margin-bottom: 16px;
+                font-size: 26px;
+            }
+
+            .feature-title {
+                font-size: 16px;
+            }
+
+            .stats-section {
+                padding: 32px 16px;
+                margin-bottom: 50px;
+            }
+
+            .stats-title {
+                font-size: 22px;
+                margin-bottom: 28px;
+            }
+
+            .stats-grid {
+                gap: 25px;
+            }
+
+            .stat-number {
+                font-size: 32px;
+            }
+
+            .nav-menu {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-item-card {
+                padding: 20px 16px;
+            }
+
+            .nav-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 16px;
+                padding: 0 10px;
+            }
+
+            .nav-card {
+                padding: 24px 18px;
+            }
+
+            .nav-card-icon {
+                font-size: 40px;
+            }
+
+            .nav-card-title {
+                font-size: 16px;
+            }
+
+            .nav-card-description {
+                font-size: 13px;
+            }
+        }
+
+        /* SCROLLBARS */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-logo">Philippine History</div>
+            <div class="header-actions">
+                <button class="logout-btn" onclick="logout()" title="Sign out">
+                    <i data-lucide="log-out" stroke-width="1.5"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Readings in Philippine History</h1>
+            <p class="hero-subtitle">Embark on an immersive journey through the rich heritage and pivotal moments that shaped the Philippines</p>
+            <div class="hero-cta">
+                <a href="quizzes.html" class="cta-btn primary">
+                    <i data-lucide="book-open" stroke-width="2" style="width: 16px; height: 16px;"></i>
+                    Take a Quiz
+                </a>
+                <a href="games.html" class="cta-btn secondary">
+                    <i data-lucide="gamepad-2" stroke-width="2" style="width: 16px; height: 16px;"></i>
+                    Play Games
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE GRID -->
+    <div class="main-content" style="padding-top: 60px;">
+        
+
+        <!-- STATS SECTION -->
+      
+
+        <!-- NAVIGATION MENU -->
+        <h2 class="content-title">Quick Navigation</h2>
+        <div class="nav-menu" id="topics">
+            <!-- Feed -->
+            <a href="course.html" class="nav-item-card">
+                <div class="nav-icon">
+                    <i data-lucide="rss" stroke-width="1.5"></i>
+                </div>
+                <h3>Feed</h3>
+                <p>Latest historical updates and news</p>
+            </a>
+
+            <!-- Topics -->
+            <a href="cavite-mutiny.html" class="nav-item-card">
+                <div class="nav-icon">
+                    <i data-lucide="book-open" stroke-width="1.5"></i>
+                </div>
+                <h3>Topics</h3>
+                <p>Explore Philippine history subjects</p>
+            </a>
+
+            <!-- Games -->
+            <a href="games.html" class="nav-item-card">
+                <div class="nav-icon">
+                    <i data-lucide="gamepad-2" stroke-width="1.5"></i>
+                </div>
+                <h3>Games</h3>
+                <p>Learn through entertaining games</p>
+            </a>
+        </div>
+
+        <!-- FACTS SECTION -->
+        <div class="facts-section">
+            <h2 class="facts-heading">Did You Know?</h2>
+            <div class="facts-carousel" id="factsCarousel">
+                <div class="fact active">José Rizal was a true <strong>polymath</strong>, speaking 22 languages fluently and earning degrees in <em>medicine, philosophy, and letters</em> across Europe</div>
+                <div class="fact">The <strong>Cavite Mutiny of 1872</strong> sparked by just 200 soldiers shook Spanish colonial rule and led to executions that <em>ignited the revolution</em></div>
+                <div class="fact"><strong>Emilio Aguinaldo</strong> declared Philippine independence on <strong>June 12, 1898</strong>, establishing <em>Asia's first democratic republic</em></div>
+                <div class="fact"><strong>Andrés Bonifacio</strong>, a humble typesetter, founded the secret <strong>Katipunan</strong> society that became a <em>revolutionary force</em></div>
+                <div class="fact">The <strong>Philippine Revolution</strong> (1896-1898) lasted only <em>2 years</em> but <strong>fundamentally transformed</strong> Asian history forever</div>
+                <div class="fact"><strong>Apolinario Mabini</strong>, paralyzed yet unbreakable, served as Prime Minister and <em>architect of independence</em> while confined to a wheelchair</div>
+                <div class="fact"><strong>Gregorio del Pilar</strong>, the 'Boy General,' heroically died at just <strong>26 years old</strong> defending the Republic at <em>Tirad Pass</em></div>
+                <div class="fact">José Rizal's groundbreaking novel <strong>Noli Me Tángere</strong> was so revolutionary that Spanish authorities <em>banned it immediately</em> upon publication</div>
+                <div class="fact">Rizal's final masterpiece <strong>Mi Último Adiós</strong>, written the night before his execution, remains one of <em>literature's most powerful farewell poems</em></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>&copy; 2026 Readings in Philippine History. All rights reserved.</p>
+        <p style="font-size: 12px; opacity: 0.6;">Immerse yourself in the legacy that shaped a nation</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        // Facts rotation
+        let currentFactIndex = 0;
+        const facts = document.querySelectorAll('.fact');
+        
+        function rotateFacts() {
+            facts.forEach(fact => fact.classList.remove('active'));
+            facts[currentFactIndex].classList.add('active');
+            currentFactIndex = (currentFactIndex + 1) % facts.length;
+        }
+        
+        // Start rotation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+            rotateFacts();
+            setInterval(rotateFacts, 4000);
+        });
+
+        // Check if user is logged in via Supabase session
+        async function checkAuth() {
+            try {
+                // Wait a bit to ensure Supabase is fully initialized
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (!window.supabaseClient) {
+                    console.error('Supabase client not initialized');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                
+                if (!session) {
+                    console.log('No active session, redirecting to login');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                console.log('User authenticated:', session.user.email);
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // If error checking auth, redirect to login to be safe
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                if (window.supabaseClient) {
+                    await window.supabaseClient.auth.signOut();
+                }
+            } catch (err) {
+                console.error('Logout error:', err);
+            } finally {
+                // Always redirect after logout attempt
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Check auth on page load
+        checkAuth();
+    </script>
+</body>
+</html>
+
+
