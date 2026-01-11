@@ -17,12 +17,8 @@
     <!-- Header Navigation -->
     <header class="header">
         <div class="header-container">
-            <button class="menu-toggle" id="menuToggle">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
+            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 1001;">
+                ☰
             </button>
 
             <h1 class="header-title"><a href="home.html" class="header-title-link">RPH Interactive Learning Hub
@@ -50,7 +46,7 @@
 
     <div class="main-layout">
         <!-- Left Sidebar -->
-        <aside class="left-sidebar" id="leftSidebar">
+        <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
             <div class="user-profile">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User Avatar" class="profile-avatar" id="profileAvatar" />
                 <div class="profile-info">
@@ -900,6 +896,23 @@
                     console.error('Logout error:', error);
                     alert('Logout failed: ' + error.message);
                 }
+            });
+        }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('leftSidebar');
+        
+        console.log('toggleBtn:', toggleBtn);
+        console.log('sidebar:', sidebar);
+        
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                console.log('Button clicked!');
+                console.log('Before toggle:', sidebar.className);
+                sidebar.classList.toggle('mobile-open');
+                console.log('After toggle:', sidebar.className);
+                console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
     </script>

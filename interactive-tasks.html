@@ -606,12 +606,8 @@
     <!-- Header Navigation -->
     <header class="header">
         <div class="header-container">
-            <button class="menu-toggle" id="menuToggle">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
+            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 1001;">
+                ☰
             </button>
 
             <h1 class="header-title"><a href="home.html" class="header-title-link">RPH Interactive Learning Hub
@@ -639,7 +635,7 @@
 
     <div class="main-layout">
         <!-- Left Sidebar Navigation -->
-        <aside class="left-sidebar" id="leftSidebar">
+        <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
             <!-- User Profile Section -->
             <div class="user-profile">
                 <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
@@ -2252,6 +2248,23 @@
                     console.error('Logout error:', error);
                     alert('Logout failed: ' + error.message);
                 }
+            });
+        }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('leftSidebar');
+        
+        console.log('toggleBtn:', toggleBtn);
+        console.log('sidebar:', sidebar);
+        
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                console.log('Button clicked!');
+                console.log('Before toggle:', sidebar.className);
+                sidebar.classList.toggle('mobile-open');
+                console.log('After toggle:', sidebar.className);
+                console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
     </script>

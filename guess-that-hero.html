@@ -997,8 +997,8 @@
 <body>
     <header class="header">
         <div class="header-container">
-            <button class="menu-toggle" id="menuToggle">
-                <i data-lucide="menu"></i>
+            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 10001; position: relative; pointer-events: auto;">
+                ☰
             </button>
 
             <h1 class="header-title"><a href="home.html" class="header-title-link">RPH Interactive Learning Hub
@@ -1016,7 +1016,7 @@
     </header>
 
     <div class="main-layout">
-        <aside class="left-sidebar" id="leftSidebar">
+        <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
             <!-- User Profile Section -->
             <div class="user-profile">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User avatar" class="profile-avatar" id="profileAvatar" />
@@ -1566,7 +1566,7 @@
         };
 
         // Sidebar toggle handlers for mobile
-        document.getElementById('menuToggle').onclick = () => {
+        document.getElementById('toggleSidebar').onclick = () => {
             const leftSidebar = document.getElementById('leftSidebar');
             leftSidebar.classList.toggle('mobile-open');
             // Close right sidebar if open
@@ -1815,6 +1815,13 @@
                 }
             });
         }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        document.getElementById('toggleSidebar').onclick = function(e) {
+            e.stopPropagation();
+            const sidebar = document.getElementById('leftSidebar');
+            sidebar.classList.toggle('mobile-open');
+        };
     </script>
 </body>
 </html>
