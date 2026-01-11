@@ -2037,20 +2037,10 @@ class CourseInterface {
 
             console.log('✅ User authenticated:', session.user.email);
 
-            // Update user metadata
-            const { data: updateData, error: updateError } = await window.supabaseClient.auth.updateUser({
-                data: {
-                    full_name: newName,
-                    bio: newBio
-                }
-            });
-
-            if (updateError) {
-                throw new Error(updateError.message || 'Failed to update profile');
-            }
-
             // Save to localStorage for games
             localStorage.setItem('userName', newName);
+            localStorage.setItem('profileName', newName);
+            localStorage.setItem('profileBio', newBio);
 
             // Update local state
             if (this.currentUser.user_metadata) {
@@ -2061,6 +2051,28 @@ class CourseInterface {
                     full_name: newName,
                     bio: newBio
                 };
+            }
+
+            // Try to save to user_profiles table in Supabase
+            try {
+                const avatarUrl = localStorage.getItem('profileAvatarUrl') || localStorage.getItem('profileAvatar');
+                const { data, error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .upsert({
+                        id: session.user.id,
+                        user_email: session.user.email,
+                        full_name: newName,
+                        bio: newBio,
+                        avatar_url: avatarUrl
+                    });
+
+                if (error) {
+                    console.warn('⚠️ Could not sync to database:', error.message);
+                } else {
+                    console.log('✅ Profile saved to database');
+                }
+            } catch (dbErr) {
+                console.warn('⚠️ Database sync failed:', dbErr.message);
             }
 
             // Update profile display
