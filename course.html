@@ -614,18 +614,18 @@
                     try {
                         const supabaseClient = await getSupabaseClient();
                         const currentEmail = session.user.email;
+                        const userId = session.user.id;
                         
                         console.log('💾 Saving profile to Supabase database...');
                         
                         const { data, error } = await supabaseClient
                             .from('user_profiles')
                             .upsert({
+                                id: userId,
                                 user_email: currentEmail,
                                 full_name: newName,
                                 bio: newBio,
                                 avatar_url: avatarUrl || localStorage.getItem('profileAvatarUrl')
-                            }, {
-                                onConflict: 'user_email'
                             });
                         
                         if (error) {
