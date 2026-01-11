@@ -549,24 +549,30 @@
                         const currentEmail = profileEmailDisplay.textContent;
                         const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
                         
+                        console.log('📤 Uploading avatar to Supabase...', fileName);
+                        
                         // Upload to Supabase storage
                         const { data, error } = await supabaseClient.storage
                             .from('user-avatars')
                             .upload(fileName, blob, { upsert: true });
                         
                         if (error) {
-                            console.error('Upload error:', error);
-                            alert('Error uploading avatar. It will be saved locally.');
+                            console.error('❌ Upload error:', error);
+                            console.error('Error message:', error.message);
+                            console.error('Error status:', error.status);
+                            alert('Error uploading avatar: ' + error.message + '. Make sure the "user-avatars" bucket exists in Supabase Storage.');
                             profileAvatar.src = selectedAvatarImage;
                             createPostAvatar.src = selectedAvatarImage;
                             localStorage.setItem('profileAvatar', selectedAvatarImage);
                         } else {
+                            console.log('✅ Avatar uploaded successfully');
                             // Get public URL
                             const { data: publicData } = supabaseClient.storage
                                 .from('user-avatars')
                                 .getPublicUrl(fileName);
                             
                             const avatarUrl = publicData.publicUrl;
+                            console.log('🔗 Public URL:', avatarUrl);
                             
                             // Save to localStorage for quick access
                             localStorage.setItem('profileAvatar', avatarUrl);
@@ -575,10 +581,12 @@
                             profileAvatar.src = avatarUrl;
                             createPostAvatar.src = avatarUrl;
                             
-                            console.log('Avatar uploaded successfully:', avatarUrl);
+                            console.log('✅ Avatar URL saved:', avatarUrl);
                         }
                     } catch (err) {
-                        console.error('Error uploading avatar:', err);
+                        console.error('❌ Error uploading avatar:', err);
+                        console.error('Error details:', err.message || err);
+                        alert('Error uploading avatar: ' + (err.message || err) + '. Check the browser console for details.');
                         // Fallback to localStorage
                         profileAvatar.src = selectedAvatarImage;
                         createPostAvatar.src = selectedAvatarImage;

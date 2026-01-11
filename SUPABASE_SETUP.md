@@ -12,80 +12,117 @@ To enable users to upload and share profile pictures, you need to create a stora
 3. Navigate to **Storage** in the left sidebar
 4. Click **Create a new bucket**
 5. Name it: `user-avatars`
-6. Make it **Public** (so avatars are accessible to all users)
+6. **IMPORTANT: Make it PUBLIC** (toggle the "Public bucket" option ON)
 7. Click **Create bucket**
 
-### 2. Update Database Schema
+### 2. Configure Storage Bucket Policies (RLS)
+
+Go to the bucket you created and set up access policies:
+
+**Steps:**
+1. Click on the `user-avatars` bucket
+2. Go to the **Policies** tab
+3. Create the following policies:
+
+**Policy 1: Public Read Access**
+- Click **New Policy** → **For queries only**
+- Name: `Allow public read access`
+- For: `SELECT`
+- USING expression: `true`
+- Click **Review** then **Save policy**
+
+**Policy 2: Authenticated Users Upload**
+- Click **New Policy** → **For full access**
+- Name: `Allow authenticated users to upload`
+- Allowed operation: Check only `INSERT`
+- USING expression: `auth.role() = 'authenticated'`
+- Click **Review** then **Save policy**
+
+**Policy 3: Users Delete Own Files**
+- Click **New Policy** → **For full access**
+- Name: `Allow users to delete own files`
+- Allowed operation: Check only `DELETE`
+- USING expression: `(storage.foldername(name))[1] = auth.jwt() ->> 'email'`
+- Click **Review** then **Save policy**
+
+### 3. Update Database Schema
 
 The `posts` table needs an `author_avatar_url` column to store the avatar URL:
 
-**SQL Command:**
+**SQL Command (run in SQL Editor):**
 ```sql
 ALTER TABLE posts ADD COLUMN author_avatar_url TEXT;
 ```
 
-Or if creating a new table:
-```sql
-CREATE TABLE posts (
-    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    topic_id BIGINT,
-    content TEXT NOT NULL,
-    author_id UUID,
-    author_name TEXT,
-    author_email TEXT,
-    author_avatar_url TEXT,
-    likes_count INT DEFAULT 0,
-    comments_count INT DEFAULT 0,
-    shares_count INT DEFAULT 0,
-    image_url TEXT,
-    video_url TEXT,
-    poll_data JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
+### 4. Enable CORS (if needed)
 
-### 3. Storage Bucket Policies
+If you're getting CORS errors, update Storage CORS settings:
 
-Make sure the `user-avatars` bucket has public read access:
-
-**Read Policy (Public):**
-- Allows anyone to view avatars
-- No authentication required for reading
-
-**Write Policy (Authenticated):**
-- Allows authenticated users to upload their own avatars
-- Users can only write to their own paths
-
-**Example RLS Policy:**
-```sql
--- Allow public read access
-CREATE POLICY "Public Access" ON storage.objects
-    FOR SELECT USING (bucket_id = 'user-avatars');
-
--- Allow authenticated users to upload
-CREATE POLICY "Authenticated Upload" ON storage.objects
-    FOR INSERT WITH CHECK (
-        bucket_id = 'user-avatars' AND auth.role() = 'authenticated'
-    );
+**Steps:**
+1. Go to **Project Settings** (bottom left) → **Storage**
+2. Scroll to **CORS Configuration**
+3. Add or update allowed origins to include your domain:
+```json
+["http://localhost:3000", "https://yourdomain.com", "*"]
 ```
 
 ## How It Works
 
-1. **Profile Upload**: When a user edits their profile and uploads an avatar, it's stored in the `user-avatars` bucket
-2. **URL Storage**: The public URL of the avatar is saved to `profileAvatarUrl` in localStorage and the `author_avatar_url` in posts
-3. **Display**: When posts are displayed, other users see the uploaded avatar instead of the default avatar
+1. **Profile Upload**: When a user edits their profile and uploads an avatar:
+   - File is uploaded to `user-avatars` bucket in Supabase Storage
+   - Public URL is generated automatically
+   - URL is saved to `profileAvatarUrl` in localStorage
+   
+2. **Post Creation**: When creating a post:
+   - Avatar URL from localStorage is included in post data
+   - Stored in `author_avatar_url` column in posts table
+   
+3. **Display**: When posts are displayed:
+   - All users see the uploaded avatar from the database
+   - Fallback to default avatar if URL is missing
+
+## Troubleshooting
+
+### "Error uploading avatar: Storage bucket not found"
+- Solution: Create the `user-avatars` bucket (see Step 1)
+- Check the bucket name is exactly `user-avatars` (lowercase, hyphen)
+
+### "Error uploading avatar: 403 - Forbidden"
+- Solution: Check bucket policies are set correctly
+- Make sure bucket is marked as **PUBLIC**
+- Verify RLS policies allow INSERT for authenticated users
+
+### "Error uploading avatar: 413 - Payload too large"
+- Solution: Image is too large
+- Compress the image before uploading
+- Maximum suggested size: 5MB
+
+### "Error uploading avatar: CORS error"
+- Solution: Update CORS settings in Project Settings → Storage
+- Allow your domain or use "*" for development
+
+### Avatar shows in editor but not on posts
+- Solution: Make sure `author_avatar_url` column exists in posts table
+- Verify avatar URL was saved to localStorage
+- Check browser console for detailed error messages
+
+## Testing
+
+1. **Open Browser Developer Tools** (F12)
+2. **Go to Application tab** → **LocalStorage** → check for:
+   - `profileAvatarUrl` - should contain a Supabase URL
+3. **Look at Console** for logs like:
+   - `✅ Avatar uploaded successfully`
+   - `🔗 Public URL: [url]`
+4. **Test with another account**:
+   - Open incognito window
+   - View posts from first user
+   - You should see their custom avatar
 
 ## Features Enabled
 
 ✅ Users can upload custom profile pictures
-✅ Profile pictures are visible to all other users
-✅ Avatar URLs are persisted in the posts table
+✅ Profile pictures are visible to all other users  
+✅ Avatar URLs are persisted in posts table
 ✅ Fallback to default avatar if upload fails
-
-## Testing
-
-1. Login and edit your profile
-2. Upload a profile picture
-3. Create a post
-4. Open an incognito/private window and view the post
-5. Your custom avatar should be visible to other users
+✅ Detailed error messages for troubleshooting
