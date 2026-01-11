@@ -911,8 +911,25 @@ class CourseInterface {
             const authorName = this.currentUser.user_metadata?.full_name || 
                               this.currentUser.email.split('@')[0];
 
-            // Get author avatar URL (from Supabase or localStorage)
+            // Get author avatar URL from database or localStorage
             let authorAvatarUrl = localStorage.getItem('profileAvatarUrl') || localStorage.getItem('profileAvatar');
+            
+            // Try to fetch from user_profiles table in Supabase
+            try {
+                const { data: profileData } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('avatar_url')
+                    .eq('user_email', this.currentUser.email)
+                    .single();
+                
+                if (profileData?.avatar_url) {
+                    authorAvatarUrl = profileData.avatar_url;
+                    console.log('✅ Fetched avatar URL from database:', authorAvatarUrl);
+                }
+            } catch (err) {
+                console.log('ℹ️ Using localStorage avatar URL');
+            }
+            
             if (!authorAvatarUrl) {
                 authorAvatarUrl = `https://i.pravatar.cc/40?u=${this.currentUser.id}`;
             }

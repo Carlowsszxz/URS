@@ -535,6 +535,8 @@
                 localStorage.setItem('profileName', newName);
                 localStorage.setItem('profileBio', newBio);
 
+                let avatarUrl = localStorage.getItem('profileAvatarUrl');
+
                 // Save avatar if changed
                 if (selectedAvatarImage) {
                     try {
@@ -571,7 +573,7 @@
                                 .from('user-avatars')
                                 .getPublicUrl(fileName);
                             
-                            const avatarUrl = publicData.publicUrl;
+                            avatarUrl = publicData.publicUrl;
                             console.log('🔗 Public URL:', avatarUrl);
                             
                             // Save to localStorage for quick access
@@ -594,7 +596,34 @@
                     }
                 }
 
-                console.log('Profile saved to localStorage');
+                // Save profile to Supabase user_profiles table
+                try {
+                    const supabaseClient = await getSupabaseClient();
+                    const currentEmail = profileEmailDisplay.textContent;
+                    
+                    console.log('💾 Saving profile to Supabase database...');
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .upsert({
+                            user_email: currentEmail,
+                            full_name: newName,
+                            bio: newBio,
+                            avatar_url: avatarUrl || localStorage.getItem('profileAvatarUrl')
+                        }, {
+                            onConflict: 'user_email'
+                        });
+                    
+                    if (error) {
+                        console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
+                    } else {
+                        console.log('✅ Profile saved to Supabase database');
+                    }
+                } catch (err) {
+                    console.warn('⚠️ Could not sync profile to database:', err.message);
+                }
+
+                console.log('Profile saved');
                 closeModal();
             } else {
                 alert('Please fill in all fields');

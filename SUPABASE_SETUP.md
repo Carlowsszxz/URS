@@ -47,9 +47,39 @@ Go to the bucket you created and set up access policies:
 
 ### 3. Update Database Schema
 
-The `posts` table needs an `author_avatar_url` column to store the avatar URL:
+Create a `user_profiles` table to store user profile data (including avatar URLs) that syncs across all devices:
 
 **SQL Command (run in SQL Editor):**
+```sql
+-- Create user_profiles table
+CREATE TABLE IF NOT EXISTS user_profiles (
+    id UUID PRIMARY KEY DEFAULT auth.uid(),
+    user_email TEXT NOT NULL UNIQUE,
+    full_name TEXT,
+    bio TEXT,
+    avatar_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add RLS policies for user_profiles
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+
+-- Allow users to read all profiles (public)
+CREATE POLICY "Allow public read" ON user_profiles
+    FOR SELECT USING (true);
+
+-- Allow users to update their own profile
+CREATE POLICY "Allow users to update own profile" ON user_profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+-- Allow users to insert their own profile
+CREATE POLICY "Allow users to insert own profile" ON user_profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+```
+
+Also add the `author_avatar_url` column to posts table:
+
 ```sql
 ALTER TABLE posts ADD COLUMN author_avatar_url TEXT;
 ```
