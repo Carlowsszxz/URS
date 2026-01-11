@@ -78,11 +78,7 @@ CREATE POLICY "Allow users to insert own profile" ON user_profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
 ```
 
-Also add the `author_avatar_url` column to posts table:
-
-```sql
-ALTER TABLE posts ADD COLUMN author_avatar_url TEXT;
-```
+**Note:** The `author_avatar_url` column already exists in the posts table, so no additional migration is needed.
 
 ### 4. Enable CORS (if needed)
 
