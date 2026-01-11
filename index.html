@@ -183,7 +183,7 @@
                     // Send password reset email via Supabase
                     if (window.supabaseClient) {
                         const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
-                            redirectTo: `${window.location.origin}/index.html`
+                            redirectTo: `${window.location.origin}/reset-password.html`
                         });
 
                         if (error) {

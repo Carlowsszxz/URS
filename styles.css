@@ -385,6 +385,20 @@ body {
     min-height: 16px;
 }
 
+.error-box {
+    text-align: center;
+    padding: 20px;
+    background: #ffebee;
+    border: 1px solid #ef5350;
+    border-radius: 4px;
+    color: #c62828;
+    font-weight: 500;
+}
+
+.error-box.hidden {
+    display: none !important;
+}
+
 .success-message {
     text-align: center;
     padding: 20px;
