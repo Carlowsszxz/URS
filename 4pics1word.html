@@ -388,7 +388,8 @@
                 </svg>
             </button>
 
-            <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
+            <h1 class="header-title"><a href="home.html" class="header-title-link">RPH Interactive Learning Hub
+</a></h1>
 
             <div class="header-actions">
                 <div class="search-box">
@@ -455,7 +456,7 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                       <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                       <a href="first-mass.html" class="dropdown-item">First Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
 
                         <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
@@ -661,15 +662,15 @@
         // 4 Pics 1 Word Game Data
         const gameData = [
             {
-                answer: 'revolt',
-                pictures: ['Images/4pics1Word/Item1/Pic 1.jpg', 'Images/4pics1Word/Item1/Pic 2.jpg', 'Images/4pics1Word/Item1/Pic 3.webp', 'Images/4pics1Word/Item1/Pic 4.avif'],
-                hint: 'An uprising or rebellion',
+                answer: 'cavite mutiny',
+                pictures: ['Images/4pics1Word/Item1/pic1.png', 'Images/4pics1Word/Item1/pic2.jpg', 'Images/4pics1Word/Item1/pic3.jpg', 'Images/4pics1Word/Item1/pic4.jpg'],
+                hint: 'A failed military uprising in 1872 at Fort San Felipe',
                 isImage: true
             },
             {
-                answer: 'mass',
+                answer: 'first mass',
                 pictures: ['Images/4pics1Word/Item2/Pic 1.jpg', 'Images/4pics1Word/Item2/Pic 2.jpg', 'Images/4pics1Word/Item2/Pic 3.jpg', 'Images/4pics1Word/Item2/Pic 4.jpg'],
-                hint: 'A religious ceremony or gathering',
+                hint: 'The initial Christian religious ceremony held in the Philippines',
                 isImage: true
             },
             {
@@ -679,15 +680,15 @@
                 isImage: true
             },
             {
-                answer: 'independence',
-                pictures: ['Images/4pics1Word/Item 4/Pic 1.jpg', 'Images/4pics1Word/Item 4/Pic 2.jpg', 'Images/4pics1Word/Item 4/Pic 3.jpg', 'Images/4pics1Word/Item 4/Pic 4.jpg'],
-                hint: 'Freedom from foreign rule',
+                answer: 'cry of rebellion',
+                pictures: ['Images/4pics1Word/Item 4/pic1.jpg', 'Images/4pics1Word/Item 4/pic2.jpg', 'Images/4pics1Word/Item 4/pic3.jpg', 'Images/4pics1Word/Item 4/pic 4.jpg'],
+                hint: 'A revolutionary cry that sparked Filipino uprisings in 1896',
                 isImage: true
             },
             {
-                answer: 'edsa',
-                pictures: ['Images/4pics1Word/Item5/Pic 1.webp', 'Images/4pics1Word/Item5/Pic 2.jpg', 'Images/4pics1Word/Item5/Pic 3.jpg', 'Images/4pics1Word/Item5/Pic 4.jpg'],
-                hint: 'Famous avenue in Manila where a revolution took place',
+                answer: 'retraction of rizal',
+                pictures: ['Images/4pics1Word/Item5/pic1.webp', 'Images/4pics1Word/Item5/pic2.jpeg', 'Images/4pics1Word/Item5/pic3.jpg', 'Images/4pics1Word/Item5/pic4.jpg'],
+                hint: 'The document signed by Jose Rizal renouncing his writings',
                 isImage: true
             }
            
@@ -1145,6 +1146,17 @@
                     console.error('Logout error:', error);
                     alert('Logout failed: ' + error.message);
                 }
+            });
+        }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        const menuToggle = document.getElementById('menuToggle');
+        const leftSidebar = document.getElementById('leftSidebar');
+        
+        if (menuToggle && leftSidebar) {
+            menuToggle.addEventListener('click', () => {
+                leftSidebar.classList.toggle('mobile-open');
+                console.log('Left sidebar toggled');
             });
         }
     </script>

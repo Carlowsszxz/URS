@@ -25,7 +25,8 @@
                 </svg>
             </button>
 
-            <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
+            <h1 class="header-title"><a href="home.html" class="header-title-link">RPH Interactive Learning Hub
+</a></h1>
 
             <div class="header-actions">
                 <button class="notification-btn">
@@ -602,6 +603,17 @@
                     console.error('Logout error:', error);
                     alert('Logout failed: ' + error.message);
                 }
+            });
+        }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        const menuToggle = document.getElementById('menuToggle');
+        const leftSidebar = document.getElementById('leftSidebar');
+        
+        if (menuToggle && leftSidebar) {
+            menuToggle.addEventListener('click', () => {
+                leftSidebar.classList.toggle('mobile-open');
+                console.log('Left sidebar toggled');
             });
         }
     </script>
