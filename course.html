@@ -505,15 +505,44 @@
         });
 
         // Open edit profile modal
-        editProfileBtn.addEventListener('click', () => {
+        editProfileBtn.addEventListener('click', async () => {
             console.log('Edit button clicked');
-            editNameInput.value = profileNameDisplay.textContent;
-            editBioInput.value = profileEmailDisplay.textContent;
+            try {
+                // Get current session
+                const session = await getCurrentSession();
+                if (!session) {
+                    editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
+                    editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+                } else {
+                    // Fetch from database
+                    const supabaseClient = await getSupabaseClient();
+                    const { data: profileData, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('full_name, bio')
+                        .eq('user_email', session.user.email)
+                        .single();
+                    
+                    if (!error && profileData) {
+                        console.log('📦 Loaded profile from database:', profileData);
+                        editNameInput.value = profileData.full_name || '';
+                        editBioInput.value = profileData.bio || '';
+                    } else {
+                        console.log('Could not load from database, using localStorage');
+                        editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
+                        editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading profile:', err);
+                editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
+                editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+            }
+            
             avatarPreview.src = profileAvatar.src;
             selectedAvatarImage = null;
             editAvatarInput.value = '';
             editProfileModal.classList.add('active');
-            console.log('Modal opened, active class added');
+            console.log('Modal opened');
         });
 
         // Close modal

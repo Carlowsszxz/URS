@@ -504,10 +504,11 @@ class CourseInterface {
                 return;
             }
 
-            posts.forEach(post => {
-                const postElement = this.createForumPostElement(post);
+            // Create all post elements asynchronously
+            for (const post of posts) {
+                const postElement = await this.createForumPostElement(post);
                 forumContainer.appendChild(postElement);
-            });
+            }
             
             console.warn('✅✅✅ Created', posts.length, 'post elements ✅✅✅');
         } catch (error) {
@@ -515,7 +516,7 @@ class CourseInterface {
         }
     }
 
-    createForumPostElement(post) {
+    async createForumPostElement(post) {
         console.log('🏗️ createForumPostElement called for post:', post.author_name);
         const postDiv = document.createElement('div');
         postDiv.className = 'forum-post';
@@ -526,29 +527,47 @@ class CourseInterface {
         let avatarSrc = `https://i.pravatar.cc/36?u=${post.author_id}`;
         const currentUserEmail = this.currentUser?.email;
         const savedAvatar = localStorage.getItem('profileAvatar');
+        let displayName = post.author_name; // Default to stored name
         
-        console.log('🔎 Post author_id:', post.author_id, 'Current user:', currentUserEmail, 'Has saved avatar:', !!savedAvatar);
+        // Determine if this post is from the current user
+        let isCurrentUserPost = false;
         
-        if (currentUserEmail && post.author_id === currentUserEmail && savedAvatar) {
-            console.log('🎨 Post from current user detected - using saved avatar');
-            avatarSrc = savedAvatar;
-        } else if (savedAvatar) {
-            // If we have a saved avatar and can't match by email, try by name
-            console.log('⚠️ Email mismatch - post author:', post.author_id, 'current user:', currentUserEmail);
-            // Check if it's the current user by checking stored profile name
-            const storedName = localStorage.getItem('profileName');
-            console.log('📛 Post author name:', post.author_name, 'Stored name:', storedName);
-            if (storedName && post.author_name === storedName) {
-                console.log('🎨 Matched by name - using saved avatar');
+        console.log('🔎 Post author_id:', post.author_id, 'Current user:', currentUserEmail);
+        
+        if (currentUserEmail && post.author_id === currentUserEmail) {
+            isCurrentUserPost = true;
+            console.log('✅ Post from current user detected');
+            if (savedAvatar) {
+                console.log('🎨 Using saved avatar for current user post');
                 avatarSrc = savedAvatar;
+            }
+        } else {
+            // For other users, fetch the latest name from database BEFORE rendering
+            try {
+                const supabaseClient = await getSupabaseClient();
+                const { data: profileData, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('full_name, avatar_url')
+                    .eq('user_email', post.author_id)
+                    .single();
+                
+                if (!error && profileData) {
+                    console.log('📝 Fetched latest name from database:', profileData.full_name);
+                    displayName = profileData.full_name;
+                    if (profileData.avatar_url) {
+                        avatarSrc = profileData.avatar_url;
+                    }
+                }
+            } catch (err) {
+                console.log('Could not fetch latest name, using stored name:', err);
             }
         }
         
         postDiv.innerHTML = `
             <div class="forum-post-header">
-                <img src="${avatarSrc}" alt="${post.author_name}" class="avatar" />
+                <img src="${avatarSrc}" alt="${displayName}" class="avatar" />
                 <div class="forum-post-info">
-                    <div class="forum-post-author">${this.escapeHtml(post.author_name)}</div>
+                    <div class="forum-post-author">${this.escapeHtml(displayName)}</div>
                     <div class="forum-post-time">${timeAgo}</div>
                 </div>
             </div>
@@ -1220,13 +1239,54 @@ class CourseInterface {
             `;
         } else {
             // Regular post
-            const authorName = postData.author_name || 'Unknown User';
+            let authorName = postData.author_name || 'Unknown User';
             const authorEmail = postData.author_email || 'user@example.com';
             // Use author_avatar_url from database if available, otherwise fallback to default
             let authorAvatar = postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
             const authorHandle = authorEmail.split('@')[0];
             const postTime = this.formatTimeAgo(postData.created_at);
             const isAuthor = postData.author_id === this.currentUser.id;
+            
+            // If this is the current user's post, use the current name from localStorage
+            if (isAuthor) {
+                const savedName = localStorage.getItem('profileName');
+                if (savedName) {
+                    authorName = savedName;
+                    console.log('📝 Using current profile name for post display:', authorName);
+                }
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                if (savedAvatar) {
+                    authorAvatar = savedAvatar;
+                    console.log('🎨 Using current profile avatar for post display');
+                }
+            } else {
+                // For other users' posts, fetch the latest name from database
+                (async () => {
+                    try {
+                        const { data: profileData, error } = await window.supabaseClient
+                            .from('user_profiles')
+                            .select('full_name, avatar_url')
+                            .eq('user_email', postData.author_email)
+                            .single();
+                        
+                        if (!error && profileData) {
+                            console.log('📝 Fetched latest name from database:', profileData.full_name);
+                            const nameEl = postCard.querySelector('.post-meta strong');
+                            if (nameEl) {
+                                nameEl.textContent = profileData.full_name;
+                            }
+                            if (profileData.avatar_url) {
+                                const avatarImg = postCard.querySelector('.avatar');
+                                if (avatarImg) {
+                                    avatarImg.src = profileData.avatar_url;
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.log('Could not fetch latest name from database');
+                    }
+                })();
+            }
             
             // Try to fetch the current avatar from user_profiles for dynamic updates
             (async () => {
@@ -1348,13 +1408,54 @@ class CourseInterface {
     }
 
     createOriginalPostContent(postData, isLiked = false) {
-        const authorName = postData.author_name || 'Unknown User';
+        let authorName = postData.author_name || 'Unknown User';
         const authorEmail = postData.author_email || 'user@example.com';
         // Use author_avatar_url from database if available, otherwise fallback to default
-        const authorAvatar = postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
+        let authorAvatar = postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
         const authorHandle = authorEmail.split('@')[0];
-        const postTime = this.formatTimeAgo(postData.created_at);
+        
+        // If this is the current user's post, use the current name from localStorage
         const isAuthor = postData.author_id === this.currentUser.id;
+        if (isAuthor) {
+            const savedName = localStorage.getItem('profileName');
+            if (savedName) {
+                authorName = savedName;
+            }
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            if (savedAvatar) {
+                authorAvatar = savedAvatar;
+            }
+        } else {
+            // For other users, fetch the latest name from database
+            (async () => {
+                try {
+                    const { data: profileData, error } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('full_name, avatar_url')
+                        .eq('user_email', authorEmail)
+                        .single();
+                    
+                    if (!error && profileData) {
+                        // Update the DOM with the latest name
+                        const nameElements = document.querySelectorAll(`[data-post-id="${postData.id}"] .post-meta strong, [data-post-id="${postData.id}"] strong:first-of-type`);
+                        nameElements.forEach(el => {
+                            if (el.textContent === authorName) {
+                                el.textContent = profileData.full_name;
+                            }
+                        });
+                        if (profileData.avatar_url) {
+                            const avatarImgs = document.querySelectorAll(`[data-post-id="${postData.id}"] .avatar`);
+                            avatarImgs.forEach(img => {
+                                img.src = profileData.avatar_url;
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.log('Could not fetch latest name from database');
+                }
+            })();
+        }
+        const postTime = this.formatTimeAgo(postData.created_at);
 
         return `
             <div class="post-header">
@@ -1792,14 +1893,54 @@ class CourseInterface {
         commentDiv.className = 'comment-item';
 
         const authorHandle = comment.author_email?.split('@')[0] || 'Unknown';
-        const authorAvatar = `https://i.pravatar.cc/32?u=${comment.author_id}`;
+        let authorAvatar = `https://i.pravatar.cc/32?u=${comment.author_id}`;
+        let commentAuthorName = comment.author_name || 'Unknown User';
         const timeAgo = this.formatTimeAgo(comment.created_at);
+        
+        // If this is the current user's comment, use the current name from localStorage
+        const isCurrentUserComment = comment.author_id === this.currentUser.id;
+        if (isCurrentUserComment) {
+            const savedName = localStorage.getItem('profileName');
+            if (savedName) {
+                commentAuthorName = savedName;
+            }
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            if (savedAvatar) {
+                authorAvatar = savedAvatar;
+            }
+        } else {
+            // For other users' comments, fetch the latest name from database
+            (async () => {
+                try {
+                    const { data: profileData, error } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('full_name, avatar_url')
+                        .eq('user_email', comment.author_email)
+                        .single();
+                    
+                    if (!error && profileData) {
+                        const nameEl = commentDiv.querySelector('.comment-header strong');
+                        if (nameEl) {
+                            nameEl.textContent = profileData.full_name;
+                        }
+                        if (profileData.avatar_url) {
+                            const avatarImg = commentDiv.querySelector('.comment-avatar');
+                            if (avatarImg) {
+                                avatarImg.src = profileData.avatar_url;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log('Could not fetch latest name from database');
+                }
+            })();
+        }
 
         commentDiv.innerHTML = `
             <img src="${authorAvatar}" alt="Author" class="comment-avatar" />
             <div class="comment-content">
                 <div class="comment-header">
-                    <strong>${comment.author_name || 'Unknown User'}</strong>
+                    <strong>${commentAuthorName}</strong>
                     <span class="comment-handle">@${authorHandle}</span>
                     <span class="comment-time">• ${timeAgo}</span>
                 </div>
