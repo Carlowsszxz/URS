@@ -914,17 +914,19 @@ class CourseInterface {
             // Get author avatar URL from database or localStorage
             let authorAvatarUrl = localStorage.getItem('profileAvatarUrl') || localStorage.getItem('profileAvatar');
             
-            // Try to fetch from user_profiles table in Supabase
+            // Try to fetch from user_profiles table in Supabase (with error handling)
             try {
-                const { data: profileData } = await window.supabaseClient
+                const { data: profileDataArray, error } = await window.supabaseClient
                     .from('user_profiles')
                     .select('avatar_url')
-                    .eq('user_email', this.currentUser.email)
-                    .single();
+                    .eq('user_email', this.currentUser.email);
                 
-                if (profileData?.avatar_url) {
-                    authorAvatarUrl = profileData.avatar_url;
-                    console.log('✅ Fetched avatar URL from database:', authorAvatarUrl);
+                if (!error && profileDataArray && profileDataArray.length > 0) {
+                    const profileData = profileDataArray[0];
+                    if (profileData?.avatar_url) {
+                        authorAvatarUrl = profileData.avatar_url;
+                        console.log('✅ Fetched avatar URL from database:', authorAvatarUrl);
+                    }
                 }
             } catch (err) {
                 console.log('ℹ️ Using localStorage avatar URL');
@@ -1229,17 +1231,19 @@ class CourseInterface {
             // Try to fetch the current avatar from user_profiles for dynamic updates
             (async () => {
                 try {
-                    const { data: profileData } = await window.supabaseClient
+                    const { data: profileDataArray, error } = await window.supabaseClient
                         .from('user_profiles')
                         .select('avatar_url')
-                        .eq('user_email', authorEmail)
-                        .single();
+                        .eq('user_email', authorEmail);
                     
-                    if (profileData?.avatar_url) {
-                        const avatarImg = postCard.querySelector('.avatar');
-                        if (avatarImg) {
-                            avatarImg.src = profileData.avatar_url;
-                            console.log('✅ Updated post avatar from user_profiles:', profileData.avatar_url);
+                    if (!error && profileDataArray && profileDataArray.length > 0) {
+                        const profileData = profileDataArray[0];
+                        if (profileData?.avatar_url) {
+                            const avatarImg = postCard.querySelector('.avatar');
+                            if (avatarImg) {
+                                avatarImg.src = profileData.avatar_url;
+                                console.log('✅ Updated post avatar from user_profiles:', profileData.avatar_url);
+                            }
                         }
                     }
                 } catch (err) {
