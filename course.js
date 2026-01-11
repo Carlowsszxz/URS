@@ -2021,6 +2021,18 @@ class CourseInterface {
             if (saveBtn) saveBtn.disabled = true;
             this.showNotification('Saving changes...', 'info');
 
+            // Check authentication before proceeding
+            if (!window.supabaseClient) {
+                throw new Error('Supabase client not initialized');
+            }
+
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                throw new Error('You must be logged in to save your profile. Please refresh the page and log in again.');
+            }
+
+            console.log('✅ User authenticated:', session.user.email);
+
             // Update user metadata
             const { data: updateData, error: updateError } = await window.supabaseClient.auth.updateUser({
                 data: {

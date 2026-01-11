@@ -527,104 +527,128 @@
             console.log('Save clicked - Name:', newName, 'Bio:', newBio, 'Avatar:', selectedAvatarImage ? 'Yes' : 'No');
 
             if (newName && newBio) {
-                profileNameDisplay.textContent = newName;
-                profileEmailDisplay.textContent = newBio;
-                createPostName.textContent = newName;
-                
-                // Save profile data to localStorage
-                localStorage.setItem('profileName', newName);
-                localStorage.setItem('profileBio', newBio);
+                try {
+                    saveProfileBtn.disabled = true;
+                    
+                    // Check authentication before proceeding
+                    const session = await getCurrentSession();
+                    if (!session) {
+                        console.error('❌ No active session found. User not authenticated.');
+                        alert('You must be logged in to save your profile. Please refresh the page and log in again.');
+                        saveProfileBtn.disabled = false;
+                        return;
+                    }
+                    
+                    console.log('✅ User authenticated:', session.user.email);
+                    
+                    profileNameDisplay.textContent = newName;
+                    profileEmailDisplay.textContent = newBio;
+                    createPostName.textContent = newName;
+                    
+                    // Save profile data to localStorage
+                    localStorage.setItem('profileName', newName);
+                    localStorage.setItem('profileBio', newBio);
 
-                let avatarUrl = localStorage.getItem('profileAvatarUrl');
+                    let avatarUrl = localStorage.getItem('profileAvatarUrl');
 
-                // Save avatar if changed
-                if (selectedAvatarImage) {
-                    try {
-                        // Convert base64 to blob
-                        const response = await fetch(selectedAvatarImage);
-                        const blob = await response.blob();
-                        
-                        // Get Supabase client
-                        const supabaseClient = await getSupabaseClient();
-                        
-                        // Get current user email
-                        const currentEmail = profileEmailDisplay.textContent;
-                        const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
-                        
-                        console.log('📤 Uploading avatar to Supabase...', fileName);
-                        
-                        // Upload to Supabase storage
-                        const { data, error } = await supabaseClient.storage
-                            .from('user-avatars')
-                            .upload(fileName, blob, { upsert: true });
-                        
-                        if (error) {
-                            console.error('❌ Upload error:', error);
-                            console.error('Error message:', error.message);
-                            console.error('Error status:', error.status);
-                            alert('Error uploading avatar: ' + error.message + '. Make sure the "user-avatars" bucket exists in Supabase Storage.');
+                    // Save avatar if changed
+                    if (selectedAvatarImage) {
+                        try {
+                            // Convert base64 to blob
+                            const response = await fetch(selectedAvatarImage);
+                            const blob = await response.blob();
+                            
+                            // Get Supabase client
+                            const supabaseClient = await getSupabaseClient();
+                            
+                            // Get current user email
+                            const currentEmail = session.user.email;
+                            const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
+                            
+                            console.log('📤 Uploading avatar to Supabase...', fileName);
+                            
+                            // Upload to Supabase storage
+                            const { data, error } = await supabaseClient.storage
+                                .from('user-avatars')
+                                .upload(fileName, blob, { upsert: true });
+                            
+                            if (error) {
+                                console.error('❌ Upload error:', error);
+                                console.error('Error message:', error.message);
+                                console.error('Error status:', error.status);
+                                alert('Error uploading avatar: ' + error.message + '. Make sure the "user-avatars" bucket exists in Supabase Storage.');
+                                profileAvatar.src = selectedAvatarImage;
+                                createPostAvatar.src = selectedAvatarImage;
+                                localStorage.setItem('profileAvatar', selectedAvatarImage);
+                            } else {
+                                console.log('✅ Avatar uploaded successfully');
+                                // Get public URL
+                                const { data: publicData } = supabaseClient.storage
+                                    .from('user-avatars')
+                                    .getPublicUrl(fileName);
+                                
+                                avatarUrl = publicData.publicUrl;
+                                console.log('🔗 Public URL:', avatarUrl);
+                                
+                                // Save to localStorage for quick access
+                                localStorage.setItem('profileAvatar', avatarUrl);
+                                localStorage.setItem('profileAvatarUrl', avatarUrl);
+                                
+                                profileAvatar.src = avatarUrl;
+                                createPostAvatar.src = avatarUrl;
+                                
+                                console.log('✅ Avatar URL saved:', avatarUrl);
+                            }
+                        } catch (err) {
+                            console.error('❌ Error uploading avatar:', err);
+                            console.error('Error details:', err.message || err);
+                            alert('Error uploading avatar: ' + (err.message || err) + '. Check the browser console for details.');
+                            // Fallback to localStorage
                             profileAvatar.src = selectedAvatarImage;
                             createPostAvatar.src = selectedAvatarImage;
                             localStorage.setItem('profileAvatar', selectedAvatarImage);
+                        }
+                    }
+
+                    // Save profile to Supabase user_profiles table
+                    try {
+                        const supabaseClient = await getSupabaseClient();
+                        const currentEmail = session.user.email;
+                        
+                        console.log('💾 Saving profile to Supabase database...');
+                        
+                        const { data, error } = await supabaseClient
+                            .from('user_profiles')
+                            .upsert({
+                                user_email: currentEmail,
+                                full_name: newName,
+                                bio: newBio,
+                                avatar_url: avatarUrl || localStorage.getItem('profileAvatarUrl')
+                            }, {
+                                onConflict: 'user_email'
+                            });
+                        
+                        if (error) {
+                            console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
+                            // Still close modal since localStorage and storage were updated
+                            alert('Profile updated but failed to sync to database. Changes saved locally.');
                         } else {
-                            console.log('✅ Avatar uploaded successfully');
-                            // Get public URL
-                            const { data: publicData } = supabaseClient.storage
-                                .from('user-avatars')
-                                .getPublicUrl(fileName);
-                            
-                            avatarUrl = publicData.publicUrl;
-                            console.log('🔗 Public URL:', avatarUrl);
-                            
-                            // Save to localStorage for quick access
-                            localStorage.setItem('profileAvatar', avatarUrl);
-                            localStorage.setItem('profileAvatarUrl', avatarUrl);
-                            
-                            profileAvatar.src = avatarUrl;
-                            createPostAvatar.src = avatarUrl;
-                            
-                            console.log('✅ Avatar URL saved:', avatarUrl);
+                            console.log('✅ Profile saved to Supabase database');
                         }
                     } catch (err) {
-                        console.error('❌ Error uploading avatar:', err);
-                        console.error('Error details:', err.message || err);
-                        alert('Error uploading avatar: ' + (err.message || err) + '. Check the browser console for details.');
-                        // Fallback to localStorage
-                        profileAvatar.src = selectedAvatarImage;
-                        createPostAvatar.src = selectedAvatarImage;
-                        localStorage.setItem('profileAvatar', selectedAvatarImage);
+                        console.warn('⚠️ Could not sync profile to database:', err.message);
+                        // Still close modal since localStorage and storage were updated
+                        alert('Profile updated but failed to sync to database. Changes saved locally.');
                     }
-                }
 
-                // Save profile to Supabase user_profiles table
-                try {
-                    const supabaseClient = await getSupabaseClient();
-                    const currentEmail = profileEmailDisplay.textContent;
-                    
-                    console.log('💾 Saving profile to Supabase database...');
-                    
-                    const { data, error } = await supabaseClient
-                        .from('user_profiles')
-                        .upsert({
-                            user_email: currentEmail,
-                            full_name: newName,
-                            bio: newBio,
-                            avatar_url: avatarUrl || localStorage.getItem('profileAvatarUrl')
-                        }, {
-                            onConflict: 'user_email'
-                        });
-                    
-                    if (error) {
-                        console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
-                    } else {
-                        console.log('✅ Profile saved to Supabase database');
-                    }
+                    console.log('Profile saved');
+                    saveProfileBtn.disabled = false;
+                    closeModal();
                 } catch (err) {
-                    console.warn('⚠️ Could not sync profile to database:', err.message);
+                    console.error('❌ Error during profile save:', err);
+                    alert('Error saving profile: ' + (err.message || err));
+                    saveProfileBtn.disabled = false;
                 }
-
-                console.log('Profile saved');
-                closeModal();
             } else {
                 alert('Please fill in all fields');
             }
