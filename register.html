@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Readings in Philippine History</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -17,8 +19,8 @@
                 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            background: linear-gradient(135deg, #51513E 0%, #51513E 100%);
-            color: #51513E;
+            background: linear-gradient(135deg, #E2D5C2 0%, #E2D5C2 100%);
+            color: #5C3422;
         }
 
         .auth-container {
@@ -32,7 +34,7 @@
         .auth-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(68, 41, 19, 0.2);
+            box-shadow: 0 10px 40px rgba(92, 52, 34, 0.2);
             width: 100%;
             max-width: 420px;
             padding: 32px 28px;
@@ -45,12 +47,12 @@
 
         .auth-header h1 {
             font-size: 26px;
-            color: #51513E;
+            color: #5C3422;
             margin-bottom: 6px;
         }
 
         .auth-header p {
-            color: #7A5B47;
+            color: #8B6F47;
             font-size: 13px;
         }
 
@@ -58,18 +60,29 @@
             margin-bottom: 14px;
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            color: #51513E;
+            color: #5C3422;
             font-size: 13px;
         }
 
         .form-group input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #D6DCE1;
+            border: 1px solid #E2D5C2;
             border-radius: 6px;
             font-size: 13px;
             transition: all 0.3s ease;
@@ -78,18 +91,18 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #51513E;
-            box-shadow: 0 0 0 3px rgba(30, 90, 150, 0.1);
+            border-color: #5C3422;
+            box-shadow: 0 0 0 3px rgba(92, 52, 34, 0.1);
         }
 
         .password-requirements {
-            background: #D6DCE1;
-            border-left: 3px solid #D6DCE1;
+            background: #E2D5C2;
+            border-left: 3px solid #E2D5C2;
             padding: 10px;
             border-radius: 4px;
             margin-bottom: 14px;
             font-size: 12px;
-            color: #7A5B47;
+            color: #8B6F47;
         }
 
         .requirement {
@@ -102,29 +115,29 @@
         .requirement-icon {
             width: 16px;
             height: 16px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             font-weight: bold;
             flex-shrink: 0;
+            color: inherit;
         }
 
         .requirement.met .requirement-icon {
-            background: #423833;
+            background: #5C3422;
             color: white;
         }
 
         .requirement.unmet .requirement-icon {
-            background: #D6DCE1;
-            color: #D6DCE1;
+            background: transparent;
+            color: #E2D5C2;
         }
 
         .register-btn {
             width: 100%;
             padding: 11px;
-            background: linear-gradient(135deg, #51513E 0%, #51513E 100%);
+            background: linear-gradient(135deg, #5C3422 0%, #5C3422 100%);
             color: white;
             border: none;
             border-radius: 6px;
@@ -137,7 +150,7 @@
 
         .register-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(30, 90, 150, 0.3);
+            box-shadow: 0 8px 24px rgba(92, 52, 34, 0.3);
         }
 
         .register-btn:active {
@@ -154,18 +167,18 @@
             text-align: center;
             margin-top: 16px;
             font-size: 13px;
-            color: #7A5B47;
+            color: #8B6F47;
         }
 
         .auth-footer a {
-            color: #51513E;
+            color: #5C3422;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
         }
 
         .auth-footer a:hover {
-            color: #51513E;
+            color: #5C3422;
             text-decoration: underline;
         }
 
@@ -186,11 +199,11 @@
 
         .success-message {
             background: #d4edda;
-            color: #423833;
+            color: #5C3422;
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 14px;
-            border-left: 3px solid #423833;
+            border-left: 3px solid #5C3422;
             font-size: 13px;
             display: none;
         }
@@ -211,6 +224,15 @@
             .form-group {
                 margin-bottom: 12px;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-row .form-group {
+                margin-bottom: 14px;
+            }
         }
     </style>
 </head>
@@ -226,24 +248,26 @@
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
 
-                <div class="form-group">
-                    <label for="studentId">Student ID</label>
-                    <input 
-                        type="text" 
-                        id="studentId" 
-                        placeholder="e.g., STU-2024-001" 
-                        required 
-                    />
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input 
+                            type="text" 
+                            id="studentId" 
+                            placeholder="e.g., STU-2024-001" 
+                            required 
+                        />
+                    </div>
 
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input 
-                        type="text" 
-                        id="fullName" 
-                        placeholder="Your full name" 
-                        required 
-                    />
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            placeholder="Your full name" 
+                            required 
+                        />
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -256,42 +280,44 @@
                     />
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="Enter a strong password" 
-                        required 
-                    />
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="Enter a strong password" 
+                            required 
+                        />
+                    </div>
 
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input 
-                        type="password" 
-                        id="confirmPassword" 
-                        placeholder="Confirm your password" 
-                        required 
-                    />
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            placeholder="Confirm your password" 
+                            required 
+                        />
+                    </div>
                 </div>
 
                 <div class="password-requirements">
                     <strong style="color: #51513E; display: block; margin-bottom: 8px;">Password Requirements:</strong>
                     <div class="requirement unmet" id="lengthReq">
-                        <div class="requirement-icon">âœ“</div>
+                        <i data-lucide="check" class="requirement-icon"></i>
                         <span>At least 8 characters</span>
                     </div>
                     <div class="requirement unmet" id="uppercaseReq">
-                        <div class="requirement-icon">âœ“</div>
+                        <i data-lucide="check" class="requirement-icon"></i>
                         <span>Contains uppercase letter</span>
                     </div>
                     <div class="requirement unmet" id="lowercaseReq">
-                        <div class="requirement-icon">âœ“</div>
+                        <i data-lucide="check" class="requirement-icon"></i>
                         <span>Contains lowercase letter</span>
                     </div>
                     <div class="requirement unmet" id="numberReq">
-                        <div class="requirement-icon">âœ“</div>
+                        <i data-lucide="check" class="requirement-icon"></i>
                         <span>Contains a number</span>
                     </div>
                 </div>
@@ -490,6 +516,11 @@
         }
 
         checkAuth();
+
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>

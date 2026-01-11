@@ -25,15 +25,6 @@
             <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
 
             <div class="header-actions">
-                <div class="search-box">
-                    <i data-lucide="search" style="width: 16px; height: 16px;"></i>
-                    <input type="text" placeholder="Search" />
-                </div>
-
-                <button class="notification-btn">
-                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
-                    <span class="notification-badge">2</span>
-                </button>
                 <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
                     <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
                 </button>
@@ -71,9 +62,10 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                         <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item active">Cavite Mutiny</a>
+
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
                     </div>
                 </div>
@@ -173,7 +165,7 @@
                             </div>
 
                             <div class="infographic-caption">
-                                <h4>Timeline of the Cavite Mutiny (1872)</h4>
+                                <h4>Cavite Mutiny (1872)</h4>
                                 <p id="slideDescription" class="slide-description">Image 1 - Cavite Mutiny Historical Document</p>
                             </div>
                         </div>
@@ -250,8 +242,39 @@
             </section>
         </main>
 
-        <style>
-            .content-with-infographic {
+        <!-- Edit Profile Modal -->
+        <div class="modal" id="editProfileModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Profile</h2>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editAvatar">Profile Picture</label>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <img id="avatarPreview" src="https://via.placeholder.com/60" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
+                            <input type="file" id="editAvatar" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" id="editName" placeholder="Your name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <style>
                 display: grid;
                 grid-template-columns: 1fr;
                 gap: 32px;
@@ -785,69 +808,35 @@
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
-            <!-- Related Content Section -->
             <div class="widget">
                 <div class="widget-header">
-                    <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
-                    <h3>Learning Path</h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    <h3>Key Facts</h3>
                 </div>
-
                 <div class="widget-content">
-                    <div class="todo-section">
-                        <h4 class="todo-label">Related Topics</h4>
-                        <div class="todo-item">
-                            <input type="checkbox" id="related1" />
-                            <label for="related1">Historical Context of Spanish Colonization</label>
-                        </div>
-                        <div class="todo-item">
-                            <input type="checkbox" id="related2" />
-                            <label for="related2">Filipino Resistance Movements</label>
-                        </div>
-                    </div>
-
-                    <div class="todo-section">
-                        <h4 class="todo-label">Key Dates</h4>
-                        <div class="todo-item">
-                            <span style="color: #8B0000; font-weight: 600;">1872</span>
-                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">Cavite Mutiny occurred</p>
-                        </div>
-                    </div>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
+                            <strong style="color: #5C3422;">Date:</strong> January 20, 1872
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
+                            <strong style="color: #5C3422;">Location:</strong> Cavite Province
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
+                            <strong style="color: #5C3422;">Leaders:</strong> GomBurZa (Gomez, Burgos, Zamora)
+                        </li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
+                            <strong style="color: #5C3422;">Participants:</strong> Filipino soldiers & artisans
+                        </li>
+                        <li style="padding: 8px 0;">
+                            <strong style="color: #5C3422;">Outcome:</strong> Execution of 3 priests & 11 soldiers
+                        </li>
+                    </ul>
                 </div>
             </div>
-
-            <!-- Important Figures Section -->
-            <div class="widget">
-                <div class="widget-header">
-
-                    <h3>Key Figures</h3>
-                </div>
-
-                <div class="widget-content ideas-list">
-                    <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>GomBurZa</strong>
-                            <p>Three Filipino priests executed for the uprising...</p>
-                        </div>
-                    </div>
-
-                    <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>Jose Rizal</strong>
-                            <p>Inspired by GomBurZa's execution to fight for independence...</p>
-                        </div>
-                    </div>
-
-                    <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>Andres Bonifacio</strong>
-                            <p>Continued the fight for Philippine independence...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Study Resources Section -->
-            
         </aside>
     </div>
 
@@ -1114,7 +1103,188 @@
     </script>
 
     <script>
-        // Lucide icons are now initialized above
+        // Profile editing functionality - Enhanced with localStorage persistence
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const editAvatarInput = document.getElementById('editAvatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const editNameInput = document.getElementById('editName');
+        const editBioInput = document.getElementById('editBio');
+        const profileNameDisplay = document.getElementById('profileName');
+        const profileEmailDisplay = document.getElementById('profileEmail');
+        const profileAvatar = document.getElementById('profileAvatar');
+
+        let selectedAvatarImage = null;
+
+        editAvatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    selectedAvatarImage = event.target.result;
+                    avatarPreview.src = selectedAvatarImage;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        editProfileBtn.addEventListener('click', () => {
+            editNameInput.value = profileNameDisplay.textContent;
+            editBioInput.value = profileEmailDisplay.textContent;
+            avatarPreview.src = profileAvatar.src;
+            selectedAvatarImage = null;
+            editAvatarInput.value = '';
+            editProfileModal.classList.add('active');
+        });
+
+        const closeModal = () => {
+            editProfileModal.classList.remove('active');
+        };
+
+        closeEditModal.addEventListener('click', closeModal);
+        cancelEditBtn.addEventListener('click', closeModal);
+
+        saveProfileBtn.addEventListener('click', () => {
+            const newName = editNameInput.value.trim();
+            const newBio = editBioInput.value.trim();
+
+            if (newName && newBio) {
+                profileNameDisplay.textContent = newName;
+                profileEmailDisplay.textContent = newBio;
+                
+                localStorage.setItem('profileName', newName);
+                localStorage.setItem('profileBio', newBio);
+
+                if (selectedAvatarImage) {
+                    profileAvatar.src = selectedAvatarImage;
+                    localStorage.setItem('profileAvatar', selectedAvatarImage);
+                }
+
+                closeModal();
+            } else {
+                alert('Please fill in all fields');
+            }
+        });
+
+        const loadProfileFromStorage = () => {
+            console.log('🔄 loadProfileFromStorage called');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const currentUserEmail = profileEmailDisplay.textContent || '';
+
+            localStorage.setItem('currentUserId', currentUserEmail);
+            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
+
+            if (savedName) {
+                console.log('✅ Setting name to:', savedName);
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio) {
+                console.log('✅ Setting bio to:', savedBio);
+                profileEmailDisplay.textContent = savedBio;
+            }
+            if (savedAvatar) {
+                console.log('✅ Setting avatar');
+                profileAvatar.src = savedAvatar;
+            }
+        };
+
+        loadProfileFromStorage();
+        window.addEventListener('load', loadProfileFromStorage);
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const targetId = target.id;
+                    const attrName = mutation.attributeName;
+                    
+                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
+                    console.log('   Current src:', target.src);
+                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
+                    
+                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                        console.log('⚠️ Profile avatar changed, restoring from localStorage');
+                        profileAvatar.src = savedAvatar;
+                    }
+                } else if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                    const savedName = localStorage.getItem('profileName');
+                    const savedBio = localStorage.getItem('profileBio');
+                    
+                    if (savedName && profileNameDisplay.textContent !== savedName) {
+                        console.log('📝 Restoring name from localStorage');
+                        profileNameDisplay.textContent = savedName;
+                    }
+                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                        console.log('📝 Restoring bio from localStorage');
+                        profileEmailDisplay.textContent = savedBio;
+                    }
+                }
+            });
+        });
+
+        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
+
+        setInterval(() => {
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            
+            if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                console.log('🔄 Periodic check: Restoring avatar');
+                profileAvatar.src = savedAvatar;
+            }
+            if (savedName && profileNameDisplay.textContent !== savedName) {
+                console.log('🔄 Periodic check: Restoring name');
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                console.log('🔄 Periodic check: Restoring bio');
+                profileEmailDisplay.textContent = savedBio;
+            }
+        }, 1000);
+
+        const originalPopulateUserProfile = window.app?.populateUserProfile;
+        
+        if (originalPopulateUserProfile) {
+            window.app.populateUserProfile = function() {
+                console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
+                originalPopulateUserProfile.call(this);
+                setTimeout(() => {
+                    console.log('🟢 Restoring localStorage data after original populateUserProfile');
+                    loadProfileFromStorage();
+                }, 500);
+            };
+        } else {
+            const checkForApp = setInterval(() => {
+                if (window.app && window.app.populateUserProfile) {
+                    console.log('✅ App found! Wrapping populateUserProfile');
+                    clearInterval(checkForApp);
+                    const origMethod = window.app.populateUserProfile;
+                    window.app.populateUserProfile = function() {
+                        console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
+                        origMethod.call(this);
+                        setTimeout(() => {
+                            console.log('🟢 Restoring localStorage data after original populateUserProfile');
+                            loadProfileFromStorage();
+                        }, 500);
+                    };
+                }
+            }, 100);
+        }
+
+        window.addEventListener('storage', () => {
+            console.log('💾 localStorage changed in another tab, reloading');
+            loadProfileFromStorage();
+        });
     </script>
 
 </body>

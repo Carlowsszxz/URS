@@ -89,6 +89,77 @@
             font-size: 80px;
             border: 3px solid #e8e3dd;
             animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .picture-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-image-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 80vw;
+            max-height: 80vh;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-image-content img {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            font-size: 28px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: white;
+            transform: scale(1.1);
         }
 
         .input-section {
@@ -384,9 +455,10 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                       <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
                     </div>
                 </div>
@@ -470,6 +542,14 @@
                 </div>
             </div>
         </main>
+
+        <!-- Image Modal -->
+        <div class="image-modal" id="imageModal">
+            <div class="modal-image-content">
+                <button class="modal-close-btn" onclick="closeImageModal()">&times;</button>
+                <img id="modalImage" src="" alt="Enlarged image" />
+            </div>
+        </div>
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
@@ -632,8 +712,20 @@
             // Check if this question uses images or emojis
             if (game.isImage) {
                 grid.innerHTML = game.pictures
-                    .map(pic => `<div class="picture-item" style="background: linear-gradient(135deg, #f5f3f0 0%, #ede9e4 100%); padding: 0; overflow: hidden;"><img src="${pic}" style="width: 100%; height: 100%; object-fit: cover;" alt="game pic" /></div>`)
+                    .map(pic => {
+                        return `<div class="picture-item clickable-pic" style="background: linear-gradient(135deg, #f5f3f0 0%, #ede9e4 100%); padding: 0; overflow: hidden;"><img src="${pic}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" alt="game pic" class="game-image" /></div>`;
+                    })
                     .join('');
+                
+                // Add click listeners after DOM update
+                setTimeout(() => {
+                    document.querySelectorAll('.game-image').forEach(img => {
+                        img.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openImageModal(img.src);
+                        });
+                    });
+                }, 50);
             } else {
                 grid.innerHTML = game.pictures
                     .map(pic => `<div class="picture-item">${pic}</div>`)
@@ -648,8 +740,41 @@
             const progress = ((currentIndex + 1) / gameData.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
             
-            document.getElementById('answerInput').focus();
         }
+
+        // Image modal functions
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside the image
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeImageModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+            });
+
+            document.getElementById('answerInput').focus();
+        });
 
         function submitAnswer() {
             const answer = document.getElementById('answerInput').value.trim().toLowerCase();

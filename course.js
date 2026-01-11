@@ -509,22 +509,44 @@ class CourseInterface {
                 forumContainer.appendChild(postElement);
             });
             
-            // Reinitialize Lucide icons for dynamically loaded content
-            this.reinitializeLucideIcons();
+            console.warn('✅✅✅ Created', posts.length, 'post elements ✅✅✅');
         } catch (error) {
             console.error('Failed to load forum posts:', error);
         }
     }
 
     createForumPostElement(post) {
+        console.log('🏗️ createForumPostElement called for post:', post.author_name);
         const postDiv = document.createElement('div');
         postDiv.className = 'forum-post';
         
         const timeAgo = this.getTimeAgo(new Date(post.created_at));
         
+        // Check if this post is from current user and use localStorage avatar if available
+        let avatarSrc = `https://i.pravatar.cc/36?u=${post.author_id}`;
+        const currentUserEmail = this.currentUser?.email;
+        const savedAvatar = localStorage.getItem('profileAvatar');
+        
+        console.log('🔎 Post author_id:', post.author_id, 'Current user:', currentUserEmail, 'Has saved avatar:', !!savedAvatar);
+        
+        if (currentUserEmail && post.author_id === currentUserEmail && savedAvatar) {
+            console.log('🎨 Post from current user detected - using saved avatar');
+            avatarSrc = savedAvatar;
+        } else if (savedAvatar) {
+            // If we have a saved avatar and can't match by email, try by name
+            console.log('⚠️ Email mismatch - post author:', post.author_id, 'current user:', currentUserEmail);
+            // Check if it's the current user by checking stored profile name
+            const storedName = localStorage.getItem('profileName');
+            console.log('📛 Post author name:', post.author_name, 'Stored name:', storedName);
+            if (storedName && post.author_name === storedName) {
+                console.log('🎨 Matched by name - using saved avatar');
+                avatarSrc = savedAvatar;
+            }
+        }
+        
         postDiv.innerHTML = `
             <div class="forum-post-header">
-                <img src="https://i.pravatar.cc/36?u=${post.author_id}" alt="${post.author_name}" class="avatar" />
+                <img src="${avatarSrc}" alt="${post.author_name}" class="avatar" />
                 <div class="forum-post-info">
                     <div class="forum-post-author">${this.escapeHtml(post.author_name)}</div>
                     <div class="forum-post-time">${timeAgo}</div>
@@ -1174,17 +1196,25 @@ class CourseInterface {
             // Regular post
             const authorName = postData.author_name || 'Unknown User';
             const authorEmail = postData.author_email || 'user@example.com';
-            const authorAvatar = `https://i.pravatar.cc/40?u=${postData.author_id}`;
+            let authorAvatar = `https://i.pravatar.cc/40?u=${postData.author_id}`;
             const authorHandle = authorEmail.split('@')[0];
             const postTime = this.formatTimeAgo(postData.created_at);
             const isAuthor = postData.author_id === this.currentUser.id;
+            
+            // Check if this is current user and use localStorage avatar if available
+            if (isAuthor) {
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                if (savedAvatar) {
+                    console.warn('🎯 Found saved avatar for current user post!');
+                    authorAvatar = savedAvatar;
+                }
+            }
 
             postCard.innerHTML = `
                 <div class="post-header">
                     <img src="${authorAvatar}" alt="Author" class="avatar" />
                     <div class="post-meta">
                         <strong>${authorName}</strong>
-                        <span class="post-handle">@${authorHandle}</span>
                         <span class="post-time">• ${postTime}</span>
                     </div>
                     ${isAuthor ? `<button class="delete-post-btn" data-post-id="${postData.id}" title="Delete post">
@@ -1799,16 +1829,30 @@ class CourseInterface {
     }
 
     formatTimeAgo(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const seconds = Math.floor((now - date) / 1000);
-
-        if (seconds < 60) return 'just now';
-        if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
-        if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
-        if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+        if (!timestamp) return 'just now';
         
-        return date.toLocaleDateString();
+        // Handle different timestamp formats
+        let date;
+        if (typeof timestamp === 'string') {
+            // Remove 'Z' and parse the timestamp
+            const cleanTimestamp = timestamp.replace('Z', '+00:00');
+            date = new Date(cleanTimestamp);
+        } else {
+            date = new Date(timestamp);
+        }
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            console.warn('Invalid timestamp:', timestamp);
+            return 'just now';
+        }
+        
+        // Convert to Philippine Time (UTC+8)
+        const phTime = new Date(date.getTime() + (8 * 60 * 60 * 1000));
+        
+        // Format as readable date/time: "Jan 11, 2:30 PM"
+        const options = { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+        return phTime.toLocaleDateString('en-US', options);
     }
 
     escapeHtml(text) {

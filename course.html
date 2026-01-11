@@ -11,6 +11,173 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="db-helpers.js"></script>
+    <style>
+        /* Mobile Search Bar Optimization */
+        @media (max-width: 1024px) {
+            .header-search {
+                max-width: 350px;
+            }
+
+            .search-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                gap: 8px;
+            }
+
+            .header-search {
+                max-width: 220px;
+                flex-grow: 1;
+            }
+
+            .search-input {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+
+            .search-btn {
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header-search {
+                max-width: none;
+                flex-grow: 0;
+                background: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+            }
+
+            .search-input {
+                display: none;
+            }
+
+            .search-btn {
+                padding: 8px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+            }
+
+            .search-btn:hover {
+                background: #f0f0f0;
+                border-radius: 8px;
+            }
+        }
+
+        /* Mobile Search Modal */
+        .mobile-search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .mobile-search-modal.active {
+            display: flex;
+        }
+
+        .mobile-search-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .mobile-search-modal-content h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .mobile-search-modal-content .mobile-search-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            font-family: inherit;
+        }
+
+        .mobile-search-modal-content .mobile-search-input:focus {
+            outline: none;
+            border-color: #5C3422;
+            box-shadow: 0 0 0 3px rgba(92, 52, 34, 0.1);
+        }
+
+        .mobile-search-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .mobile-search-modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-search-modal-buttons .cancel-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .mobile-search-modal-buttons .cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .mobile-search-modal-buttons .search-submit-btn {
+            background: #5C3422;
+            color: white;
+        }
+
+        .mobile-search-modal-buttons .search-submit-btn:hover {
+            background: #3e2416;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -23,6 +190,12 @@
             <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
 
             <div class="header-actions">
+                <div class="header-search">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search users..." />
+                    <button class="search-btn" id="searchBtn" title="Search">
+                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
                 
                 <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
                     <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
@@ -61,9 +234,10 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
                     </div>
                 </div>
@@ -121,10 +295,7 @@
                             <i data-lucide="youtube" style="width: 20px; height: 20px; color: #FF0000;"></i>
                         </button>
 
-                        <label class="file-upload-btn" title="Add file">
-                            <i data-lucide="file" style="width: 20px; height: 20px;"></i>
-                            <input type="file" id="fileInput" style="display: none;" />
-                        </label>
+                        
 
 
                         <button class="poll-btn" title="Create poll" id="pollBtn">
@@ -177,6 +348,31 @@
         </aside>
     </div>
 
+    <!-- Mobile Search Modal -->
+    <div class="mobile-search-modal" id="mobileSearchModal">
+        <div class="mobile-search-modal-content">
+            <h3>Search Users</h3>
+            <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="Enter username or email..." />
+            <div class="mobile-search-modal-buttons">
+                <button class="cancel-btn" id="mobileSearchCancel">Cancel</button>
+                <button class="search-submit-btn" id="mobileSearchSubmit">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Modal -->
+    <div class="modal" id="searchResultsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Search Results</h2>
+                <button class="modal-close" id="closeSearchModal">&times;</button>
+            </div>
+            <div class="modal-body" id="searchResultsBody" style="max-height: 600px; overflow-y: auto;">
+                <!-- Search results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
@@ -185,6 +381,13 @@
                 <button class="modal-close" id="closeEditModal">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <label for="editAvatar">Profile Picture</label>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <img id="avatarPreview" src="https://i.pravatar.cc/80?img=20" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
+                        <input type="file" id="editAvatar" accept="image/*" />
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="editName">Full Name</label>
                     <input type="text" id="editName" placeholder="Your name" />
@@ -247,7 +450,7 @@
                         <input type="text" id="pollOption4" placeholder="Enter fourth poll option" />
                     </div>
                 </div>
-                <button type="button" class="add-option-btn" id="addOptionBtn">+ Add Another Option</button>
+                <button type="button" class="add-option-btn" id="addOptionBtn" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; margin-top: 8px; background: #f0f0f0; border: 2px dashed #5C3422; border-radius: 6px; color: #5C3422; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">+ Add Another Option</button>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" id="cancelPollBtn">Cancel</button>
@@ -262,6 +465,468 @@
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
+
+        // Profile editing functionality
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const editAvatarInput = document.getElementById('editAvatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const editNameInput = document.getElementById('editName');
+        const editBioInput = document.getElementById('editBio');
+        const profileNameDisplay = document.getElementById('profileName');
+        const profileEmailDisplay = document.getElementById('profileEmail');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const createPostAvatar = document.getElementById('createPostAvatar');
+        const createPostName = document.getElementById('createPostName');
+
+        let selectedAvatarImage = null;
+
+        // Handle avatar image selection
+        editAvatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    selectedAvatarImage = event.target.result;
+                    avatarPreview.src = selectedAvatarImage;
+                    console.log('Image selected:', selectedAvatarImage.substring(0, 50) + '...');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Open edit profile modal
+        editProfileBtn.addEventListener('click', () => {
+            console.log('Edit button clicked');
+            editNameInput.value = profileNameDisplay.textContent;
+            editBioInput.value = profileEmailDisplay.textContent;
+            avatarPreview.src = profileAvatar.src;
+            selectedAvatarImage = null;
+            editAvatarInput.value = '';
+            editProfileModal.classList.add('active');
+            console.log('Modal opened, active class added');
+        });
+
+        // Close modal
+        const closeModal = () => {
+            editProfileModal.classList.remove('active');
+            console.log('Modal closed');
+        };
+
+        closeEditModal.addEventListener('click', closeModal);
+        cancelEditBtn.addEventListener('click', closeModal);
+
+        // Save profile changes
+        saveProfileBtn.addEventListener('click', () => {
+            const newName = editNameInput.value.trim();
+            const newBio = editBioInput.value.trim();
+
+            console.log('Save clicked - Name:', newName, 'Bio:', newBio, 'Avatar:', selectedAvatarImage ? 'Yes' : 'No');
+
+            if (newName && newBio) {
+                profileNameDisplay.textContent = newName;
+                profileEmailDisplay.textContent = newBio;
+                createPostName.textContent = newName;
+                
+                // Save profile data
+                localStorage.setItem('profileName', newName);
+                localStorage.setItem('profileBio', newBio);
+
+                // Save avatar if changed
+                if (selectedAvatarImage) {
+                    profileAvatar.src = selectedAvatarImage;
+                    createPostAvatar.src = selectedAvatarImage;
+                    localStorage.setItem('profileAvatar', selectedAvatarImage);
+                    console.log('Avatar saved');
+                }
+
+                console.log('Profile saved to localStorage');
+                closeModal();
+            } else {
+                alert('Please fill in all fields');
+            }
+        });
+
+        // Load profile from localStorage on page load
+        const loadProfileFromStorage = () => {
+            console.log('🔄 loadProfileFromStorage called');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const currentUserEmail = profileEmailDisplay.textContent || profileEmail.textContent;
+
+            // Store current user email for post filtering
+            localStorage.setItem('currentUserId', currentUserEmail);
+
+            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
+
+            if (savedName) {
+                console.log('✅ Setting name to:', savedName);
+                profileNameDisplay.textContent = savedName;
+                createPostName.textContent = savedName;
+            }
+            if (savedBio) {
+                console.log('✅ Setting bio to:', savedBio);
+                profileEmailDisplay.textContent = savedBio;
+            }
+            if (savedAvatar) {
+                console.log('✅ Setting avatar');
+                profileAvatar.src = savedAvatar;
+                createPostAvatar.src = savedAvatar;
+            }
+        };
+
+        // Load immediately
+        console.log('⏱️ Loading profile immediately...');
+        loadProfileFromStorage();
+
+        // Also load on window load event
+        window.addEventListener('load', () => {
+            console.log('⏱️ Window load event - reloading profile');
+            loadProfileFromStorage();
+        });
+
+        // Watch for any changes to profile elements and restore localStorage data
+        console.log('👀 Setting up MutationObserver to watch for profile changes...');
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                const savedName = localStorage.getItem('profileName');
+                const savedBio = localStorage.getItem('profileBio');
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                
+                if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                    if (savedName && profileNameDisplay.textContent !== savedName) {
+                        console.log('⚠️ Profile name changed from:', profileNameDisplay.textContent, 'back to:', savedName);
+                        profileNameDisplay.textContent = savedName;
+                        createPostName.textContent = savedName;
+                    }
+                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                        console.log('⚠️ Profile bio changed from:', profileEmailDisplay.textContent, 'back to:', savedBio);
+                        profileEmailDisplay.textContent = savedBio;
+                    }
+                }
+                
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const targetId = target.id;
+                    const attrName = mutation.attributeName;
+                    
+                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
+                    console.log('   Current src:', target.src);
+                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
+                    
+                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                        console.log('⚠️ Profile avatar (profileAvatar) changed from:', profileAvatar.src, 'to:', savedAvatar);
+                        profileAvatar.src = savedAvatar;
+                        createPostAvatar.src = savedAvatar;
+                    }
+                    if (savedAvatar && createPostAvatar.src !== savedAvatar) {
+                        console.log('⚠️ Create post avatar (createPostAvatar) changed from:', createPostAvatar.src, 'to:', savedAvatar);
+                        createPostAvatar.src = savedAvatar;
+                    }
+                }
+            });
+        });
+
+        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
+        observer.observe(createPostAvatar, { attributes: true, attributeFilter: ['src'] });
+        
+        // Also periodically check and restore avatar
+        setInterval(() => {
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            if (savedAvatar) {
+                if (profileAvatar.src !== savedAvatar) {
+                    console.log('🔄 Periodic check: Restoring profileAvatar');
+                    profileAvatar.src = savedAvatar;
+                }
+                if (createPostAvatar.src !== savedAvatar) {
+                    console.log('🔄 Periodic check: Restoring createPostAvatar from', createPostAvatar.src, 'to', savedAvatar);
+                    createPostAvatar.src = savedAvatar;
+                }
+                
+                // Also update all post avatars in the feed
+                const allPostAvatars = document.querySelectorAll('.post-avatar');
+                allPostAvatars.forEach((avatar, index) => {
+                    if (avatar.src && avatar.src !== savedAvatar && !avatar.src.includes('i.pravatar.cc')) {
+                        console.log('🔄 Periodic check: Updating post avatar', index, 'to', savedAvatar.substring(0, 50));
+                        avatar.src = savedAvatar;
+                    }
+                });
+            }
+        }, 1000);
+
+        // Override the app's profile population to preserve localStorage data
+        console.log('🔧 Attempting to override populateUserProfile...');
+        const originalPopulateUserProfile = window.app?.populateUserProfile;
+        
+        if (originalPopulateUserProfile) {
+            console.log('✅ Found original populateUserProfile, wrapping it');
+            window.app.populateUserProfile = function() {
+                console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
+                // Call original method first
+                originalPopulateUserProfile.call(this);
+                // Then restore localStorage data
+                setTimeout(() => {
+                    console.log('🟢 Restoring localStorage data after original populateUserProfile');
+                    loadProfileFromStorage();
+                }, 500);
+            };
+        } else {
+            console.log('❌ window.app not found yet, waiting for it...');
+            // If app isn't loaded yet, keep checking
+            const checkForApp = setInterval(() => {
+                if (window.app && window.app.populateUserProfile) {
+                    console.log('✅ App found! Wrapping populateUserProfile');
+                    clearInterval(checkForApp);
+                    const origMethod = window.app.populateUserProfile;
+                    window.app.populateUserProfile = function() {
+                        console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
+                        origMethod.call(this);
+                        setTimeout(() => {
+                            console.log('🟢 Restoring localStorage data after original populateUserProfile');
+                            loadProfileFromStorage();
+                        }, 500);
+                    };
+                }
+            }, 100);
+        }
+
+        // Also load when localStorage changes (in case another tab updates it)
+        window.addEventListener('storage', () => {
+            console.log('💾 localStorage changed in another tab, reloading');
+            loadProfileFromStorage();
+        });
+
+        // Watch for new posts being added and update their avatars  
+        const forumContainer = document.querySelector('.forum-container') || document.getElementById('postsContainer');
+        if (forumContainer) {
+            const postObserver = new MutationObserver((mutations) => {
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                const currentUserId = localStorage.getItem('currentUserId') || profileEmail.textContent;
+                
+                if (savedAvatar && currentUserId) {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                            mutation.addedNodes.forEach((node) => {
+                                if (node.nodeType === 1) { // Element node
+                                    // Look for avatars in newly added posts
+                                    const avatars = node.querySelectorAll('.avatar, img[alt]');
+                                    avatars.forEach((avatar) => {
+                                        if (avatar.src && avatar.src.includes('i.pravatar.cc') && avatar.alt === profileEmail.textContent) {
+                                            console.log('📸 Found post avatar for current user, replacing with custom avatar');
+                                            avatar.src = savedAvatar;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            postObserver.observe(forumContainer, { childList: true, subtree: false });
+            console.log('✅ Post avatar observer initialized');
+        }
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResultsModal = document.getElementById('searchResultsModal');
+        const closeSearchModal = document.getElementById('closeSearchModal');
+        const searchResultsBody = document.getElementById('searchResultsBody');
+
+        // Helper function to get Supabase client
+        async function getSupabaseClient() {
+            let attempts = 0;
+            while (attempts < 50) {
+                if (window.supabaseClient) {
+                    return window.supabaseClient;
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            throw new Error('Supabase client not initialized. Please refresh the page.');
+        }
+
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        closeSearchModal.addEventListener('click', () => {
+            searchResultsModal.style.display = 'none';
+        });
+
+        searchResultsModal.addEventListener('click', (e) => {
+            if (e.target === searchResultsModal) {
+                searchResultsModal.style.display = 'none';
+            }
+        });
+
+        async function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (!searchTerm) {
+                return;
+            }
+
+            try {
+                // Get the Supabase client
+                const supabaseClient = await getSupabaseClient();
+
+                // Get all posts from database
+                const { data: posts, error } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Search error:', error);
+                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #d9534f;">Error loading posts. Please try again.</p>';
+                    searchResultsModal.style.display = 'flex';
+                    return;
+                }
+
+                if (!posts || posts.length === 0) {
+                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">No posts found.</p>';
+                    searchResultsModal.style.display = 'flex';
+                    return;
+                }
+
+                // Filter posts by author name or email containing search term
+                const matchingPosts = posts.filter(post => {
+                    const authorName = (post.author_name || '').toLowerCase();
+                    const authorEmail = (post.author_email || '').toLowerCase();
+                    return authorName.includes(searchTerm) || authorEmail.includes(searchTerm);
+                });
+
+                // Group posts by user
+                const userMap = {};
+                matchingPosts.forEach(post => {
+                    const userId = post.author_id;
+                    if (!userMap[userId]) {
+                        userMap[userId] = {
+                            id: userId,
+                            name: post.author_name || 'Unknown User',
+                            email: post.author_email,
+                            posts: []
+                        };
+                    }
+                    userMap[userId].posts.push(post);
+                });
+
+                const users = Object.values(userMap);
+
+                if (users.length === 0) {
+                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">No users found matching "' + searchTerm + '".</p>';
+                } else {
+                    let resultsHTML = '';
+                    users.forEach(user => {
+                        const userAvatar = `https://i.pravatar.cc/40?u=${user.id}`;
+                        resultsHTML += `
+                            <div style="padding: 16px; border-bottom: 1px solid #ecf0f1;">
+                                <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+                                    <img src="${userAvatar}" alt="${user.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                                    <div style="flex: 1;">
+                                        <h4 style="margin: 0 0 4px 0; color: #333; font-size: 14px;">${user.name}</h4>
+                                        <p style="margin: 0; font-size: 12px; color: #999;">${user.email || 'No email'}</p>
+                                    </div>
+                                </div>
+                                <div style="margin-left: 52px;">
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;"><strong>${user.posts.length}</strong> post${user.posts.length !== 1 ? 's' : ''}</p>
+                                    <div style="background: #f8f9fa; border-radius: 6px; padding: 12px; max-height: 200px; overflow-y: auto;">
+                        `;
+                        
+                        user.posts.slice(0, 3).forEach(post => {
+                            const postDate = new Date(post.created_at);
+                            const formattedDate = postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+                            resultsHTML += `
+                                <div style="padding: 8px 0; border-bottom: 1px solid #e0e0e0; font-size: 13px;">
+                                    <p style="margin: 0; color: #333; word-break: break-word;">${(post.content || '').substring(0, 100)}${(post.content || '').length > 100 ? '...' : ''}</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">${formattedDate}</p>
+                                </div>
+                            `;
+                        });
+
+                        if (user.posts.length > 3) {
+                            resultsHTML += `<p style="margin: 8px 0 0 0; font-size: 12px; color: #5C3422; font-weight: 500;">+${user.posts.length - 3} more posts</p>`;
+                        }
+
+                        resultsHTML += `
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    searchResultsBody.innerHTML = resultsHTML;
+                }
+
+                searchResultsModal.style.display = 'flex';
+                searchInput.value = '';
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #d9534f;">Error: ' + error.message + '</p>';
+                searchResultsModal.style.display = 'flex';
+            }
+        }
+
+        // Mobile Search Bar Toggle
+        const headerSearch = document.querySelector('.header-search');
+        const searchInputElement = document.getElementById('searchInput');
+        const searchBtnElement = document.getElementById('searchBtn');
+        const mobileSearchModal = document.getElementById('mobileSearchModal');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchSubmit = document.getElementById('mobileSearchSubmit');
+        const mobileSearchCancel = document.getElementById('mobileSearchCancel');
+
+        if (searchBtnElement) {
+            // Open mobile search modal on click when on mobile
+            searchBtnElement.addEventListener('click', (e) => {
+                if (window.innerWidth <= 640) {
+                    e.preventDefault();
+                    mobileSearchModal.classList.add('active');
+                    mobileSearchInput.focus();
+                } else {
+                    performSearch();
+                }
+            });
+        }
+
+        // Close mobile search modal
+        const closeMobileSearchModal = () => {
+            mobileSearchModal.classList.remove('active');
+            mobileSearchInput.value = '';
+        };
+
+        mobileSearchCancel.addEventListener('click', closeMobileSearchModal);
+
+        // Close modal when clicking outside
+        mobileSearchModal.addEventListener('click', (e) => {
+            if (e.target === mobileSearchModal) {
+                closeMobileSearchModal();
+            }
+        });
+
+        // Search from mobile modal
+        mobileSearchSubmit.addEventListener('click', () => {
+            searchInput.value = mobileSearchInput.value;
+            performSearch();
+            closeMobileSearchModal();
+        });
+
+        // Enter key to search from mobile modal
+        mobileSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchInput.value = mobileSearchInput.value;
+                performSearch();
+                closeMobileSearchModal();
+            }
+        });
     </script>
 </body>
 </html>

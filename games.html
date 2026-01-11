@@ -231,14 +231,6 @@
             <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
 
             <div class="header-actions">
-                <div class="search-box">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" placeholder="Search" />
-                </div>
-
                 <button class="notification-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -276,10 +268,7 @@
                     <p class="profile-email" id="profileEmail">Loading...</p>
                 </div>
                 <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
                 </button>
             </div>
 
@@ -295,11 +284,12 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                           <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
-                    </div>
+                   </div>
                 </div>
                 <div class="nav-item-dropdown">
                     <div class="nav-item" data-section="activities">
@@ -321,10 +311,10 @@
                 </div>
 
 
-                <div class="nav-item" data-section="videos">
+                <a href="videos.html" class="nav-item" data-section="videos">
                     <i data-lucide="play-circle" class="nav-icon-svg"></i>
                     <span>Videos</span>
-                </div>
+                </a>
             </nav>
 
         </aside>
@@ -366,6 +356,37 @@
         </div>
             </div>
         </main>
+
+        <!-- Edit Profile Modal -->
+        <div class="modal" id="editProfileModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Profile</h2>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editAvatar">Profile Picture</label>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <img id="avatarPreview" src="https://via.placeholder.com/60" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
+                            <input type="file" id="editAvatar" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" id="editName" placeholder="Your name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
@@ -414,6 +435,169 @@
         if (window.lucide) {
             lucide.createIcons();
         }
+
+        // ==================== PROFILE EDITING SYSTEM ====================
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const editAvatarInput = document.getElementById('editAvatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const editNameInput = document.getElementById('editName');
+        const editBioInput = document.getElementById('editBio');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+        const profileNameDisplay = document.querySelector('.profile-name');
+        const profileEmailDisplay = document.querySelector('.profile-email');
+        const profileAvatar = document.querySelector('.profile-avatar');
+
+        // ==================== LOAD PROFILE FROM localStorage ====================
+        function loadProfileFromStorage() {
+            console.log('🔍 Loading profile from localStorage...');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            const savedAvatar = localStorage.getItem('profileAvatar');
+
+            if (savedName && profileNameDisplay) profileNameDisplay.textContent = savedName;
+            if (savedBio && profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
+            if (savedAvatar && profileAvatar) profileAvatar.src = savedAvatar;
+        }
+
+        // ==================== EDIT PROFILE MODAL MANAGEMENT ====================
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                editProfileModal.style.display = 'flex';
+                editNameInput.value = localStorage.getItem('profileName') || '';
+                editBioInput.value = localStorage.getItem('profileBio') || '';
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                if (savedAvatar) avatarPreview.src = savedAvatar;
+            });
+        }
+
+        if (closeEditModal) {
+            closeEditModal.addEventListener('click', function() {
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', function() {
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        editProfileModal.addEventListener('click', function(e) {
+            if (e.target === editProfileModal) {
+                editProfileModal.style.display = 'none';
+            }
+        });
+
+        // ==================== AVATAR FILE UPLOAD ====================
+        if (editAvatarInput) {
+            editAvatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const base64String = event.target.result;
+                        avatarPreview.src = base64String;
+                        console.log('📝 Avatar preview updated');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // ==================== SAVE PROFILE CHANGES ====================
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', function() {
+                const newName = editNameInput.value || 'User';
+                const newBio = editBioInput.value || 'Bio';
+                const newAvatar = avatarPreview.src;
+
+                localStorage.setItem('profileName', newName);
+                localStorage.setItem('profileBio', newBio);
+                localStorage.setItem('profileAvatar', newAvatar);
+
+                if (profileNameDisplay) profileNameDisplay.textContent = newName;
+                if (profileEmailDisplay) profileEmailDisplay.textContent = newBio;
+                if (profileAvatar) profileAvatar.src = newAvatar;
+
+                console.log('✅ Profile saved:', { name: newName, bio: newBio });
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        // ==================== MUTATIONOBSERVER: RESTORE PROFILE ON CHANGES ====================
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.target === profileNameDisplay && profileNameDisplay.textContent !== localStorage.getItem('profileName')) {
+                    console.log('🔍 Profile Name changed by Supabase, restoring from localStorage...');
+                    profileNameDisplay.textContent = localStorage.getItem('profileName') || profileNameDisplay.textContent;
+                }
+                if (mutation.target === profileEmailDisplay && profileEmailDisplay.textContent !== localStorage.getItem('profileBio')) {
+                    console.log('🔍 Profile Bio changed by Supabase, restoring from localStorage...');
+                    profileEmailDisplay.textContent = localStorage.getItem('profileBio') || profileEmailDisplay.textContent;
+                }
+                if (mutation.target === profileAvatar && profileAvatar.src !== localStorage.getItem('profileAvatar')) {
+                    console.log('🔍 Profile Avatar changed by Supabase, restoring from localStorage...');
+                    profileAvatar.src = localStorage.getItem('profileAvatar') || profileAvatar.src;
+                }
+            });
+        });
+
+        observer.observe(profileNameDisplay, { attributes: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { attributes: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, childList: true, subtree: true });
+
+        // ==================== PERIODIC RESTORATION: Every 1000ms ====================
+        setInterval(function() {
+            const currentName = profileNameDisplay ? profileNameDisplay.textContent : '';
+            const savedName = localStorage.getItem('profileName');
+            if (currentName !== savedName && savedName) {
+                console.log('🔄 Periodic: Restoring profile name from localStorage');
+                if (profileNameDisplay) profileNameDisplay.textContent = savedName;
+            }
+
+            const currentBio = profileEmailDisplay ? profileEmailDisplay.textContent : '';
+            const savedBio = localStorage.getItem('profileBio');
+            if (currentBio !== savedBio && savedBio) {
+                console.log('🔄 Periodic: Restoring profile bio from localStorage');
+                if (profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
+            }
+
+            const currentAvatar = profileAvatar ? profileAvatar.src : '';
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            if (currentAvatar !== savedAvatar && savedAvatar) {
+                console.log('🔄 Periodic: Restoring profile avatar from localStorage');
+                if (profileAvatar) profileAvatar.src = savedAvatar;
+            }
+        }, 1000);
+
+        // ==================== OVERRIDE: SUPABASE populateUserProfile ====================
+        const checkForApp = setInterval(function() {
+            if (window.app && window.app.populateUserProfile) {
+                clearInterval(checkForApp);
+                const originalPopulate = window.app.populateUserProfile.bind(window.app);
+                window.app.populateUserProfile = function() {
+                    console.log('🔴 populateUserProfile called by Supabase');
+                    originalPopulate();
+                    setTimeout(function() {
+                        loadProfileFromStorage();
+                        console.log('🟢 Profile restored from localStorage after Supabase call');
+                    }, 500);
+                };
+            }
+        }, 100);
+
+        // ==================== STORAGE EVENT LISTENER: Cross-tab Synchronization ====================
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'profileName' || e.key === 'profileBio' || e.key === 'profileAvatar') {
+                console.log('💾 Storage changed in another tab, reloading profile...');
+                loadProfileFromStorage();
+            }
+        });
     </script>
 </body>
 </html>

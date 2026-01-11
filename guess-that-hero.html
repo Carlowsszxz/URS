@@ -341,12 +341,84 @@
         }
 
         .hero-image {
-            width: 160px;
-            height: 160px;
+            width: 220px;
+            height: 220px;
             border-radius: 12px;
             object-fit: cover;
             filter: brightness(0.5) contrast(1.1);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Image Modal */
+        .hero-image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2500;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hero-image-modal.active {
+            display: flex;
+        }
+
+        .hero-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 80vw;
+            max-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        .hero-modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .hero-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5C3422;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-modal-close:hover {
+            background: #E2D5C2;
+            transform: rotate(90deg);
         }
 
         .feedback {
@@ -815,6 +887,14 @@
 
         /* RESPONSIVE */
         @media (max-width: 1200px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar-toggle-right {
+                display: flex;
+            }
+
             .main-layout {
                 grid-template-columns: 1fr;
             }
@@ -879,8 +959,8 @@
             }
 
             .hero-image {
-                width: 140px;
-                height: 140px;
+                width: 180px;
+                height: 180px;
             }
 
             .game-over-title {
@@ -937,9 +1017,10 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                           <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
                     </div>
                 </div>
@@ -988,6 +1069,13 @@
                         <div id="gameScreen">
                             <div class="hero-image-container">
                                 <img id="heroImage" src="https://i.pravatar.cc/200?img=1" alt="Mystery hero" class="hero-image" />
+                            </div>
+                            <!-- Hero Image Modal -->
+                            <div class="hero-image-modal" id="heroImageModal">
+                                <div class="hero-modal-content">
+                                    <button class="hero-modal-close" id="heroModalClose">&times;</button>
+                                    <img id="heroModalImage" src="" alt="Hero Image" />
+                                </div>
                             </div>
 
                             <div class="feedback" id="feedback"></div>
@@ -1480,6 +1568,45 @@
         setInterval(() => {
             game.loadLeaderboard();
         }, 5000);
+
+        // Hero Image Modal Functions
+        const heroImageModal = document.getElementById('heroImageModal');
+        const heroImage = document.getElementById('heroImage');
+        const heroModalImage = document.getElementById('heroModalImage');
+        const heroModalClose = document.getElementById('heroModalClose');
+
+        function openHeroImageModal(imageSrc) {
+            heroModalImage.src = imageSrc;
+            heroImageModal.classList.add('active');
+        }
+
+        function closeHeroImageModal() {
+            heroImageModal.classList.remove('active');
+        }
+
+        // Hero image click handler
+        heroImage.addEventListener('click', () => {
+            openHeroImageModal(heroImage.src);
+        });
+
+        // Close button handler
+        heroModalClose.addEventListener('click', () => {
+            closeHeroImageModal();
+        });
+
+        // Close modal when clicking outside the image
+        heroImageModal.addEventListener('click', (e) => {
+            if (e.target === heroImageModal) {
+                closeHeroImageModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && heroImageModal.classList.contains('active')) {
+                closeHeroImageModal();
+            }
+        });
     </script>
 </body>
 </html>

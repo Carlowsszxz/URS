@@ -617,14 +617,6 @@
             <h1 class="header-title"><a href="home.html" class="header-title-link">Readings in Philippine History</a></h1>
 
             <div class="header-actions">
-                <div class="search-box">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" placeholder="Search" />
-                </div>
-
                 <button class="notification-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -662,10 +654,7 @@
                     <p class="profile-email" id="profileEmail">Loading...</p>
                 </div>
                 <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
                 </button>
             </div>
 
@@ -823,48 +812,81 @@
             </div>
         </main>
 
+        <!-- Edit Profile Modal -->
+        <div class="modal" id="editProfileModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Profile</h2>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editAvatar">Profile Picture</label>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <img id="avatarPreview" src="https://via.placeholder.com/60" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
+                            <input type="file" id="editAvatar" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" id="editName" placeholder="Your name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
             <div class="sidebar-section">
-                <h4 class="sidebar-title">Your Progress</h4>
-                <div class="progress-circle">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" class="progress-bg"></circle>
-                        <circle cx="50" cy="50" r="45" class="progress-fill" style="stroke-dashoffset: 75;"></circle>
-                    </svg>
-                    <div class="progress-text">62%</div>
+                <h4 class="sidebar-title">Quick Reference</h4>
+                <div style="background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-left: 4px solid #5C3422; padding: 14px; border-radius: 6px; font-size: 13px; color: #51513E; line-height: 1.6;">
+                    <p style="margin: 0 0 10px 0;"><strong>Date:</strong> January 20, 1872</p>
+                    <p style="margin: 0 0 10px 0;"><strong>Location:</strong> Fort San Felipe, Cavite</p>
+                    <p style="margin: 0 0 10px 0;"><strong>Cause:</strong> Filipino soldiers' discrimination & low pay</p>
+                    <p style="margin: 0;"><strong>Result:</strong> 3 priests executed (GomBurZa)</p>
                 </div>
-                <p class="sidebar-text">5 of 8 tasks completed</p>
             </div>
 
             <div class="sidebar-section">
-                <h4 class="sidebar-title">Learning Tips</h4>
-                <ul class="tips-list">
-                    <li><strong>Read carefully</strong> - Pay attention to dates and names</li>
-                    <li><strong>Use context clues</strong> - Connect events to broader themes</li>
-                    <li><strong>Review often</strong> - Revisit completed tasks for reinforcement</li>
-                    <li><strong>Take notes</strong> - Write down key takeaways</li>
-                </ul>
+                <h4 class="sidebar-title">Task Tips</h4>
+                <div style="display: grid; gap: 12px;">
+                    <div style="background: linear-gradient(135deg, #FEF5E7 0%, #F9F0E3 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Timeline</p>
+                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Click events in chronological order (earliest first)</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #E8F4F0 0%, #E0EEEA 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Matching</p>
+                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Match each figure to their correct role</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #FCE8E4 0%, #F9E4DF 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Fill Blanks</p>
+                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Complete sentences using provided historical context</p>
+                    </div>
+                </div>
             </div>
 
             <div class="sidebar-section">
-                <h4 class="sidebar-title">Recommended Path</h4>
-                <div class="path-steps">
-                    <div class="step step-done">
-                        <span class="step-num">1</span>
-                        <p>Cavite Timeline</p>
+                <h4 class="sidebar-title">Key Figures</h4>
+                <div style="display: grid; gap: 10px;">
+                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">Mariano Gómez</p>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
                     </div>
-                    <div class="step step-done">
-                        <span class="step-num">2</span>
-                        <p>Match Figures</p>
+                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">José Burgos</p>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
                     </div>
-                    <div class="step step-current">
-                        <span class="step-num">3</span>
-                        <p>Analyze Sources</p>
-                    </div>
-                    <div class="step">
-                        <span class="step-num">4</span>
-                        <p>Concept Map</p>
+                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
+                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">Jacinto Zamora</p>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
                     </div>
                 </div>
             </div>
@@ -1436,14 +1458,14 @@
         }
 
         .btn-save {
-            background: linear-gradient(135deg, #006666 0%, #00a8a8 100%);
+            background: linear-gradient(135deg, #5C3422 0%, #7A5B47 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(0, 102, 102, 0.3);
+            box-shadow: 0 4px 12px rgba(92, 52, 34, 0.3);
         }
 
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 102, 102, 0.4);
+            box-shadow: 0 6px 16px rgba(92, 52, 34, 0.4);
         }
 
         /* Responsive Design */
@@ -1514,43 +1536,53 @@
                     title: 'Cavite Mutiny Timeline',
                     maxScore: 8,
                     content: `
-                        <p><strong>Arrange these events in the correct chronological order by selecting them:</strong></p>
-                        <div style="margin: 20px 0; display: grid; gap: 10px;">
-                            <div class="timeline-item" data-order="1" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Fort San Felipe Mutiny begins
+                        <p style="font-size: 16px; color: #51513E; margin-bottom: 24px; font-weight: 500;"><strong>Arrange these events in the correct chronological order by selecting them:</strong></p>
+                        <div style="margin: 20px 0; display: grid; gap: 12px;">
+                            <div class="timeline-item" data-order="1" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; hover-scale: 1.02;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Fort San Felipe Mutiny begins</span>
                             </div>
-                            <div class="timeline-item" data-order="2" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Execution of GomBurZa
+                            <div class="timeline-item" data-order="2" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Execution of GomBurZa</span>
                             </div>
-                            <div class="timeline-item" data-order="3" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Mutiny suppressed
+                            <div class="timeline-item" data-order="3" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Mutiny suppressed</span>
                             </div>
-                            <div class="timeline-item" data-order="4" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Spanish reinforcements arrive
+                            <div class="timeline-item" data-order="4" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Spanish reinforcements arrive</span>
                             </div>
-                            <div class="timeline-item" data-order="5" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Resignation of priests
+                            <div class="timeline-item" data-order="5" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Resignation of priests</span>
                             </div>
-                            <div class="timeline-item" data-order="6" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Outbreak of Filipino nationalism
+                            <div class="timeline-item" data-order="6" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Outbreak of Filipino nationalism</span>
                             </div>
-                            <div class="timeline-item" data-order="7" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Discovery of Katipunan
+                            <div class="timeline-item" data-order="7" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Discovery of Katipunan</span>
                             </div>
-                            <div class="timeline-item" data-order="8" onclick="selectTimelineItem(this)" style="padding: 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; border: 2px solid transparent;">
-                                <input type="checkbox" class="timeline-check"> Suspension of public executions
+                            <div class="timeline-item" data-order="8" onclick="selectTimelineItem(this)" style="padding: 16px 18px; background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-radius: 10px; cursor: pointer; border: 2px solid #D6DCE1; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px;">
+                                <input type="checkbox" class="timeline-check" style="width: 18px; height: 18px; cursor: pointer;"> <span style="color: #51513E; font-weight: 500;">Suspension of public executions</span>
                             </div>
                         </div>
-                        <div id="timeline-feedback" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
+                        <div id="timeline-feedback" style="margin-top: 20px; padding: 16px; border-radius: 8px; display: none; border-left: 4px solid #28a745;"></div>
                     `,
                     check: function() {
-                        let score = 0;
-                        document.querySelectorAll('.timeline-item').forEach((item, index) => {
-                            if (item.querySelector('.timeline-check').checked && item.dataset.order == (index + 1)) {
-                                score++;
+                        // Check if items were selected in correct chronological order
+                        if (timelineSelectionOrder.length < 8) {
+                            return { score: 0, max: 8 };
+                        }
+                        
+                        const selectedOrder = timelineSelectionOrder.map(item => parseInt(item.getAttribute('data-order')));
+                        
+                        // Verify they're in ascending chronological order (1,2,3,4,5,6,7,8)
+                        let isCorrect = true;
+                        for (let i = 0; i < selectedOrder.length; i++) {
+                            if (selectedOrder[i] !== i + 1) {
+                                isCorrect = false;
+                                break;
                             }
-                        });
-                        return { score: score, max: 8 };
+                        }
+                        
+                        return { score: isCorrect ? 8 : 0, max: 8 };
                     }
                 },
                 'matching-figures': {
@@ -1732,23 +1764,374 @@
             }
         };
 
+        // Track selection order globally
+        let timelineSelectionOrder = [];
+
         // Helper function for timeline selection
         function selectTimelineItem(element) {
-            element.querySelector('.timeline-check').checked = !element.querySelector('.timeline-check').checked;
-            if (element.querySelector('.timeline-check').checked) {
-                element.style.borderColor = '#4caf50';
-                element.style.backgroundColor = '#e8f5e9';
+            const checkbox = element.querySelector('.timeline-check');
+            const orderBadge = element.querySelector('.order-badge');
+            
+            if (!checkbox.checked) {
+                // Adding to selection
+                checkbox.checked = true;
+                timelineSelectionOrder.push(element);
+                
+                element.style.borderColor = '#5C3422';
+                element.style.backgroundColor = '#EBE4DC';
+                element.style.boxShadow = '0 6px 20px rgba(92, 52, 34, 0.15)';
+                element.style.transform = 'translateY(-2px)';
+                
+                // Add numbered badge
+                const badge = document.createElement('span');
+                badge.className = 'order-badge';
+                badge.textContent = timelineSelectionOrder.length;
+                badge.style.cssText = `
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: linear-gradient(135deg, #5C3422 0%, #7A5B47 100%);
+                    color: white;
+                    border-radius: 50%;
+                    width: 32px;
+                    height: 32px;
+                    min-width: 32px;
+                    font-weight: 700;
+                    margin-left: 12px;
+                    font-size: 14px;
+                    box-shadow: 0 4px 12px rgba(92, 52, 34, 0.3);
+                    flex-shrink: 0;
+                `;
+                element.appendChild(badge);
             } else {
-                element.style.borderColor = 'transparent';
-                element.style.backgroundColor = '#f0f0f0';
+                // Removing from selection
+                checkbox.checked = false;
+                const index = timelineSelectionOrder.indexOf(element);
+                if (index > -1) {
+                    timelineSelectionOrder.splice(index, 1);
+                }
+                
+                element.style.borderColor = '#D6DCE1';
+                element.style.backgroundColor = 'linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%)';
+                element.style.boxShadow = 'none';
+                element.style.transform = 'translateY(0)';
+                
+                // Remove badge
+                if (orderBadge) {
+                    orderBadge.remove();
+                }
+            }
+            
+            // Update all badges to show correct order
+            timelineSelectionOrder.forEach((item, idx) => {
+                const badge = item.querySelector('.order-badge');
+                if (badge) {
+                    badge.textContent = idx + 1;
+                }
+            });
+        }
+
+        // Submit timeline task
+        function submitTimelineTask() {
+            if (timelineSelectionOrder.length < 8) {
+                const feedback = document.getElementById('timeline-feedback');
+                feedback.style.display = 'block';
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.borderLeft = '4px solid #dc3545';
+                feedback.innerHTML = '<strong style="color: #721c24;">✗ Incomplete</strong><p style="margin: 5px 0 0 0; color: #721c24;">Please select all 8 events before submitting.</p>';
+                return;
+            }
+
+            // Check if the order they CLICKED matches the chronological order (1-8)
+            // The timelineSelectionOrder array is in the order they clicked
+            // We need to verify the actual data-order values are in sequence 1,2,3,4,5,6,7,8
+            const selectedOrder = timelineSelectionOrder.map(item => parseInt(item.getAttribute('data-order')));
+            
+            // Check if they're in ascending chronological order
+            let isCorrect = true;
+            for (let i = 0; i < selectedOrder.length; i++) {
+                if (selectedOrder[i] !== i + 1) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            const feedback = document.getElementById('timeline-feedback');
+            feedback.style.display = 'block';
+            
+            if (isCorrect) {
+                feedback.style.backgroundColor = '#d4edda';
+                feedback.style.borderLeft = '4px solid #28a745';
+                feedback.innerHTML = '<strong style="color: #155724;">✓ Correct!</strong><p style="margin: 5px 0 0 0; color: #155724;">You arranged all events in the correct chronological order. Excellent!</p>';
+            } else {
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.borderLeft = '4px solid #dc3545';
+                feedback.innerHTML = '<strong style="color: #721c24;">✗ Incorrect Order</strong><p style="margin: 5px 0 0 0; color: #721c24;">You selected all 8 events, but not in the correct chronological order. Try again!</p>';
             }
         }
+
+        // Submit matching task
+        function submitMatchingTask() {
+            let correctCount = 0;
+            const matchAnswers = document.querySelectorAll('.match-answer');
+            
+            matchAnswers.forEach((select) => {
+                if (select.value === select.dataset.answer) {
+                    correctCount++;
+                }
+            });
+
+            const feedback = document.getElementById('matching-feedback');
+            feedback.style.display = 'block';
+            
+            if (correctCount === 4) {
+                feedback.style.backgroundColor = '#d4edda';
+                feedback.style.borderLeft = '4px solid #28a745';
+                feedback.innerHTML = '<strong style="color: #155724;">✓ Perfect!</strong><p style="margin: 5px 0 0 0; color: #155724;">You matched all historical figures correctly. Excellent work!</p>';
+            } else if (correctCount >= 2) {
+                feedback.style.backgroundColor = '#fff3cd';
+                feedback.style.borderLeft = '4px solid #ffc107';
+                feedback.innerHTML = `<strong style="color: #856404;">⚠ Partial</strong><p style="margin: 5px 0 0 0; color: #856404;">You got ${correctCount} out of 4 correct. Try again to get them all!</p>`;
+            } else {
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.borderLeft = '4px solid #dc3545';
+                feedback.innerHTML = `<strong style="color: #721c24;">✗ Incorrect</strong><p style="margin: 5px 0 0 0; color: #721c24;">You got ${correctCount} out of 4 correct. Try again!</p>`;
+            }
+        }
+
+        // Submit fill blanks task
+        function submitFillBlanksTask() {
+            let correctCount = 0;
+            const blankInputs = document.querySelectorAll('.blank-input');
+            
+            blankInputs.forEach((input) => {
+                if (input.value.toLowerCase().trim() === input.dataset.answer.toLowerCase()) {
+                    correctCount++;
+                }
+            });
+
+            const totalBlanks = blankInputs.length;
+            const feedback = document.getElementById('fillblank-feedback');
+            feedback.style.display = 'block';
+            
+            if (correctCount === totalBlanks) {
+                feedback.style.backgroundColor = '#d4edda';
+                feedback.style.borderLeft = '4px solid #28a745';
+                feedback.innerHTML = '<strong style="color: #155724;">✓ Perfect!</strong><p style="margin: 5px 0 0 0; color: #155724;">You filled in all the blanks correctly. Great job!</p>';
+            } else if (correctCount >= Math.ceil(totalBlanks / 2)) {
+                feedback.style.backgroundColor = '#fff3cd';
+                feedback.style.borderLeft = '4px solid #ffc107';
+                feedback.innerHTML = `<strong style="color: #856404;">⚠ Partial</strong><p style="margin: 5px 0 0 0; color: #856404;">You got ${correctCount} out of ${totalBlanks} correct. Try again!</p>`;
+            } else {
+                feedback.style.backgroundColor = '#f8d7da';
+                feedback.style.borderLeft = '4px solid #dc3545';
+                feedback.innerHTML = `<strong style="color: #721c24;">✗ Incorrect</strong><p style="margin: 5px 0 0 0; color: #721c24;">You got ${correctCount} out of ${totalBlanks} correct. Try again!</p>`;
+            }
+        }
+
+        // Setup modal event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskModal = document.getElementById('taskModal');
+            const closeTaskModal = document.getElementById('closeTaskModal');
+            const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+            const submitTaskBtn = document.getElementById('submitTaskBtn');
+            const taskContent = document.getElementById('taskContent');
+
+            if (closeTaskModal) {
+                closeTaskModal.addEventListener('click', () => {
+                    taskModal.style.display = 'none';
+                });
+            }
+
+            if (cancelTaskBtn) {
+                cancelTaskBtn.addEventListener('click', () => {
+                    taskModal.style.display = 'none';
+                });
+            }
+
+            if (submitTaskBtn) {
+                submitTaskBtn.addEventListener('click', () => {
+                    // Check which task is active by looking for specific elements
+                    if (taskContent.querySelector('.timeline-item')) {
+                        submitTimelineTask();
+                    } else if (taskContent.querySelector('.match-answer')) {
+                        submitMatchingTask();
+                    } else if (taskContent.querySelector('.blank-input')) {
+                        submitFillBlanksTask();
+                    }
+                });
+                submitTaskBtn.style.display = 'block';
+            }
+        });
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             TaskManager.init();
             if (window.lucide) {
                 lucide.createIcons();
+            }
+        });
+
+        // ==================== PROFILE EDITING SYSTEM ====================
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const editAvatarInput = document.getElementById('editAvatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const editNameInput = document.getElementById('editName');
+        const editBioInput = document.getElementById('editBio');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+        const profileNameDisplay = document.querySelector('.profile-name');
+        const profileEmailDisplay = document.querySelector('.profile-email');
+        const profileAvatar = document.querySelector('.profile-avatar');
+
+        // ==================== LOAD PROFILE FROM localStorage ====================
+        function loadProfileFromStorage() {
+            console.log('🔍 Loading profile from localStorage...');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            const savedAvatar = localStorage.getItem('profileAvatar');
+
+            if (savedName && profileNameDisplay) profileNameDisplay.textContent = savedName;
+            if (savedBio && profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
+            if (savedAvatar && profileAvatar) profileAvatar.src = savedAvatar;
+        }
+
+        // ==================== EDIT PROFILE MODAL MANAGEMENT ====================
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                editProfileModal.style.display = 'flex';
+                editNameInput.value = localStorage.getItem('profileName') || '';
+                editBioInput.value = localStorage.getItem('profileBio') || '';
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                if (savedAvatar) avatarPreview.src = savedAvatar;
+            });
+        }
+
+        if (closeEditModal) {
+            closeEditModal.addEventListener('click', function() {
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', function() {
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        editProfileModal.addEventListener('click', function(e) {
+            if (e.target === editProfileModal) {
+                editProfileModal.style.display = 'none';
+            }
+        });
+
+        // ==================== AVATAR FILE UPLOAD ====================
+        if (editAvatarInput) {
+            editAvatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const base64String = event.target.result;
+                        avatarPreview.src = base64String;
+                        console.log('📝 Avatar preview updated');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // ==================== SAVE PROFILE CHANGES ====================
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', function() {
+                const newName = editNameInput.value || 'User';
+                const newBio = editBioInput.value || 'Bio';
+                const newAvatar = avatarPreview.src;
+
+                localStorage.setItem('profileName', newName);
+                localStorage.setItem('profileBio', newBio);
+                localStorage.setItem('profileAvatar', newAvatar);
+
+                if (profileNameDisplay) profileNameDisplay.textContent = newName;
+                if (profileEmailDisplay) profileEmailDisplay.textContent = newBio;
+                if (profileAvatar) profileAvatar.src = newAvatar;
+
+                console.log('✅ Profile saved:', { name: newName, bio: newBio });
+                editProfileModal.style.display = 'none';
+            });
+        }
+
+        // ==================== MUTATIONOBSERVER: RESTORE PROFILE ON CHANGES ====================
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.target === profileNameDisplay && profileNameDisplay.textContent !== localStorage.getItem('profileName')) {
+                    console.log('🔍 Profile Name changed by Supabase, restoring from localStorage...');
+                    profileNameDisplay.textContent = localStorage.getItem('profileName') || profileNameDisplay.textContent;
+                }
+                if (mutation.target === profileEmailDisplay && profileEmailDisplay.textContent !== localStorage.getItem('profileBio')) {
+                    console.log('🔍 Profile Bio changed by Supabase, restoring from localStorage...');
+                    profileEmailDisplay.textContent = localStorage.getItem('profileBio') || profileEmailDisplay.textContent;
+                }
+                if (mutation.target === profileAvatar && profileAvatar.src !== localStorage.getItem('profileAvatar')) {
+                    console.log('🔍 Profile Avatar changed by Supabase, restoring from localStorage...');
+                    profileAvatar.src = localStorage.getItem('profileAvatar') || profileAvatar.src;
+                }
+            });
+        });
+
+        observer.observe(profileNameDisplay, { attributes: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { attributes: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, childList: true, subtree: true });
+
+        // ==================== PERIODIC RESTORATION: Every 1000ms ====================
+        setInterval(function() {
+            const currentName = profileNameDisplay ? profileNameDisplay.textContent : '';
+            const savedName = localStorage.getItem('profileName');
+            if (currentName !== savedName && savedName) {
+                console.log('🔄 Periodic: Restoring profile name from localStorage');
+                if (profileNameDisplay) profileNameDisplay.textContent = savedName;
+            }
+
+            const currentBio = profileEmailDisplay ? profileEmailDisplay.textContent : '';
+            const savedBio = localStorage.getItem('profileBio');
+            if (currentBio !== savedBio && savedBio) {
+                console.log('🔄 Periodic: Restoring profile bio from localStorage');
+                if (profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
+            }
+
+            const currentAvatar = profileAvatar ? profileAvatar.src : '';
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            if (currentAvatar !== savedAvatar && savedAvatar) {
+                console.log('🔄 Periodic: Restoring profile avatar from localStorage');
+                if (profileAvatar) profileAvatar.src = savedAvatar;
+            }
+        }, 1000);
+
+        // ==================== OVERRIDE: SUPABASE populateUserProfile ====================
+        const checkForApp = setInterval(function() {
+            if (window.app && window.app.populateUserProfile) {
+                clearInterval(checkForApp);
+                const originalPopulate = window.app.populateUserProfile.bind(window.app);
+                window.app.populateUserProfile = function() {
+                    console.log('🔴 populateUserProfile called by Supabase');
+                    originalPopulate();
+                    setTimeout(function() {
+                        loadProfileFromStorage();
+                        console.log('🟢 Profile restored from localStorage after Supabase call');
+                    }, 500);
+                };
+            }
+        }, 100);
+
+        // ==================== STORAGE EVENT LISTENER: Cross-tab Synchronization ====================
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'profileName' || e.key === 'profileBio' || e.key === 'profileAvatar') {
+                console.log('💾 Storage changed in another tab, reloading profile...');
+                loadProfileFromStorage();
             }
         });
     </script>
