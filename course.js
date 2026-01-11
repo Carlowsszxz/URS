@@ -911,6 +911,12 @@ class CourseInterface {
             const authorName = this.currentUser.user_metadata?.full_name || 
                               this.currentUser.email.split('@')[0];
 
+            // Get author avatar URL (from Supabase or localStorage)
+            let authorAvatarUrl = localStorage.getItem('profileAvatarUrl') || localStorage.getItem('profileAvatar');
+            if (!authorAvatarUrl) {
+                authorAvatarUrl = `https://i.pravatar.cc/40?u=${this.currentUser.id}`;
+            }
+
             // Upload images and get URLs
             let imageUrls = [];
             if (this.selectedImages.length > 0) {
@@ -927,6 +933,7 @@ class CourseInterface {
                         author_id: this.currentUser.id,
                         author_name: authorName,
                         author_email: this.currentUser.email,
+                        author_avatar_url: authorAvatarUrl,
                         likes_count: 0,
                         comments_count: 0,
                         shares_count: 0,
@@ -1196,19 +1203,11 @@ class CourseInterface {
             // Regular post
             const authorName = postData.author_name || 'Unknown User';
             const authorEmail = postData.author_email || 'user@example.com';
-            let authorAvatar = `https://i.pravatar.cc/40?u=${postData.author_id}`;
+            // Use author_avatar_url from database if available, otherwise fallback to default
+            let authorAvatar = postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
             const authorHandle = authorEmail.split('@')[0];
             const postTime = this.formatTimeAgo(postData.created_at);
             const isAuthor = postData.author_id === this.currentUser.id;
-            
-            // Check if this is current user and use localStorage avatar if available
-            if (isAuthor) {
-                const savedAvatar = localStorage.getItem('profileAvatar');
-                if (savedAvatar) {
-                    console.warn('🎯 Found saved avatar for current user post!');
-                    authorAvatar = savedAvatar;
-                }
-            }
 
             postCard.innerHTML = `
                 <div class="post-header">
@@ -1309,7 +1308,8 @@ class CourseInterface {
     createOriginalPostContent(postData, isLiked = false) {
         const authorName = postData.author_name || 'Unknown User';
         const authorEmail = postData.author_email || 'user@example.com';
-        const authorAvatar = `https://i.pravatar.cc/40?u=${postData.author_id}`;
+        // Use author_avatar_url from database if available, otherwise fallback to default
+        const authorAvatar = postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
         const authorHandle = authorEmail.split('@')[0];
         const postTime = this.formatTimeAgo(postData.created_at);
         const isAuthor = postData.author_id === this.currentUser.id;

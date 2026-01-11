@@ -520,7 +520,7 @@
         cancelEditBtn.addEventListener('click', closeModal);
 
         // Save profile changes
-        saveProfileBtn.addEventListener('click', () => {
+        saveProfileBtn.addEventListener('click', async () => {
             const newName = editNameInput.value.trim();
             const newBio = editBioInput.value.trim();
 
@@ -531,16 +531,59 @@
                 profileEmailDisplay.textContent = newBio;
                 createPostName.textContent = newName;
                 
-                // Save profile data
+                // Save profile data to localStorage
                 localStorage.setItem('profileName', newName);
                 localStorage.setItem('profileBio', newBio);
 
                 // Save avatar if changed
                 if (selectedAvatarImage) {
-                    profileAvatar.src = selectedAvatarImage;
-                    createPostAvatar.src = selectedAvatarImage;
-                    localStorage.setItem('profileAvatar', selectedAvatarImage);
-                    console.log('Avatar saved');
+                    try {
+                        // Convert base64 to blob
+                        const response = await fetch(selectedAvatarImage);
+                        const blob = await response.blob();
+                        
+                        // Get Supabase client
+                        const supabaseClient = await getSupabaseClient();
+                        
+                        // Get current user email
+                        const currentEmail = profileEmailDisplay.textContent;
+                        const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
+                        
+                        // Upload to Supabase storage
+                        const { data, error } = await supabaseClient.storage
+                            .from('user-avatars')
+                            .upload(fileName, blob, { upsert: true });
+                        
+                        if (error) {
+                            console.error('Upload error:', error);
+                            alert('Error uploading avatar. It will be saved locally.');
+                            profileAvatar.src = selectedAvatarImage;
+                            createPostAvatar.src = selectedAvatarImage;
+                            localStorage.setItem('profileAvatar', selectedAvatarImage);
+                        } else {
+                            // Get public URL
+                            const { data: publicData } = supabaseClient.storage
+                                .from('user-avatars')
+                                .getPublicUrl(fileName);
+                            
+                            const avatarUrl = publicData.publicUrl;
+                            
+                            // Save to localStorage for quick access
+                            localStorage.setItem('profileAvatar', avatarUrl);
+                            localStorage.setItem('profileAvatarUrl', avatarUrl);
+                            
+                            profileAvatar.src = avatarUrl;
+                            createPostAvatar.src = avatarUrl;
+                            
+                            console.log('Avatar uploaded successfully:', avatarUrl);
+                        }
+                    } catch (err) {
+                        console.error('Error uploading avatar:', err);
+                        // Fallback to localStorage
+                        profileAvatar.src = selectedAvatarImage;
+                        createPostAvatar.src = selectedAvatarImage;
+                        localStorage.setItem('profileAvatar', selectedAvatarImage);
+                    }
                 }
 
                 console.log('Profile saved to localStorage');
