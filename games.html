@@ -367,12 +367,11 @@
                     <button class="modal-close" id="closeEditModal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="editAvatar">Profile Picture</label>
-                        <div style="display: flex; gap: 16px; align-items: center;">
-                            <img id="avatarPreview" src="https://via.placeholder.com/60" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
-                            <input type="file" id="editAvatar" accept="image/*" />
-                        </div>
+                    <div class="form-group" style="background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            💡 <strong>Profile pictures can only be changed on the Feed page.</strong> 
+                            <a href="course.html" style="color: #5C3422; text-decoration: underline;">Go to Feed</a>
+                        </p>
                     </div>
                     <div class="form-group">
                         <label for="editName">Full Name</label>
@@ -514,19 +513,7 @@
         // ==================== SAVE PROFILE CHANGES ====================
         if (saveProfileBtn) {
             saveProfileBtn.addEventListener('click', function() {
-                const newName = editNameInput.value || 'User';
-                const newBio = editBioInput.value || 'Bio';
-                const newAvatar = avatarPreview.src;
-
-                localStorage.setItem('profileName', newName);
-                localStorage.setItem('profileBio', newBio);
-                localStorage.setItem('profileAvatar', newAvatar);
-
-                if (profileNameDisplay) profileNameDisplay.textContent = newName;
-                if (profileEmailDisplay) profileEmailDisplay.textContent = newBio;
-                if (profileAvatar) profileAvatar.src = newAvatar;
-
-                console.log('✅ Profile saved:', { name: newName, bio: newBio });
+                alert('To change your profile, please navigate to the Feed page (course.html). Click on your profile picture in the sidebar to edit your profile there.');
                 editProfileModal.style.display = 'none';
             });
         }

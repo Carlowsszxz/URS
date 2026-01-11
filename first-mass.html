@@ -73,7 +73,7 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                           <a href="first-mass.html" class="dropdown-item active">First Catholic Mass</a>
+                           <a href="first-mass.html" class="dropdown-item active">First Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
 
                         <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
@@ -113,7 +113,7 @@
             <section class="discussion-section">
                 <!-- Topic Header -->
                 <div class="topic-header">
-                    <h2>First Catholic Mass (1521)</h2>
+                    <h2>First Mass (1521)</h2>
                     <p class="topic-subtitle">Where in the Philippines Was the First Mass Celebrated?</p>
                 </div>
 
@@ -687,12 +687,11 @@
                 <button class="modal-close" id="closeEditModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="editAvatar">Profile Picture</label>
-                    <div style="display: flex; gap: 16px; align-items: center;">
-                        <img id="avatarPreview" src="https://via.placeholder.com/60" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
-                        <input type="file" id="editAvatar" accept="image/*" />
-                    </div>
+                <div class="form-group" style="background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                    <p style="margin: 0; color: #666; font-size: 14px;">
+                        💡 <strong>Profile pictures can only be changed on the Feed page.</strong> 
+                        <a href="course.html" style="color: #5C3422; text-decoration: underline;">Go to Feed</a>
+                    </p>
                 </div>
                 <div class="form-group">
                     <label for="editName">Full Name</label>
@@ -760,27 +759,8 @@
 
         // Save profile changes
         saveProfileBtn.addEventListener('click', () => {
-            const newName = editNameInput.value.trim();
-            const newBio = editBioInput.value.trim();
-
-            if (newName && newBio) {
-                profileNameDisplay.textContent = newName;
-                profileEmailDisplay.textContent = newBio;
-                
-                // Save profile data
-                localStorage.setItem('profileName', newName);
-                localStorage.setItem('profileBio', newBio);
-
-                // Save avatar if changed
-                if (selectedAvatarImage) {
-                    profileAvatar.src = selectedAvatarImage;
-                    localStorage.setItem('profileAvatar', selectedAvatarImage);
-                }
-
-                closeModal();
-            } else {
-                alert('Please fill in all fields');
-            }
+            alert('To change your profile, please navigate to the Feed page (course.html). Click on your profile picture in the sidebar to edit your profile there.');
+            closeModal();
         });
 
         // Load profile from localStorage on page load
