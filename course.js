@@ -1225,6 +1225,27 @@ class CourseInterface {
             const authorHandle = authorEmail.split('@')[0];
             const postTime = this.formatTimeAgo(postData.created_at);
             const isAuthor = postData.author_id === this.currentUser.id;
+            
+            // Try to fetch the current avatar from user_profiles for dynamic updates
+            (async () => {
+                try {
+                    const { data: profileData } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('avatar_url')
+                        .eq('user_email', authorEmail)
+                        .single();
+                    
+                    if (profileData?.avatar_url) {
+                        const avatarImg = postCard.querySelector('.avatar');
+                        if (avatarImg) {
+                            avatarImg.src = profileData.avatar_url;
+                            console.log('✅ Updated post avatar from user_profiles:', profileData.avatar_url);
+                        }
+                    }
+                } catch (err) {
+                    // Silently fail - use the stored avatar
+                }
+            })();
 
             postCard.innerHTML = `
                 <div class="post-header">
