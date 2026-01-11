@@ -51,7 +51,7 @@
         <!-- Left Sidebar -->
         <aside class="left-sidebar">
             <div class="user-profile">
-                <img src="https://via.placeholder.com/48" alt="User Avatar" class="profile-avatar" id="profileAvatar" />
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User Avatar" class="profile-avatar" id="profileAvatar" />
                 <div class="profile-info">
                     <p class="profile-name" id="profileName">Loading...</p>
                     <p class="profile-email" id="profileEmail">Loading...</p>
@@ -240,33 +240,43 @@
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
+            <!-- Key Facts Section -->
             <div class="widget">
                 <div class="widget-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                        <path d="M2 17l10 5 10-5"></path>
-                        <path d="M2 12l10 5 10-5"></path>
-                    </svg>
+                    <i data-lucide="lightbulb" style="width: 20px; height: 20px; color: #F4A460;"></i>
                     <h3>Key Facts</h3>
                 </div>
-                <div class="widget-content">
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
-                            <strong style="color: #5C3422;">Date:</strong> March 31, 1521
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
-                            <strong style="color: #5C3422;">Location:</strong> Limasawa Island
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
-                            <strong style="color: #5C3422;">Priest:</strong> Father Pedro Valderama
-                        </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #E2D5C2;">
-                            <strong style="color: #5C3422;">Attendees:</strong> Chief Rajah Humabon & followers
-                        </li>
-                        <li style="padding: 8px 0;">
-                            <strong style="color: #5C3422;">Significance:</strong> First Christian mass in the Philippines
-                        </li>
-                    </ul>
+
+                <div class="widget-content ideas-list">
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="calendar" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Date</strong>
+                                <p>March 31, 1521</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Location</strong>
+                                <p>Limasawa Island</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="users" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Key Figures</strong>
+                                <p>Father Pedro Valderama and Chief Rajah Humabon</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -687,10 +697,11 @@
                 <button class="modal-close" id="closeEditModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group" style="background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
-                    <p style="margin: 0; color: #666; font-size: 14px;">
-                        💡 <strong>Profile pictures can only be changed on the Feed page.</strong> 
-                        <a href="course.html" style="color: #5C3422; text-decoration: underline;">Go to Feed</a>
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
+                    <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                        💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
                     </p>
                 </div>
                 <div class="form-group">
@@ -716,7 +727,6 @@
         const closeEditModal = document.getElementById('closeEditModal');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const editAvatarInput = document.getElementById('editAvatar');
         const avatarPreview = document.getElementById('avatarPreview');
         const editNameInput = document.getElementById('editName');
         const editBioInput = document.getElementById('editBio');
@@ -726,26 +736,12 @@
 
         let selectedAvatarImage = null;
 
-        // Handle avatar image selection
-        editAvatarInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    selectedAvatarImage = event.target.result;
-                    avatarPreview.src = selectedAvatarImage;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
         // Open edit profile modal
         editProfileBtn.addEventListener('click', () => {
             editNameInput.value = profileNameDisplay.textContent;
             editBioInput.value = profileEmailDisplay.textContent;
             avatarPreview.src = profileAvatar.src;
             selectedAvatarImage = null;
-            editAvatarInput.value = '';
             editProfileModal.classList.add('active');
         });
 
@@ -889,6 +885,22 @@
             console.log('💾 localStorage changed in another tab, reloading');
             loadProfileFromStorage();
         });
+
+        // ==================== LOGOUT BUTTON ====================
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const supabaseClient = await getSupabaseClient();
+                    await supabaseClient.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -541,6 +541,37 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Edit Profile Modal -->
+            <div class="modal" id="editProfileModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Profile</h2>
+                        <button class="modal-close" id="closeEditModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
+                            <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                                💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label for="editName">Full Name</label>
+                            <input type="text" id="editName" placeholder="Your name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="editBio">Bio</label>
+                            <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                        <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+                    </div>
+                </div>
+            </div>
         </main>
 
         <!-- Image Modal -->
@@ -965,6 +996,157 @@
                 lucide.createIcons();
             }
         }, 100);
+
+        // ==================== PROFILE SECTION ====================
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const editNameInput = document.getElementById('editName');
+        const editBioInput = document.getElementById('editBio');
+        const profileNameDisplay = document.querySelector('.profile-name');
+        const profileEmailDisplay = document.querySelector('.profile-email');
+        const profileAvatar = document.querySelector('.profile-avatar');
+
+        // ==================== LOAD PROFILE FROM localStorage ====================
+        const loadProfileFromStorage = () => {
+            console.log('🔄 loadProfileFromStorage called');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const currentUserEmail = profileEmailDisplay.textContent || '';
+
+            localStorage.setItem('currentUserId', currentUserEmail);
+            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
+
+            if (savedName) {
+                console.log('✅ Setting name to:', savedName);
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio) {
+                console.log('✅ Setting bio to:', savedBio);
+                profileEmailDisplay.textContent = savedBio;
+            }
+            if (savedAvatar) {
+                console.log('✅ Setting avatar');
+                profileAvatar.src = savedAvatar;
+            }
+        };
+
+        // ==================== EDIT PROFILE MODAL MANAGEMENT ====================
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                editProfileModal.classList.add('active');
+                editNameInput.value = localStorage.getItem('profileName') || '';
+                editBioInput.value = localStorage.getItem('profileBio') || '';
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                if (savedAvatar) avatarPreview.src = savedAvatar;
+            });
+        }
+
+        if (closeEditModal) {
+            closeEditModal.addEventListener('click', function() {
+                editProfileModal.classList.remove('active');
+            });
+        }
+
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', function() {
+                editProfileModal.classList.remove('active');
+            });
+        }
+
+        editProfileModal.addEventListener('click', function(e) {
+            if (e.target === editProfileModal) {
+                editProfileModal.classList.remove('active');
+            }
+        });
+
+        // ==================== SAVE PROFILE CHANGES ====================
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', function() {
+                alert('To change your profile, please navigate to the Feed page (course.html). Click on your profile picture in the sidebar to edit your profile there.');
+                editProfileModal.classList.remove('active');
+            });
+        }
+
+        loadProfileFromStorage();
+        window.addEventListener('load', loadProfileFromStorage);
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const targetId = target.id;
+                    const attrName = mutation.attributeName;
+                    
+                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
+                    console.log('   Current src:', target.src);
+                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
+                    
+                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                        console.log('⚠️ Profile avatar changed, restoring from localStorage');
+                        profileAvatar.src = savedAvatar;
+                    }
+                } else if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                    const savedName = localStorage.getItem('profileName');
+                    const savedBio = localStorage.getItem('profileBio');
+                    
+                    if (savedName && profileNameDisplay.textContent !== savedName) {
+                        console.log('📝 Restoring name from localStorage');
+                        profileNameDisplay.textContent = savedName;
+                    }
+                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                        console.log('📝 Restoring bio from localStorage');
+                        profileEmailDisplay.textContent = savedBio;
+                    }
+                }
+            });
+        });
+
+        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
+
+        setInterval(() => {
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            
+            if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                console.log('🔄 Periodic check: Restoring avatar');
+                profileAvatar.src = savedAvatar;
+            }
+            if (savedName && profileNameDisplay.textContent !== savedName) {
+                console.log('🔄 Periodic check: Restoring name');
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                console.log('🔄 Periodic check: Restoring bio');
+                profileEmailDisplay.textContent = savedBio;
+            }
+        }, 1000);
+
+        // ==================== LOGOUT BUTTON ====================
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const supabaseClient = await getSupabaseClient();
+                    await supabaseClient.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>

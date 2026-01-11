@@ -684,9 +684,10 @@ html, body {
 .idea-info p {
     font-size: 12px;
     color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 0;
 }
 
 .join-section {

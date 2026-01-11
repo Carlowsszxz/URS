@@ -264,7 +264,7 @@
         <aside class="left-sidebar" id="leftSidebar">
             <!-- User Profile Section -->
             <div class="user-profile">
-                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User avatar" class="profile-avatar" id="profileAvatar" />
                 <div class="profile-info">
                     <h4 class="profile-name" id="profileName">Loading...</h4>
                     <p class="profile-email" id="profileEmail">Loading...</p>
@@ -286,7 +286,7 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                           <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                           <a href="first-mass.html" class="dropdown-item">First Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
 
                         <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
@@ -367,10 +367,11 @@
                     <button class="modal-close" id="closeEditModal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group" style="background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
-                        <p style="margin: 0; color: #666; font-size: 14px;">
-                            💡 <strong>Profile pictures can only be changed on the Feed page.</strong> 
-                            <a href="course.html" style="color: #5C3422; text-decoration: underline;">Go to Feed</a>
+                    <div class="form-group">
+                        <label>Profile Picture</label>
+                        <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
+                        <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                            💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
                         </p>
                     </div>
                     <div class="form-group">
@@ -397,30 +398,31 @@
             <!-- Game Tips Section -->
             <div class="widget">
                 <div class="widget-header">
-                    <span class="notification-dot">â—</span>
+                    <i data-lucide="lightbulb" style="width: 20px; height: 20px; color: #F4A460;"></i>
                     <h3>Game Tips</h3>
                 </div>
 
                 <div class="widget-content ideas-list">
                     <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>Guess that Hero!</strong>
-                            <p>Identify historical figures by their clues and descriptions...</p>
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="users" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Guess that Hero!</strong>
+                                <p>Identify historical figures by their clues and descriptions</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>Which is Odd?</strong>
-                            <p>Find the item that doesn't belong in each set...</p>
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="image" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>4 Pics 1 Word</strong>
+                                <p>Guess the word from four related pictures</p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="idea-card">
-                        <div class="idea-info">
-                            <strong>Katipunan Quest</strong>
-                            <p>Embark on a revolutionary journey through history...</p>
-                        </div>
+                </div>
                     </div>
                 </div>
             </div>
@@ -453,16 +455,29 @@
         const profileAvatar = document.querySelector('.profile-avatar');
 
         // ==================== LOAD PROFILE FROM localStorage ====================
-        function loadProfileFromStorage() {
-            console.log('🔍 Loading profile from localStorage...');
+        const loadProfileFromStorage = () => {
+            console.log('🔄 loadProfileFromStorage called');
             const savedName = localStorage.getItem('profileName');
             const savedBio = localStorage.getItem('profileBio');
             const savedAvatar = localStorage.getItem('profileAvatar');
+            const currentUserEmail = profileEmailDisplay.textContent || '';
 
-            if (savedName && profileNameDisplay) profileNameDisplay.textContent = savedName;
-            if (savedBio && profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
-            if (savedAvatar && profileAvatar) profileAvatar.src = savedAvatar;
-        }
+            localStorage.setItem('currentUserId', currentUserEmail);
+            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
+
+            if (savedName) {
+                console.log('✅ Setting name to:', savedName);
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio) {
+                console.log('✅ Setting bio to:', savedBio);
+                profileEmailDisplay.textContent = savedBio;
+            }
+            if (savedAvatar) {
+                console.log('✅ Setting avatar');
+                profileAvatar.src = savedAvatar;
+            }
+        };
 
         // ==================== EDIT PROFILE MODAL MANAGEMENT ====================
         if (editProfileBtn) {
@@ -518,36 +533,80 @@
             });
         }
 
-        // ==================== OPTIMIZED PROFILE RESTORATION ====================
-        let profileRestoreTimeout = null;
-        
-        // Load profile on page load
         loadProfileFromStorage();
-        
-        // Restore on storage changes from other tabs
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'profileName' || e.key === 'profileBio' || e.key === 'profileAvatar') {
-                console.log('💾 Storage changed, reloading profile...');
-                loadProfileFromStorage();
-            }
+        window.addEventListener('load', loadProfileFromStorage);
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                const savedAvatar = localStorage.getItem('profileAvatar');
+                
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    const targetId = target.id;
+                    const attrName = mutation.attributeName;
+                    
+                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
+                    console.log('   Current src:', target.src);
+                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
+                    
+                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                        console.log('⚠️ Profile avatar changed, restoring from localStorage');
+                        profileAvatar.src = savedAvatar;
+                    }
+                } else if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                    const savedName = localStorage.getItem('profileName');
+                    const savedBio = localStorage.getItem('profileBio');
+                    
+                    if (savedName && profileNameDisplay.textContent !== savedName) {
+                        console.log('📝 Restoring name from localStorage');
+                        profileNameDisplay.textContent = savedName;
+                    }
+                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                        console.log('📝 Restoring bio from localStorage');
+                        profileEmailDisplay.textContent = savedBio;
+                    }
+                }
+            });
         });
 
-        // ==================== OVERRIDE: SUPABASE populateUserProfile ====================
-        // Only override if app loads (one-time setup)
-        const checkForApp = setInterval(function() {
-            if (window.app && window.app.populateUserProfile) {
-                clearInterval(checkForApp);
-                const originalPopulate = window.app.populateUserProfile.bind(window.app);
-                window.app.populateUserProfile = function() {
-                    console.log('populateUserProfile called');
-                    originalPopulate();
-                    setTimeout(loadProfileFromStorage, 500);
-                };
-            }
-        }, 100);
+        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
+        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
 
-        // Stop checking after 10 seconds to avoid memory leaks
-        setTimeout(() => clearInterval(checkForApp), 10000);
+        setInterval(() => {
+            const savedAvatar = localStorage.getItem('profileAvatar');
+            const savedName = localStorage.getItem('profileName');
+            const savedBio = localStorage.getItem('profileBio');
+            
+            if (savedAvatar && profileAvatar.src !== savedAvatar) {
+                console.log('🔄 Periodic check: Restoring avatar');
+                profileAvatar.src = savedAvatar;
+            }
+            if (savedName && profileNameDisplay.textContent !== savedName) {
+                console.log('🔄 Periodic check: Restoring name');
+                profileNameDisplay.textContent = savedName;
+            }
+            if (savedBio && profileEmailDisplay.textContent !== savedBio) {
+                console.log('🔄 Periodic check: Restoring bio');
+                profileEmailDisplay.textContent = savedBio;
+            }
+        }, 1000);
+
+        // ==================== LOGOUT BUTTON ====================
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const supabaseClient = await getSupabaseClient();
+                    await supabaseClient.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>

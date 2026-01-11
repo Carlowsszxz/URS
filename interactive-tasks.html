@@ -671,7 +671,7 @@
                     </div>
                     <div class="dropdown-menu">
                         <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                        <a href="first-mass.html" class="dropdown-item">First Catholic Mass</a>
+                        <a href="first-mass.html" class="dropdown-item">Firsts Mass</a>
                         <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
                         <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
                     </div>
@@ -820,10 +820,11 @@
                     <button class="modal-close" id="closeEditModal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group" style="background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
-                        <p style="margin: 0; color: #666; font-size: 14px;">
-                            💡 <strong>Profile pictures can only be changed on the Feed page.</strong> 
-                            <a href="course.html" style="color: #5C3422; text-decoration: underline;">Go to Feed</a>
+                    <div class="form-group">
+                        <label>Profile Picture</label>
+                        <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
+                        <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
+                            💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
                         </p>
                     </div>
                     <div class="form-group">
@@ -844,48 +845,42 @@
 
         <!-- Right Sidebar -->
         <aside class="right-sidebar">
-            <div class="sidebar-section">
-                <h4 class="sidebar-title">Quick Reference</h4>
-                <div style="background: linear-gradient(135deg, #F9F7F4 0%, #FFFFFF 100%); border-left: 4px solid #5C3422; padding: 14px; border-radius: 6px; font-size: 13px; color: #51513E; line-height: 1.6;">
-                    <p style="margin: 0 0 10px 0;"><strong>Date:</strong> January 20, 1872</p>
-                    <p style="margin: 0 0 10px 0;"><strong>Location:</strong> Fort San Felipe, Cavite</p>
-                    <p style="margin: 0 0 10px 0;"><strong>Cause:</strong> Filipino soldiers' discrimination & low pay</p>
-                    <p style="margin: 0;"><strong>Result:</strong> 3 priests executed (GomBurZa)</p>
+            <!-- Task Tips Section -->
+            <div class="widget">
+                <div class="widget-header">
+                    <i data-lucide="lightbulb" style="width: 20px; height: 20px; color: #F4A460;"></i>
+                    <h3>Task Tips</h3>
                 </div>
-            </div>
 
-            <div class="sidebar-section">
-                <h4 class="sidebar-title">Task Tips</h4>
-                <div style="display: grid; gap: 12px;">
-                    <div style="background: linear-gradient(135deg, #FEF5E7 0%, #F9F0E3 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Timeline</p>
-                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Click events in chronological order (earliest first)</p>
+                <div class="widget-content ideas-list">
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="clock" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Timeline</strong>
+                                <p>Click events in chronological order, earliest first</p>
+                            </div>
+                        </div>
                     </div>
-                    <div style="background: linear-gradient(135deg, #E8F4F0 0%, #E0EEEA 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Matching</p>
-                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Match each figure to their correct role</p>
-                    </div>
-                    <div style="background: linear-gradient(135deg, #FCE8E4 0%, #F9E4DF 100%); padding: 12px; border-radius: 6px; border-left: 3px solid #51513E;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 12px;">Fill Blanks</p>
-                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #7A5B47;">Complete sentences using provided historical context</p>
-                    </div>
-                </div>
-            </div>
 
-            <div class="sidebar-section">
-                <h4 class="sidebar-title">Key Figures</h4>
-                <div style="display: grid; gap: 10px;">
-                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">Mariano Gómez</p>
-                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="link" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Matching</strong>
+                                <p>Match each figure to their correct role</p>
+                            </div>
+                        </div>
                     </div>
-                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">José Burgos</p>
-                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
-                    </div>
-                    <div style="padding: 10px; background: #F9F7F4; border-radius: 6px;">
-                        <p style="margin: 0; font-weight: 600; color: #51513E; font-size: 13px;">Jacinto Zamora</p>
-                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A5B47;">Filipino Priest (Executed)</p>
+
+                    <div class="idea-card">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
+                            <i data-lucide="edit-3" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <strong>Fill Blanks</strong>
+                                <p>Complete sentences using historical context</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2121,6 +2116,22 @@
                 loadProfileFromStorage();
             }
         });
+
+        // ==================== LOGOUT BUTTON ====================
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const supabaseClient = await getSupabaseClient();
+                    await supabaseClient.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            });
+        }
     </script>
 </body>
 </html>
