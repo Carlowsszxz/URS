@@ -405,6 +405,11 @@
                     <i data-lucide="play-circle" class="nav-icon-svg"></i>
                     <span>Videos</span>
                 </a>
+
+                <a href="reference.html" class="nav-item" data-section="reference">
+                    <i data-lucide="book" class="nav-icon-svg"></i>
+                    <span>Reference</span>
+                </a>
             </nav>
 
         </aside>
@@ -650,6 +655,16 @@
         const createPostAvatar = document.getElementById('createPostAvatar');
         const createPostName = document.getElementById('createPostName');
 
+        // Helper function to get user-specific localStorage values
+        const getUserLocalStorage = async (key) => {
+            const session = await getCurrentSession();
+            if (session?.session?.user) {
+                const userId = session.session.user.id;
+                return localStorage.getItem(`${key}_${userId}`);
+            }
+            return null;
+        };
+
         let selectedAvatarImage = null;
 
         // Handle avatar image selection
@@ -673,33 +688,49 @@
                 // Get current session
                 const session = await getCurrentSession();
                 if (!session) {
-                    editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
-                    editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+                    editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
+                    editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
                 } else {
                     // Fetch from database
                     const supabaseClient = await getSupabaseClient();
+                    console.log('🔍 Querying user_profiles for user ID:', session.user.id);
                     const { data: profileData, error } = await supabaseClient
                         .from('user_profiles')
-                        .select('full_name, bio')
-                        .eq('user_email', session.user.email)
+                        .select('full_name, bio, avatar_url')
+                        .eq('id', session.user.id)
                         .single();
+                    
+                    console.log('📊 Query result:', { data: profileData, error });
                     
                     if (!error && profileData) {
                         console.log('📦 Loaded profile from database:', profileData);
                         editNameInput.value = profileData.full_name || '';
                         editBioInput.value = profileData.bio || '';
+                        console.log('✅ Set editNameInput to:', profileData.full_name);
+                        // Update avatar preview with database avatar
+                        if (profileData.avatar_url) {
+                            avatarPreview.src = profileData.avatar_url;
+                            console.log('✅ Set avatar preview to:', profileData.avatar_url);
+                        }
                     } else {
-                        console.log('Could not load from database, using localStorage');
-                        editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
-                        editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+                        console.log('❌ Could not load from database, using localStorage. Error:', error);
+                        editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
+                        editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
+                        console.log('📱 Fallback values - Name:', editNameInput.value, 'Bio:', editBioInput.value);
+                        // Try to get avatar from localStorage
+                        const savedAvatar = await getUserLocalStorage('profileAvatar');
+                        if (savedAvatar) {
+                            avatarPreview.src = savedAvatar;
+                            console.log('📱 Fallback avatar from localStorage:', savedAvatar);
+                        }
                     }
                 }
             } catch (err) {
                 console.error('Error loading profile:', err);
-                editNameInput.value = localStorage.getItem('profileName') || profileNameDisplay.textContent || '';
-                editBioInput.value = localStorage.getItem('profileBio') || profileEmailDisplay.textContent || '';
+                editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
+                editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
             }
-            
+
             avatarPreview.src = profileAvatar.src;
             selectedAvatarImage = null;
             editAvatarInput.value = '';
@@ -742,11 +773,14 @@
                     profileEmailDisplay.textContent = newBio;
                     createPostName.textContent = newName;
                     
-                    // Save profile data to localStorage
-                    localStorage.setItem('profileName', newName);
-                    localStorage.setItem('profileBio', newBio);
+                    // Save profile data to user-specific localStorage
+                    if (session?.session?.user) {
+                        const userId = session.session.user.id;
+                        localStorage.setItem(`profileName_${userId}`, newName);
+                        localStorage.setItem(`profileBio_${userId}`, newBio);
+                    }
 
-                    let avatarUrl = localStorage.getItem('profileAvatarUrl');
+                    let avatarUrl = await getUserLocalStorage('profileAvatar');
 
                     // Save avatar if changed
                     if (selectedAvatarImage) {
@@ -776,7 +810,11 @@
                                 alert('Error uploading avatar: ' + error.message + '. Make sure the "user-avatars" bucket exists in Supabase Storage.');
                                 profileAvatar.src = selectedAvatarImage;
                                 createPostAvatar.src = selectedAvatarImage;
-                                localStorage.setItem('profileAvatar', selectedAvatarImage);
+                                const session = await getCurrentSession();
+                                if (session?.session?.user) {
+                                    const userId = session.session.user.id;
+                                    localStorage.setItem(`profileAvatar_${userId}`, selectedAvatarImage);
+                                }
                             } else {
                                 console.log('✅ Avatar uploaded successfully');
                                 // Get public URL
@@ -787,9 +825,12 @@
                                 avatarUrl = publicData.publicUrl;
                                 console.log('🔗 Public URL:', avatarUrl);
                                 
-                                // Save to localStorage for quick access
-                                localStorage.setItem('profileAvatar', avatarUrl);
-                                localStorage.setItem('profileAvatarUrl', avatarUrl);
+                                // Save to user-specific localStorage for quick access
+                                const session = await getCurrentSession();
+                                if (session?.session?.user) {
+                                    const userId = session.session.user.id;
+                                    localStorage.setItem(`profileAvatar_${userId}`, avatarUrl);
+                                }
                                 
                                 profileAvatar.src = avatarUrl;
                                 createPostAvatar.src = avatarUrl;
@@ -803,17 +844,28 @@
                             // Fallback to localStorage
                             profileAvatar.src = selectedAvatarImage;
                             createPostAvatar.src = selectedAvatarImage;
-                            localStorage.setItem('profileAvatar', selectedAvatarImage);
+                            const session = await getCurrentSession();
+                            if (session?.session?.user) {
+                                const userId = session.session.user.id;
+                                localStorage.setItem(`profileAvatar_${userId}`, selectedAvatarImage);
+                            }
                         }
                     }
 
-                    // Save profile to Supabase user_profiles table
+                    // Save profile to Supabase users table
                     try {
                         const supabaseClient = await getSupabaseClient();
                         const currentEmail = session.user.email;
                         const userId = session.user.id;
                         
                         console.log('💾 Saving profile to Supabase database...');
+                        console.log('📝 Save data:', {
+                            id: userId,
+                            user_email: currentEmail,
+                            full_name: newName,
+                            bio: newBio,
+                            avatar_url: avatarUrl || (await getUserLocalStorage('profileAvatar'))
+                        });
                         
                         const { data, error } = await supabaseClient
                             .from('user_profiles')
@@ -822,8 +874,10 @@
                                 user_email: currentEmail,
                                 full_name: newName,
                                 bio: newBio,
-                                avatar_url: avatarUrl || localStorage.getItem('profileAvatarUrl')
+                                avatar_url: avatarUrl || (await getUserLocalStorage('profileAvatar'))
                             });
+                        
+                        console.log('💾 Save result:', { data, error });
                         
                         if (error) {
                             console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
@@ -852,114 +906,30 @@
         });
 
         // Load profile from Supabase database
-        const loadProfileFromDatabase = async () => {
-            try {
-                console.log('🔄 loadProfileFromDatabase called');
-                const supabaseClient = await getSupabaseClient();
-                const session = await getCurrentSession();
-                
-                if (!session) {
-                    console.log('⚠️ No session, loading from localStorage');
-                    loadProfileFromStorage();
-                    return;
-                }
-                
-                const currentEmail = session.user.email;
-                const userId = session.user.id;
-                
-                console.log('📚 Fetching profile from database for user:', userId);
-                
-                const { data, error } = await supabaseClient
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', userId);
-                
-                if (error) {
-                    console.warn('⚠️ Could not fetch from database:', error.message);
-                    loadProfileFromStorage();
-                    return;
-                }
-                
-                if (data && data.length > 0) {
-                    const profile = data[0];
-                    console.log('📦 Loaded from database - Name:', profile.full_name, 'Bio:', profile.bio, 'Avatar:', profile.avatar_url ? 'Yes' : 'No');
-                    
-                    if (profile.full_name) {
-                        console.log('✅ Setting name to:', profile.full_name);
-                        profileNameDisplay.textContent = profile.full_name;
-                        createPostName.textContent = profile.full_name;
-                        localStorage.setItem('profileName', profile.full_name);
-                    }
-                    if (profile.bio) {
-                        console.log('✅ Setting bio to:', profile.bio);
-                        profileEmailDisplay.textContent = profile.bio;
-                        localStorage.setItem('profileBio', profile.bio);
-                    }
-                    if (profile.avatar_url) {
-                        console.log('✅ Setting avatar');
-                        profileAvatar.src = profile.avatar_url;
-                        createPostAvatar.src = profile.avatar_url;
-                        localStorage.setItem('profileAvatar', profile.avatar_url);
-                    }
-                    
-                    // Store current user email for post filtering
-                    localStorage.setItem('currentUserId', currentEmail);
-                } else {
-                    console.log('ℹ️ No profile in database, loading from localStorage');
-                    loadProfileFromStorage();
-                }
-            } catch (err) {
-                console.warn('⚠️ Error loading from database:', err.message);
-                loadProfileFromStorage();
-            }
-        };
-
-        // Load profile from localStorage on page load
-        const loadProfileFromStorage = () => {
-            console.log('🔄 loadProfileFromStorage called');
-            const savedName = localStorage.getItem('profileName');
-            const savedBio = localStorage.getItem('profileBio');
-            const savedAvatar = localStorage.getItem('profileAvatar');
-            const currentUserEmail = profileEmailDisplay.textContent || profileEmail.textContent;
-
-            // Store current user email for post filtering
-            localStorage.setItem('currentUserId', currentUserEmail);
-
-            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
-
-            if (savedName) {
-                console.log('✅ Setting name to:', savedName);
-                profileNameDisplay.textContent = savedName;
-                createPostName.textContent = savedName;
-            }
-            if (savedBio) {
-                console.log('✅ Setting bio to:', savedBio);
-                profileEmailDisplay.textContent = savedBio;
-            }
-            if (savedAvatar) {
-                console.log('✅ Setting avatar');
-                profileAvatar.src = savedAvatar;
-                createPostAvatar.src = savedAvatar;
-            }
-        };
-
-        // Load immediately from database
-        console.log('⏱️ Loading profile immediately from database...');
-        loadProfileFromDatabase();
+        // Load profile using the centralized function
+        console.log('⏱️ Loading profile using centralized function...');
+        loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
+            // Update create post avatar and name after profile loads
+            createPostAvatar.src = profileAvatar.src;
+            createPostName.textContent = profileNameDisplay.textContent;
+        });
 
         // Also load on window load event
         window.addEventListener('load', () => {
-            console.log('⏱️ Window load event - reloading profile from database');
-            loadProfileFromDatabase();
+            console.log('⏱️ Window load event - reloading profile');
+            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
+                createPostAvatar.src = profileAvatar.src;
+                createPostName.textContent = profileNameDisplay.textContent;
+            });
         });
 
         // Watch for any changes to profile elements and restore localStorage data
         console.log('👀 Setting up MutationObserver to watch for profile changes...');
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                const savedName = localStorage.getItem('profileName');
-                const savedBio = localStorage.getItem('profileBio');
-                const savedAvatar = localStorage.getItem('profileAvatar');
+        const observer = new MutationObserver(async (mutations) => {
+            mutations.forEach(async (mutation) => {
+                const savedName = await getUserLocalStorage('profileName');
+                const savedBio = await getUserLocalStorage('profileBio');
+                const savedAvatar = await getUserLocalStorage('profileAvatar');
                 
                 if (mutation.type === 'characterData' || mutation.type === 'childList') {
                     if (savedName && profileNameDisplay.textContent !== savedName) {
@@ -1036,8 +1006,8 @@
                 originalPopulateUserProfile.call(this);
                 // Then restore localStorage data
                 setTimeout(() => {
-                    console.log('🟢 Restoring localStorage data after original populateUserProfile');
-                    loadProfileFromStorage();
+                    console.log('🟢 Restoring profile data after original populateUserProfile');
+                    loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
                 }, 500);
             };
         } else {
@@ -1049,11 +1019,11 @@
                     clearInterval(checkForApp);
                     const origMethod = window.app.populateUserProfile;
                     window.app.populateUserProfile = function() {
-                        console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
+                        console.log('🔴 populateUserProfile called - restoring profile data after 500ms');
                         origMethod.call(this);
                         setTimeout(() => {
-                            console.log('🟢 Restoring localStorage data after original populateUserProfile');
-                            loadProfileFromStorage();
+                            console.log('🟢 Restoring profile data after original populateUserProfile');
+                            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
                         }, 500);
                     };
                 }
@@ -1062,8 +1032,8 @@
 
         // Also load when localStorage changes (in case another tab updates it)
         window.addEventListener('storage', () => {
-            console.log('💾 localStorage changed in another tab, reloading');
-            loadProfileFromStorage();
+            console.log('💾 localStorage changed in another tab, reloading profile');
+            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
         });
 
         // Watch for new posts being added and update their avatars  
@@ -1168,15 +1138,33 @@
                     return authorName.includes(searchTerm) || authorEmail.includes(searchTerm);
                 });
 
-                // Group posts by user
+                // Group posts by user and fetch current profile data
                 const userMap = {};
+                const userIds = [...new Set(matchingPosts.map(post => post.author_id))];
+                
+                // Fetch current profile data for all users
+                const { data: profiles, error: profileError } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, full_name, user_email, avatar_url')
+                    .in('id', userIds);
+                
+                const profileMap = {};
+                if (!profileError && profiles) {
+                    profiles.forEach(profile => {
+                        profileMap[profile.id] = profile;
+                    });
+                }
+                
                 matchingPosts.forEach(post => {
                     const userId = post.author_id;
+                    const profile = profileMap[userId];
+                    
                     if (!userMap[userId]) {
                         userMap[userId] = {
                             id: userId,
-                            name: post.author_name || 'Unknown User',
-                            email: post.author_email,
+                            name: profile?.full_name || post.author_name || 'Unknown User',
+                            email: profile?.user_email || post.author_email,
+                            avatar: profile?.avatar_url || `https://i.pravatar.cc/40?u=${userId}`,
                             posts: []
                         };
                     }
@@ -1190,11 +1178,10 @@
                 } else {
                     let resultsHTML = '';
                     users.forEach(user => {
-                        const userAvatar = `https://i.pravatar.cc/40?u=${user.id}`;
                         resultsHTML += `
                             <div style="padding: 16px; border-bottom: 1px solid #ecf0f1;">
                                 <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
-                                    <img src="${userAvatar}" alt="${user.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                                    <img src="${user.avatar}" alt="${user.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                                     <div style="flex: 1;">
                                         <h4 style="margin: 0 0 4px 0; color: #333; font-size: 14px;">${user.name}</h4>
                                         <p style="margin: 0; font-size: 12px; color: #999;">${user.email || 'No email'}</p>

@@ -37,6 +37,77 @@ async function checkAuthAndRedirect(redirectUrl = 'course.html') {
     return true;
 }
 
+// Helper function to load user profile with user-specific localStorage
+async function loadUserProfile(nameElement, emailElement, avatarElement) {
+    try {
+        const session = await getCurrentSession();
+        if (!session?.session?.user) return false;
+
+        const userId = session.session.user.id;
+        const supabaseClient = window.supabaseClient;
+
+        // Try to load from user-specific localStorage first (for faster loading)
+        const cachedName = localStorage.getItem(`profileName_${userId}`);
+        const cachedBio = localStorage.getItem(`profileBio_${userId}`);
+        const cachedAvatar = localStorage.getItem(`profileAvatar_${userId}`);
+
+        if (cachedName && nameElement) nameElement.textContent = cachedName;
+        if (cachedBio && emailElement) emailElement.textContent = cachedBio;
+        if (cachedAvatar && avatarElement) avatarElement.src = cachedAvatar;
+
+        // Then fetch from database to ensure data is current
+        try {
+            console.log('🔍 loadUserProfile querying user_profiles for userId:', userId);
+            const { data: profileData, error } = await supabaseClient
+                .from('user_profiles')
+                .select('full_name, bio, avatar_url')
+                .eq('id', userId)
+                .single();
+            
+            console.log('📊 loadUserProfile query result:', { data: profileData, error });
+
+            if (!error && profileData) {
+                const name = profileData.full_name || session.session.user.user_metadata?.full_name || session.session.user.email?.split('@')[0] || 'User';
+                const bio = profileData.bio || '';
+                const avatarUrl = profileData.avatar_url || `https://i.pravatar.cc/80?u=${userId}`;
+
+                // Update UI elements
+                if (nameElement) nameElement.textContent = name;
+                if (emailElement) emailElement.textContent = bio; // emailElement actually displays bio
+                if (avatarElement) avatarElement.src = avatarUrl;
+
+                // Update user-specific localStorage
+                localStorage.setItem(`profileName_${userId}`, name);
+                localStorage.setItem(`profileBio_${userId}`, bio);
+                localStorage.setItem(`profileAvatar_${userId}`, avatarUrl);
+
+                return true;
+            }
+        } catch (dbError) {
+            console.log('Database profile load failed, using cached/session data');
+        }
+
+        // Fallback to session data if database fails
+        const name = session.session.user.user_metadata?.full_name || session.session.user.email.split('@')[0];
+        const bio = '';
+        const avatarUrl = `https://i.pravatar.cc/80?u=${userId}`;
+
+        if (nameElement) nameElement.textContent = name;
+        if (emailElement) emailElement.textContent = bio;
+        if (avatarElement) avatarElement.src = avatarUrl;
+
+        // Store fallback data in user-specific localStorage
+        localStorage.setItem(`profileName_${userId}`, name);
+        localStorage.setItem(`profileBio_${userId}`, bio);
+        localStorage.setItem(`profileAvatar_${userId}`, avatarUrl);
+
+        return true;
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        return false;
+    }
+}
+
 // Listen for auth changes
 if (window.supabaseClient) {
     window.supabaseClient.auth.onAuthStateChange((event, session) => {

@@ -445,72 +445,12 @@
                 referenceNav.classList.add('active');
             }
 
-            // Populate user profile
-            populateUserProfile();
+            // Populate user profile using the centralized function
+            const nameEl = document.getElementById('profileName');
+            const emailEl = document.getElementById('profileEmail');
+            const avatarEl = document.getElementById('profileAvatar');
+            loadUserProfile(nameEl, emailEl, avatarEl);
         });
-
-        // ==================== PROFILE POPULATION ====================
-        async function populateUserProfile() {
-            try {
-                const nameEl = document.getElementById('profileName');
-                const emailEl = document.getElementById('profileEmail');
-                const avatarEl = document.getElementById('profileAvatar');
-
-                // Try to fetch profile from database first
-                (async () => {
-                    try {
-                        const supabaseClient = await window.supabaseClient || getSupabaseClient();
-                        const { data: session } = await supabaseClient.auth.getSession();
-
-                        if (session?.session?.user) {
-                            const userId = session.session.user.id;
-                            const { data: profileData, error } = await supabaseClient
-                                .from('user_profiles')
-                                .select('full_name, bio, avatar_url')
-                                .eq('id', userId)
-                                .single();
-
-                            if (!error && profileData) {
-                                // Use database data
-                                const name = profileData.full_name || session.session.user.user_metadata?.full_name || session.session.user.email?.split('@')[0] || 'User';
-                                const email = profileData.bio || session.session.user.email || '';
-                                const avatarUrl = profileData.avatar_url || `https://i.pravatar.cc/80?u=${session.session.user.id || 'guest'}`;
-                                const smallAvatarUrl = profileData.avatar_url || `https://i.pravatar.cc/40?u=${session.session.user.id || 'guest'}`;
-
-                                // Update profile sidebar
-                                if (nameEl) nameEl.textContent = name;
-                                if (emailEl) emailEl.textContent = email;
-                                if (avatarEl) avatarEl.src = avatarUrl;
-
-                                // Store in localStorage for consistency
-                                localStorage.setItem('profileName', name);
-                                localStorage.setItem('profileBio', email);
-                                if (profileData.avatar_url) localStorage.setItem('profileAvatar', profileData.avatar_url);
-
-                                return;
-                            }
-                        }
-                    } catch (err) {
-                        console.log('Could not fetch profile from database, using session data');
-                    }
-
-                    // Fallback to session user data
-                    if (session?.session?.user) {
-                        // Extract name from email or use user metadata
-                        const name = session.session.user.user_metadata?.full_name || session.session.user.email.split('@')[0];
-                        const email = session.session.user.email;
-                        const avatarUrl = `https://i.pravatar.cc/80?u=${session.session.user.id}`;
-
-                        // Update profile sidebar
-                        if (nameEl) nameEl.textContent = name;
-                        if (emailEl) emailEl.textContent = email;
-                        if (avatarEl) avatarEl.src = avatarUrl;
-                    }
-                })();
-            } catch (error) {
-                console.error('Error populating profile:', error);
-            }
-        }
 
         // ==================== SEARCH FUNCTIONALITY ====================
         const searchInput = document.getElementById('searchInput');
@@ -607,28 +547,36 @@
 
         // ==================== LOGOUT BUTTON ====================
         const logoutBtn = document.querySelector('.logout-btn');
+        console.log('Logout button found:', logoutBtn);
         if (logoutBtn) {
+            console.log('Adding logout event listener');
             logoutBtn.addEventListener('click', async () => {
+                console.log('Logout button clicked');
                 try {
                     // Clear all local storage
                     localStorage.clear();
                     sessionStorage.clear();
+                    console.log('Cleared localStorage and sessionStorage');
 
                     // Sign out from Supabase globally
                     const supabaseClient = await getSupabaseClient();
+                    console.log('Got supabase client, signing out...');
                     const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
                     if (error) {
                         console.error('Supabase signOut error:', error);
+                    } else {
+                        console.log('Supabase signOut successful');
                     }
                 } catch (error) {
                     console.error('Logout error:', error);
                 } finally {
                     // Force redirect to index after clearing everything
+                    console.log('Redirecting to index.html');
                     window.location.href = 'index.html';
                 }
             });
-        }
-
+        } else {
+            console.error('Logout button not found!');
         // ==================== LEFT SIDEBAR TOGGLE ====================
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('leftSidebar');
