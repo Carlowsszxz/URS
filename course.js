@@ -40,7 +40,7 @@ class CourseInterface {
 
     async checkAuthentication() {
         // Skip auth for educational content pages
-        const educationalPages = ['cry-of-rebellion', 'first-mass', 'cavite-mutiny', 'retraction-of-rizal', 'games', 'interactive-tasks', 'videos'];
+        const educationalPages = ['cry-of-rebellion', 'first-mass', 'cavite-mutiny', 'retraction-of-rizal', 'games', 'interactive-tasks', 'videos', 'worksheets', 'graphic-organizers', 'reflections'];
         const currentPage = window.location.pathname.toLowerCase();
         const isEducationalPage = educationalPages.some(page => currentPage.includes(page));
         
@@ -97,22 +97,66 @@ class CourseInterface {
             const createPostNameEl = document.getElementById('createPostName');
             const createPostAvatarEl = document.getElementById('createPostAvatar');
 
-            if (this.currentUser) {
-                // Extract name from email or use user metadata
-                const name = this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0];
-                const email = this.currentUser.email;
-                const avatarUrl = `https://i.pravatar.cc/80?u=${this.currentUser.id}`;
-                const smallAvatarUrl = `https://i.pravatar.cc/40?u=${this.currentUser.id}`;
+            // Try to fetch profile from database first
+            (async () => {
+                try {
+                    const supabaseClient = await window.supabaseClient || getSupabaseClient();
+                    const { data: session } = await supabaseClient.auth.getSession();
+                    
+                    if (session?.session?.user) {
+                        const userId = session.session.user.id;
+                        const { data: profileData, error } = await supabaseClient
+                            .from('user_profiles')
+                            .select('full_name, bio, avatar_url')
+                            .eq('id', userId)
+                            .single();
+                        
+                        if (!error && profileData) {
+                            // Use database data
+                            const name = profileData.full_name || this.currentUser?.user_metadata?.full_name || this.currentUser?.email?.split('@')[0] || 'User';
+                            const email = profileData.bio || this.currentUser?.email || '';
+                            const avatarUrl = profileData.avatar_url || `https://i.pravatar.cc/80?u=${this.currentUser?.id || 'guest'}`;
+                            const smallAvatarUrl = profileData.avatar_url || `https://i.pravatar.cc/40?u=${this.currentUser?.id || 'guest'}`;
 
-                // Update profile sidebar
-                if (nameEl) nameEl.textContent = name;
-                if (emailEl) emailEl.textContent = email;
-                if (avatarEl) avatarEl.src = avatarUrl;
-                
-                // Update create post section
-                if (createPostNameEl) createPostNameEl.textContent = name;
-                if (createPostAvatarEl) createPostAvatarEl.src = smallAvatarUrl;
-            }
+                            // Update profile sidebar
+                            if (nameEl) nameEl.textContent = name;
+                            if (emailEl) emailEl.textContent = email;
+                            if (avatarEl) avatarEl.src = avatarUrl;
+                            
+                            // Update create post section
+                            if (createPostNameEl) createPostNameEl.textContent = name;
+                            if (createPostAvatarEl) createPostAvatarEl.src = smallAvatarUrl;
+
+                            // Store in localStorage for consistency
+                            localStorage.setItem('profileName', name);
+                            localStorage.setItem('profileBio', email);
+                            if (profileData.avatar_url) localStorage.setItem('profileAvatar', profileData.avatar_url);
+                            
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.log('Could not fetch profile from database, using currentUser data');
+                }
+
+                // Fallback to currentUser data
+                if (this.currentUser) {
+                    // Extract name from email or use user metadata
+                    const name = this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0];
+                    const email = this.currentUser.email;
+                    const avatarUrl = `https://i.pravatar.cc/80?u=${this.currentUser.id}`;
+                    const smallAvatarUrl = `https://i.pravatar.cc/40?u=${this.currentUser.id}`;
+
+                    // Update profile sidebar
+                    if (nameEl) nameEl.textContent = name;
+                    if (emailEl) emailEl.textContent = email;
+                    if (avatarEl) avatarEl.src = avatarUrl;
+                    
+                    // Update create post section
+                    if (createPostNameEl) createPostNameEl.textContent = name;
+                    if (createPostAvatarEl) createPostAvatarEl.src = smallAvatarUrl;
+                }
+            })();
         } catch (error) {
             console.error('Error populating profile:', error);
         }
@@ -169,7 +213,7 @@ class CourseInterface {
         }
         
         // Auto-open Activities dropdown on activity pages
-        if (currentPage.includes('interactive-tasks') || currentPage.includes('games')) {
+        if (currentPage.includes('interactive-tasks') || currentPage.includes('games') || currentPage.includes('worksheets') || currentPage.includes('graphic-organizers') || currentPage.includes('reflections')) {
             dropdownToggles.forEach(toggle => {
                 if (toggle.textContent.trim() === 'Activities') {
                     const dropdown = toggle.closest('.nav-item-dropdown');

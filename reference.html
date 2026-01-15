@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Materials - Readings in Philippine History</title>
+    <link rel="stylesheet" href="course.css">
+    <!-- Lucide Icons - Modern Icon Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="db-helpers.js"></script>
+    <script src="course.js"></script>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 1001;">
+                ☰
+            </button>
+
+            <h1 class="header-title">
+                <a href="home.html" class="header-title-link">RPH Interactive Learning Hub</a>
+            </h1>
+
+            <div class="header-actions">
+                <div class="header-search">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search users..." />
+                    <button class="search-btn" id="searchBtn" title="Search">
+                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
+                
+                <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
+                    <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="logout-btn" title="Logout">
+                    <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Left Sidebar Navigation -->
+        <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
+                <div class="profile-info">
+                    <h4 class="profile-name" id="profileName">Loading...</h4>
+                    <p class="profile-email" id="profileEmail">Loading...</p>
+                </div>
+                <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="course.html" class="nav-item" data-section="feed">
+                    <i data-lucide="radio" class="nav-icon-svg"></i>
+                    <span>Feed</span>
+                </a>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="topic">
+                        <i data-lucide="book-open" class="nav-icon-svg"></i>
+                        <span>Topic</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="first-mass.html" class="dropdown-item">First Mass</a>
+                        <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
+                        <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
+                    </div>
+                </div>
+                <div class="nav-item-dropdown">
+                    <div class="nav-item" data-section="activities">
+                        <i data-lucide="calendar" class="nav-icon-svg"></i>
+                        <span>Learning Hub</span>
+                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Worksheets
+                        </a>
+                        <a href="games.html" class="dropdown-item" data-section="games">
+                            <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
+                            Games
+                        </a>
+                        <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
+                            <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                            Interactive Tasks
+                        </a>
+                    </div>
+                </div>
+
+                <a href="videos.html" class="nav-item" data-section="videos">
+                    <i data-lucide="play-circle" class="nav-icon-svg"></i>
+                    <span>Videos</span>
+                </a>
+
+                <a href="reference.html" class="nav-item active" data-section="reference">
+                    <i data-lucide="book-open" class="nav-icon-svg"></i>
+                    <span>Reference</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-title">
+                <h1>Reference Materials</h1>
+                <p>Essential resources and materials for Readings in Philippine History</p>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="reference-controls">
+                <div class="search-container">
+                    <input type="text" id="referenceSearch" placeholder="Search reference materials..." class="reference-search-input">
+                    <button class="reference-search-btn">
+                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="timeline">Timeline</button>
+                    <button class="filter-btn" data-filter="figures">Key Figures</button>
+                    <button class="filter-btn" data-filter="documents">Documents</button>
+                    <button class="filter-btn" data-filter="glossary">Glossary</button>
+                </div>
+            </div>
+
+            <!-- Reference Content Sections -->
+            <div class="reference-content">
+
+                <!-- Timeline Section -->
+                <section class="reference-section" data-category="timeline">
+                    <div class="section-header">
+                        <h2><i data-lucide="calendar" style="width: 24px; height: 24px;"></i> Historical Timeline</h2>
+                        <p>Key events in Philippine history from pre-colonial times to the modern era</p>
+                    </div>
+
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-date">1521</div>
+                            <div class="timeline-content">
+                                <h3>Ferdinand Magellan's Arrival</h3>
+                                <p>Portuguese explorer Ferdinand Magellan arrives in the Philippines, claiming the islands for Spain and beginning the Spanish colonial period.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">1565</div>
+                            <div class="timeline-content">
+                                <h3>Spanish Colonization Begins</h3>
+                                <p>Miguel López de Legazpi establishes the first permanent Spanish settlement in Cebu, marking the beginning of 333 years of Spanish rule.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">1896</div>
+                            <div class="timeline-content">
+                                <h3>Philippine Revolution</h3>
+                                <p>The Cry of Pugad Lawin sparks the Philippine Revolution against Spanish rule, led by figures like José Rizal, Andrés Bonifacio, and Emilio Aguinaldo.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">1898</div>
+                            <div class="timeline-content">
+                                <h3>Declaration of Independence</h3>
+                                <p>Emilio Aguinaldo declares Philippine independence from Spain on June 12, though this leads to the Philippine-American War.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">1946</div>
+                            <div class="timeline-content">
+                                <h3>Independence from the United States</h3>
+                                <p>The Philippines gains full independence on July 4, becoming the first Asian country to achieve independence from Western colonial powers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Figures Section -->
+                <section class="reference-section" data-category="figures">
+                    <div class="section-header">
+                        <h2><i data-lucide="users" style="width: 24px; height: 24px;"></i> Key Historical Figures</h2>
+                        <p>Important individuals who shaped Philippine history</p>
+                    </div>
+
+                    <div class="figures-grid">
+                        <div class="figure-card">
+                            <div class="figure-image">
+                                <img src="https://i.pravatar.cc/120?img=1" alt="José Rizal">
+                            </div>
+                            <div class="figure-info">
+                                <h3>José Rizal</h3>
+                                <p class="figure-role">National Hero</p>
+                                <p class="figure-description">Writer, physician, and revolutionary whose novels "Noli Me Tangere" and "El Filibusterismo" exposed Spanish colonial abuses and inspired the Philippine Revolution.</p>
+                                <p class="figure-dates">1861-1896</p>
+                            </div>
+                        </div>
+
+                        <div class="figure-card">
+                            <div class="figure-image">
+                                <img src="https://i.pravatar.cc/120?img=2" alt="Andrés Bonifacio">
+                            </div>
+                            <div class="figure-info">
+                                <h3>Andrés Bonifacio</h3>
+                                <p class="figure-role">Revolutionary Leader</p>
+                                <p class="figure-description">Founder of the Katipunan secret society and leader of the 1896 Philippine Revolution. Known as the "Father of the Philippine Revolution."</p>
+                                <p class="figure-dates">1863-1897</p>
+                            </div>
+                        </div>
+
+                        <div class="figure-card">
+                            <div class="figure-image">
+                                <img src="https://i.pravatar.cc/120?img=3" alt="Emilio Aguinaldo">
+                            </div>
+                            <div class="figure-info">
+                                <h3>Emilio Aguinaldo</h3>
+                                <p class="figure-role">First President</p>
+                                <p class="figure-description">Military leader who became the first President of the Philippines. Led the fight against both Spanish and American forces.</p>
+                                <p class="figure-dates">1869-1964</p>
+                            </div>
+                        </div>
+
+                        <div class="figure-card">
+                            <div class="figure-image">
+                                <img src="https://i.pravatar.cc/120?img=4" alt="Apolinario Mabini">
+                            </div>
+                            <div class="figure-info">
+                                <h3>Apolinario Mabini</h3>
+                                <p class="figure-role">Prime Minister</p>
+                                <p class="figure-description">Brilliant paralytic known as the "Sublime Paralytic" and "Brains of the Revolution." Served as Prime Minister of the First Philippine Republic.</p>
+                                <p class="figure-dates">1864-1903</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Important Documents Section -->
+                <section class="reference-section" data-category="documents">
+                    <div class="section-header">
+                        <h2><i data-lucide="file-text" style="width: 24px; height: 24px;"></i> Important Documents</h2>
+                        <p>Key documents that shaped Philippine history and governance</p>
+                    </div>
+
+                    <div class="documents-grid">
+                        <div class="document-card">
+                            <div class="document-icon">
+                                <i data-lucide="scroll-text" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <div class="document-info">
+                                <h3>Malolos Constitution</h3>
+                                <p class="document-date">1899</p>
+                                <p class="document-description">The first republican constitution in Asia, establishing the First Philippine Republic under Emilio Aguinaldo.</p>
+                                <a href="#" class="document-link">View Document</a>
+                            </div>
+                        </div>
+
+                        <div class="document-card">
+                            <div class="document-icon">
+                                <i data-lucide="book-open" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <div class="document-info">
+                                <h3>Noli Me Tangere</h3>
+                                <p class="document-date">1887</p>
+                                <p class="document-description">José Rizal's seminal novel exposing Spanish colonial abuses and awakening Filipino national consciousness.</p>
+                                <a href="#" class="document-link">Read Excerpt</a>
+                            </div>
+                        </div>
+
+                        <div class="document-card">
+                            <div class="document-icon">
+                                <i data-lucide="flag" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <div class="document-info">
+                                <h3>Act of Declaration of Philippine Independence</h3>
+                                <p class="document-date">1898</p>
+                                <p class="document-description">Document declaring Philippine independence from Spain, read by Ambrosio Rianzares Bautista in Kawit, Cavite.</p>
+                                <a href="#" class="document-link">View Document</a>
+                            </div>
+                        </div>
+
+                        <div class="document-card">
+                            <div class="document-icon">
+                                <i data-lucide="file-check" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <div class="document-info">
+                                <h3>Treaty of Paris</h3>
+                                <p class="document-date">1898</p>
+                                <p class="document-description">Treaty that ended the Spanish-American War and ceded the Philippines to the United States for $20 million.</p>
+                                <a href="#" class="document-link">View Treaty</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Glossary Section -->
+                <section class="reference-section" data-category="glossary">
+                    <div class="section-header">
+                        <h2><i data-lucide="book" style="width: 24px; height: 24px;"></i> Historical Glossary</h2>
+                        <p>Key terms and concepts in Philippine history</p>
+                    </div>
+
+                    <div class="glossary-container">
+                        <div class="glossary-item">
+                            <h3>Encomienda System</h3>
+                            <p>A Spanish colonial system where land and native inhabitants were granted to Spanish encomenderos who were responsible for their conversion to Christianity and protection.</p>
+                        </div>
+
+                        <div class="glossary-item">
+                            <h3>Galleon Trade</h3>
+                            <p>The trans-Pacific trade route established by Spain connecting Manila to Acapulco, Mexico, bringing silver from the Americas and goods from Asia.</p>
+                        </div>
+
+                        <div class="glossary-item">
+                            <h3>Ilustrados</h3>
+                            <p>Educated Filipinos who studied in Europe during the Spanish colonial period and became advocates for reform and eventual independence.</p>
+                        </div>
+
+                        <div class="glossary-item">
+                            <h3>Katipunan</h3>
+                            <p>A secret revolutionary society founded by Andrés Bonifacio in 1892 that organized the Philippine Revolution against Spanish rule.</p>
+                        </div>
+
+                        <div class="glossary-item">
+                            <h3>Propaganda Movement</h3>
+                            <p>A reform movement led by Filipino intellectuals in the late 19th century that sought peaceful change through education and legal means.</p>
+                        </div>
+
+                        <div class="glossary-item">
+                            <h3>Reduccion</h3>
+                            <p>The Spanish policy of concentrating indigenous populations into centralized settlements called reducciones for easier administration and Christianization.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Maps Section -->
+                <section class="reference-section" data-category="maps">
+                    <div class="section-header">
+                        <h2><i data-lucide="map" style="width: 24px; height: 24px;"></i> Historical Maps</h2>
+                        <p>Geographical context for key historical events</p>
+                    </div>
+
+                    <div class="maps-grid">
+                        <div class="map-card">
+                            <div class="map-placeholder">
+                                <i data-lucide="map-pin" style="width: 48px; height: 48px;"></i>
+                                <p>Map of Spanish Colonial Philippines</p>
+                            </div>
+                            <div class="map-info">
+                                <h3>Spanish Colonial Divisions</h3>
+                                <p>Shows the administrative divisions during the Spanish colonial period (1565-1898).</p>
+                            </div>
+                        </div>
+
+                        <div class="map-card">
+                            <div class="map-placeholder">
+                                <i data-lucide="navigation" style="width: 48px; height: 48px;"></i>
+                                <p>Route of the Philippine Revolution</p>
+                            </div>
+                            <div class="map-info">
+                                <h3>Revolutionary Campaigns</h3>
+                                <p>Key battle sites and campaigns during the 1896-1898 Philippine Revolution.</p>
+                            </div>
+                        </div>
+
+                        <div class="map-card">
+                            <div class="map-placeholder">
+                                <i data-lucide="anchor" style="width: 48px; height: 48px;"></i>
+                                <p>Galleon Trade Routes</p>
+                            </div>
+                            <div class="map-info">
+                                <h3>Manila-Acapulco Trade</h3>
+                                <p>The maritime route that connected Asia to the Americas via the Philippines.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bibliography Section -->
+                <section class="reference-section" data-category="bibliography">
+                    <div class="section-header">
+                        <h2><i data-lucide="library" style="width: 24px; height: 24px;"></i> Bibliography</h2>
+                        <p>Recommended readings for further study</p>
+                    </div>
+
+                    <div class="bibliography-container">
+                        <div class="bib-category">
+                            <h3>Primary Sources</h3>
+                            <ul>
+                                <li><strong>Rizal, José.</strong> <em>Noli Me Tangere</em>. 1887.</li>
+                                <li><strong>Rizal, José.</strong> <em>El Filibusterismo</em>. 1891.</li>
+                                <li><strong>Zaide, Gregorio F.</strong> <em>Documentary Sources of Philippine History</em>. 1990.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bib-category">
+                            <h3>Secondary Sources</h3>
+                            <ul>
+                                <li><strong>Agoncillo, Teodoro A.</strong> <em>The Revolt of the Masses: The Story of Bonifacio and the Katipunan</em>. 1956.</li>
+                                <li><strong>Constantino, Renato.</strong> <em>The Philippines: A Past Revisited</em>. 1975.</li>
+                                <li><strong>Ileto, Reynaldo C.</strong> <em>Pasyon and Revolution: Popular Movements in the Philippines, 1840-1910</em>. 1979.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bib-category">
+                            <h3>Modern Scholarship</h3>
+                            <ul>
+                                <li><strong>Anderson, Benedict.</strong> <em>Under Three Flags: Anarchism and the Anti-Colonial Imagination</em>. 2005.</li>
+                                <li><strong>Francisco, Juan R.</strong> <em>Philippine History: Colonial Period</em>. 2010.</li>
+                                <li><strong>McCoy, Alfred W.</strong> <em>An Anarchy of Families: State and Family in the Philippines</em>. 1993.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Right sidebar content can be added here if needed -->
+        </aside>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Add active class to reference nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            const referenceNav = document.querySelector('[data-section="reference"]');
+            if (referenceNav) {
+                referenceNav.classList.add('active');
+            }
+
+            // Populate user profile
+            populateUserProfile();
+        });
+
+        // ==================== PROFILE POPULATION ====================
+        async function populateUserProfile() {
+            try {
+                const nameEl = document.getElementById('profileName');
+                const emailEl = document.getElementById('profileEmail');
+                const avatarEl = document.getElementById('profileAvatar');
+
+                // Try to fetch profile from database first
+                (async () => {
+                    try {
+                        const supabaseClient = await window.supabaseClient || getSupabaseClient();
+                        const { data: session } = await supabaseClient.auth.getSession();
+
+                        if (session?.session?.user) {
+                            const userId = session.session.user.id;
+                            const { data: profileData, error } = await supabaseClient
+                                .from('user_profiles')
+                                .select('full_name, bio, avatar_url')
+                                .eq('id', userId)
+                                .single();
+
+                            if (!error && profileData) {
+                                // Use database data
+                                const name = profileData.full_name || session.session.user.user_metadata?.full_name || session.session.user.email?.split('@')[0] || 'User';
+                                const email = profileData.bio || session.session.user.email || '';
+                                const avatarUrl = profileData.avatar_url || `https://i.pravatar.cc/80?u=${session.session.user.id || 'guest'}`;
+                                const smallAvatarUrl = profileData.avatar_url || `https://i.pravatar.cc/40?u=${session.session.user.id || 'guest'}`;
+
+                                // Update profile sidebar
+                                if (nameEl) nameEl.textContent = name;
+                                if (emailEl) emailEl.textContent = email;
+                                if (avatarEl) avatarEl.src = avatarUrl;
+
+                                // Store in localStorage for consistency
+                                localStorage.setItem('profileName', name);
+                                localStorage.setItem('profileBio', email);
+                                if (profileData.avatar_url) localStorage.setItem('profileAvatar', profileData.avatar_url);
+
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        console.log('Could not fetch profile from database, using session data');
+                    }
+
+                    // Fallback to session user data
+                    if (session?.session?.user) {
+                        // Extract name from email or use user metadata
+                        const name = session.session.user.user_metadata?.full_name || session.session.user.email.split('@')[0];
+                        const email = session.session.user.email;
+                        const avatarUrl = `https://i.pravatar.cc/80?u=${session.session.user.id}`;
+
+                        // Update profile sidebar
+                        if (nameEl) nameEl.textContent = name;
+                        if (emailEl) emailEl.textContent = email;
+                        if (avatarEl) avatarEl.src = avatarUrl;
+                    }
+                })();
+            } catch (error) {
+                console.error('Error populating profile:', error);
+            }
+        }
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+
+        // Search through reference content
+        function performReferenceSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (!searchTerm) return;
+
+            // Get all reference content elements
+            const referenceCards = document.querySelectorAll('.reference-card');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const figureCards = document.querySelectorAll('.figure-card');
+            const glossaryTerms = document.querySelectorAll('.glossary-term');
+
+            let foundResults = false;
+
+            // Search in reference cards
+            referenceCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.backgroundColor = '#fff3cd';
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    foundResults = true;
+                } else {
+                    card.style.backgroundColor = '';
+                }
+            });
+
+            // Search in timeline items
+            timelineItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.backgroundColor = '#fff3cd';
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    foundResults = true;
+                } else {
+                    item.style.backgroundColor = '';
+                }
+            });
+
+            // Search in figure cards
+            figureCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.backgroundColor = '#fff3cd';
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    foundResults = true;
+                } else {
+                    card.style.backgroundColor = '';
+                }
+            });
+
+            // Search in glossary terms
+            glossaryTerms.forEach(term => {
+                const text = term.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    term.style.backgroundColor = '#fff3cd';
+                    term.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    foundResults = true;
+                } else {
+                    term.style.backgroundColor = '';
+                }
+            });
+
+            if (!foundResults) {
+                alert('No results found for: ' + searchTerm);
+            }
+        }
+
+        // Add event listeners
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performReferenceSearch);
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performReferenceSearch();
+                }
+            });
+        }
+
+        // ==================== RIGHT SIDEBAR TOGGLE ====================
+        const sidebarToggleRight = document.getElementById('sidebarToggleRight');
+        const rightSidebar = document.querySelector('.right-sidebar');
+
+        if (sidebarToggleRight && rightSidebar) {
+            sidebarToggleRight.addEventListener('click', function() {
+                rightSidebar.classList.toggle('sidebar-open');
+            });
+        }
+
+        // ==================== LOGOUT BUTTON ====================
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    // Clear all local storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+
+                    // Sign out from Supabase globally
+                    const supabaseClient = await getSupabaseClient();
+                    const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
+                    if (error) {
+                        console.error('Supabase signOut error:', error);
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    // Force redirect to index after clearing everything
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // ==================== LEFT SIDEBAR TOGGLE ====================
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('leftSidebar');
+
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+            });
+        }
+
+        // ==================== REFERENCE PAGE FUNCTIONALITY ====================
+
+        // Search functionality
+        const searchInput = document.getElementById('referenceSearch');
+        const referenceSections = document.querySelectorAll('.reference-section');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                referenceSections.forEach(section => {
+                    const sectionText = section.textContent.toLowerCase();
+                    const isVisible = searchTerm === '' || sectionText.includes(searchTerm);
+                    section.style.display = isVisible ? 'block' : 'none';
+                });
+            });
+        }
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter sections
+                referenceSections.forEach(section => {
+                    if (filter === 'all') {
+                        section.style.display = 'block';
+                    } else {
+                        const category = section.getAttribute('data-category');
+                        section.style.display = category === filter ? 'block' : 'none';
+                    }
+                });
+
+                // Clear search when filtering
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+            });
+        });
+
+        // Highlight search terms
+        function highlightSearchTerms(text, searchTerm) {
+            if (!searchTerm) return text;
+
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        // Enhanced search with highlighting
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                referenceSections.forEach(section => {
+                    const sectionText = section.textContent.toLowerCase();
+                    const isVisible = searchTerm === '' || sectionText.includes(searchTerm);
+
+                    if (isVisible) {
+                        section.style.display = 'block';
+
+                        // Remove previous highlights
+                        section.querySelectorAll('mark').forEach(mark => {
+                            const textNode = document.createTextNode(mark.textContent);
+                            mark.parentNode.replaceChild(textNode, mark);
+                        });
+
+                        // Add new highlights if there's a search term
+                        if (searchTerm) {
+                            const textElements = section.querySelectorAll('p, h3, li');
+                            textElements.forEach(element => {
+                                if (element.textContent.toLowerCase().includes(searchTerm)) {
+                                    element.innerHTML = highlightSearchTerms(element.innerHTML, searchTerm);
+                                }
+                            });
+                        }
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

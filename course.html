@@ -178,6 +178,140 @@
             }
         }
     </style>
+    <style>
+        /* Welcome Section Styles */
+        .welcome-section {
+            background: linear-gradient(135deg, #8B7355 0%, #5C3422 100%);
+            color: white;
+            padding: 40px 32px;
+            margin-bottom: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(92, 52, 34, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.08)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.08)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.08)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            line-height: 1.3;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            margin: 0 0 32px 0;
+            opacity: 0.95;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 400;
+        }
+
+        .welcome-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            min-width: 120px;
+            cursor: pointer;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.9;
+        }
+
+        .stat-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.9;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-section {
+                padding: 32px 20px;
+                margin-bottom: 32px;
+            }
+
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+
+            .welcome-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .welcome-stats {
+                gap: 16px;
+            }
+
+            .stat-item {
+                padding: 12px;
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 1.6rem;
+            }
+
+            .welcome-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-item {
+                width: 100%;
+                max-width: 180px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -245,7 +379,7 @@
                 <div class="nav-item-dropdown">
                     <div class="nav-item" data-section="activities">
                         <i data-lucide="calendar" class="nav-icon-svg"></i>
-                        <span>Activities</span>
+                        <span>Learning Hub</span>
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
@@ -258,6 +392,11 @@
                             <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
                             Interactive Tasks
                         </a>
+
+                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Worksheets
+                        </a>
                     </div>
                 </div>
 
@@ -266,12 +405,39 @@
                     <i data-lucide="play-circle" class="nav-icon-svg"></i>
                     <span>Videos</span>
                 </a>
+
+                <a href="reference.html" class="nav-item" data-section="reference">
+                    <i data-lucide="book-open" class="nav-icon-svg"></i>
+                    <span>Reference</span>
+                </a>
             </nav>
 
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <h1 class="welcome-title">Welcome to Readings in Philippine History!</h1>
+                    <p class="welcome-subtitle">Explore Philippine history through interactive lessons and engaging activities.</p>
+                    <div class="welcome-stats">
+                        <div class="stat-item">
+                            <i data-lucide="book-open" class="stat-icon"></i>
+                            <span class="stat-text">Lessons</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="target" class="stat-icon"></i>
+                            <span class="stat-text">Activities</span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="message-circle" class="stat-icon"></i>
+                            <span class="stat-text">Discussions</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Discussion/Post Section -->
             <section class="discussion-section">
                 <!-- Create Post -->
@@ -1171,6 +1337,27 @@
                 console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
+
+        // ==================== WELCOME STATS NAVIGATION ====================
+        document.querySelectorAll('.stat-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const text = item.querySelector('.stat-text').textContent;
+                
+                switch(text) {
+                    case 'Lessons':
+                        window.location.href = 'first-mass.html';
+                        break;
+                    case 'Activities':
+                        window.location.href = 'worksheets.html';
+                        break;
+                    case 'Discussions':
+                        document.querySelector('.discussion-section').scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        break;
+                }
+            });
+        });
     </script>
 </body>
 </html>

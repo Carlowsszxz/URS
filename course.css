@@ -17,13 +17,13 @@ html, body {
 
 /* HEADER - BULLO STYLE */
 .header {
-    background: #FFFFFF;
+    background: linear-gradient(135deg, #E8E2D5 0%, #F0EBE0 100%);
     color: #5C3422;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 1px 3px rgba(92, 52, 34, 0.08);
-    border-bottom: 1px solid #E2D5C2;
+    box-shadow: 0 3px 12px rgba(92, 52, 34, 0.15);
+    border-bottom: 1px solid #D4C4A8;
 }
 
 .header-container {
@@ -1557,6 +1557,439 @@ html, body {
     color: #999;
     padding: 20px;
     font-size: 13px;
+}
+
+/* ===========================================
+   REFERENCE PAGE STYLES
+   =========================================== */
+
+/* Reference Controls */
+.reference-controls {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(92, 52, 34, 0.1);
+}
+
+.search-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.reference-search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #E8E2D5;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.reference-search-input:focus {
+    outline: none;
+    border-color: #5C3422;
+}
+
+.reference-search-btn {
+    background: #5C3422;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reference-search-btn:hover {
+    background: #4A2A1A;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 2px solid #E8E2D5;
+    background: white;
+    color: #5C3422;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: #5C3422;
+}
+
+.filter-btn.active {
+    background: #5C3422;
+    color: white;
+    border-color: #5C3422;
+}
+
+/* Reference Content */
+.reference-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.reference-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(92, 52, 34, 0.1);
+}
+
+.section-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #E8E2D5;
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #5C3422;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.section-header p {
+    color: #8B7355;
+    font-size: 16px;
+}
+
+/* Timeline Styles */
+.timeline-container {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #E8E2D5;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 32px;
+    padding-left: 40px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    background: #5C3422;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #E8E2D5;
+}
+
+.timeline-date {
+    position: absolute;
+    left: -80px;
+    top: 0;
+    background: #5C3422;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.timeline-content h3 {
+    color: #5C3422;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.timeline-content p {
+    color: #8B7355;
+    line-height: 1.6;
+}
+
+/* Figures Grid */
+.figures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.figure-card {
+    background: #F8F6F2;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.figure-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(92, 52, 34, 0.15);
+}
+
+.figure-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(92, 52, 34, 0.1);
+}
+
+.figure-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.figure-info h3 {
+    color: #5C3422;
+    margin-bottom: 4px;
+    font-size: 18px;
+}
+
+.figure-role {
+    color: #8B7355;
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.figure-description {
+    color: #8B7355;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.figure-dates {
+    color: #5C3422;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Documents Grid */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.document-card {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: #F8F6F2;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.document-card:hover {
+    transform: translateY(-2px);
+}
+
+.document-icon {
+    color: #5C3422;
+    flex-shrink: 0;
+}
+
+.document-info h3 {
+    color: #5C3422;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.document-date {
+    color: #8B7355;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.document-description {
+    color: #8B7355;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.document-link {
+    color: #5C3422;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.document-link:hover {
+    color: #8B7355;
+}
+
+/* Glossary Styles */
+.glossary-container {
+    display: grid;
+    gap: 20px;
+}
+
+.glossary-item {
+    padding: 20px;
+    background: #F8F6F2;
+    border-radius: 12px;
+    border-left: 4px solid #5C3422;
+}
+
+.glossary-item h3 {
+    color: #5C3422;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.glossary-item p {
+    color: #8B7355;
+    line-height: 1.6;
+}
+
+/* Maps Grid */
+.maps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.map-card {
+    background: #F8F6F2;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.map-card:hover {
+    transform: translateY(-4px);
+}
+
+.map-placeholder {
+    height: 200px;
+    background: linear-gradient(135deg, #E8E2D5 0%, #F0EBE0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8B7355;
+    text-align: center;
+    padding: 20px;
+}
+
+.map-placeholder i {
+    margin-bottom: 12px;
+}
+
+.map-info {
+    padding: 20px;
+}
+
+.map-info h3 {
+    color: #5C3422;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.map-info p {
+    color: #8B7355;
+    line-height: 1.6;
+}
+
+/* Bibliography Styles */
+.bibliography-container {
+    display: grid;
+    gap: 24px;
+}
+
+.bib-category {
+    background: #F8F6F2;
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.bib-category h3 {
+    color: #5C3422;
+    margin-bottom: 16px;
+    font-size: 18px;
+    border-bottom: 2px solid #E8E2D5;
+    padding-bottom: 8px;
+}
+
+.bib-category ul {
+    list-style: none;
+    padding: 0;
+}
+
+.bib-category li {
+    margin-bottom: 12px;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.bib-category li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #5C3422;
+    font-weight: bold;
+}
+
+.bib-category strong {
+    color: #5C3422;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .reference-controls {
+        padding: 16px;
+    }
+
+    .figures-grid,
+    .documents-grid,
+    .maps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-date {
+        position: static;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    .timeline-container {
+        padding-left: 0;
+    }
+
+    .timeline-item {
+        padding-left: 0;
+    }
+
+    .document-card {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 

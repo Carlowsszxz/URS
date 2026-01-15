@@ -11,7 +11,7 @@
     <script src=https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2></script>
     <script src=supabase-config.js></script>
     <script src=db-helpers.js></script>
-    <script src=course.js></script>
+    <script src="course.js"></script>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -64,7 +64,7 @@
                     <i data-lucide="radio" class="nav-icon-svg"></i>
                     <span>Feed</span>
                 </a>
-                <div class="nav-item-dropdown">
+                <div class="nav-item-dropdown open">
                     <div class="nav-item" data-section="topic">
                         <i data-lucide="book-open" class="nav-icon-svg"></i>
                         <span>Topic</span>
@@ -81,7 +81,7 @@
                 <div class="nav-item-dropdown">
                     <div class="nav-item" data-section="activities">
                         <i data-lucide="calendar" class="nav-icon-svg"></i>
-                        <span>Activities</span>
+                        <span>Learning Hub</span>
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
@@ -94,6 +94,11 @@
                             <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
                             Interactive Tasks
                         </a>
+
+                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Worksheets
+                        </a>
                     </div>
                 </div>
 
@@ -101,6 +106,11 @@
                 <a href="videos.html" class="nav-item" data-section="videos">
                     <i data-lucide="play-circle" class="nav-icon-svg"></i>
                     <span>Videos</span>
+                </a>
+
+                <a href="reference.html" class="nav-item" data-section="reference">
+                    <i data-lucide="book-open" class="nav-icon-svg"></i>
+                    <span>Reference</span>
                 </a>
             </nav>
 
