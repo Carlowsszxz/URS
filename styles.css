@@ -94,7 +94,6 @@ body {
     height: 80px;
     margin-bottom: 16px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(92, 52, 34, 0.15);
 }
 
 .login-header h1 {

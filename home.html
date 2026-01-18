@@ -44,12 +44,21 @@
         }
 
         .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-size: 22px;
             font-weight: 800;
             background: linear-gradient(135deg, #5C3422 0%, #442913 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .header-logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
         }
 
         .header-actions {
@@ -747,8 +756,10 @@
     <!-- HEADER -->
     <header class="header">
         <div class="header-container">
-            <div class="header-logo">RPH Interactive Learning Hub
-</div>
+            <div class="header-logo">
+                <img src="Images/favicon.png" alt="RPH Logo" class="header-logo-img">
+                RPH Interactive Learning Hub
+            </div>
             <div class="header-actions">
                 <button class="logout-btn" onclick="logout()" title="Sign out">
                     <i data-lucide="log-out" stroke-width="1.5"></i>

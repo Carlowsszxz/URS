@@ -60,6 +60,18 @@ html, body {
     background: #E2D5C2;
 }
 
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
 .header-title {
     font-size: 22px;
     font-weight: 800;
