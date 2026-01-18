@@ -8,11 +8,10 @@
 // For now, using CDN import - add this to your HTML <head>:
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-const SUPABASE_URL = 'https://your-project-id.supabase.co'; // Replace with your URL
-const SUPABASE_ANON_KEY = 'your-anon-key-here'; // Replace with your key
+// SUPABASE_URL and SUPABASE_ANON_KEY are defined in supabase-config.js
 
-// Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Use the client from supabase-config.js
+const client = window.supabaseClient;
 
 /**
  * Authentication Functions
@@ -23,7 +22,7 @@ const SupabaseAuth = {
    */
   async signUp(email, password, fullName) {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await client.auth.signUp({
         email,
         password,
         options: {
@@ -46,7 +45,7 @@ const SupabaseAuth = {
    */
   async signIn(email, password) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await client.auth.signInWithPassword({
         email,
         password
       });
@@ -64,7 +63,7 @@ const SupabaseAuth = {
    */
   async signOut() {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await client.auth.signOut();
       if (error) throw error;
       return { success: true };
     } catch (error) {
@@ -78,7 +77,7 @@ const SupabaseAuth = {
    */
   async getCurrentUser() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await client.auth.getUser();
       return user;
     } catch (error) {
       console.error('Get user error:', error.message);
@@ -90,7 +89,7 @@ const SupabaseAuth = {
    * Subscribe to auth state changes
    */
   onAuthStateChange(callback) {
-    return supabase.auth.onAuthStateChange((event, session) => {
+    return client.auth.onAuthStateChange((event, session) => {
       callback(event, session);
     });
   }
@@ -160,9 +159,9 @@ const SupabaseDB = {
       if (error) throw error;
 
       // Update like count
-      await supabase
+      await client
         .from('posts')
-        .update({ likes_count: supabase.rpc('increment_likes', { post_id: postId }) })
+        .update({ likes_count: client.rpc('increment_likes', { post_id: postId }) })
         .eq('id', postId);
 
       return { success: true };
@@ -284,7 +283,7 @@ const SupabaseRealtime = {
    * Unsubscribe from changes
    */
   unsubscribe(subscription) {
-    return supabase.removeChannel(subscription);
+    return client.removeChannel(subscription);
   }
 };
 
