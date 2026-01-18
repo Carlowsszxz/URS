@@ -481,10 +481,26 @@
             line-height: 1.6;
             width: 100%;
             padding: 0 20px;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .fact.active {
             opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .facts-carousel {
+                min-height: 120px;
+                padding: 0 10px;
+            }
+
+            .fact {
+                font-size: 14px;
+                padding: 0 10px;
+                line-height: 1.5;
+            }
         }
 
         /* FOOTER */
