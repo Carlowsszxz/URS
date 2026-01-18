@@ -629,7 +629,6 @@
             try {
                 // If userEmail not in localStorage, user is logged out
                 if (!localStorage.getItem('userEmail')) {
-                    console.log('No user email in localStorage, redirecting to login');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -646,12 +645,9 @@
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
 
                 if (!session) {
-                    console.log('No active session, redirecting to login');
                     window.location.href = 'index.html';
                     return;
                 }
-
-                console.log('User authenticated:', session.user.email);
             } catch (error) {
                 console.error('Auth check error:', error);
                 // If error checking auth, redirect to login to be safe
@@ -711,30 +707,10 @@
         // Initialize slideshow
         showSlide(currentSlideIndex);
         
-        // DEBUG: Initialize Lucide icons
-        console.log('=== LUCIDE DEBUG ===');
-        console.log('window.lucide exists:', !!window.lucide);
-        console.log('Lucide version:', window.lucide ? 'loaded' : 'not loaded');
-        
-        const iconElements = document.querySelectorAll('[data-lucide]');
-        console.log('Icon elements found:', iconElements.length);
-        iconElements.forEach((el, i) => {
-            console.log(`Icon ${i}: data-lucide="${el.getAttribute('data-lucide')}", innerHTML="${el.innerHTML}", class="${el.className}"`);
-        });
-        
+        // Initialize Lucide icons
         setTimeout(() => {
-            console.log('Calling lucide.createIcons()...');
             if (window.lucide) {
                 lucide.createIcons();
-                console.log('lucide.createIcons() called');
-                
-                // Check again after calling
-                const updatedIcons = document.querySelectorAll('[data-lucide]');
-                updatedIcons.forEach((el, i) => {
-                    console.log(`After createIcons - Icon ${i}: innerHTML="${el.innerHTML.substring(0, 50)}..."`);
-                });
-            } else {
-                console.log('ERROR: window.lucide is not defined!');
             }
         }, 200);
     </script>
@@ -811,7 +787,6 @@
 
         // Load profile from localStorage on page load
         const loadProfileFromStorage = () => {
-            console.log('🔄 loadProfileFromStorage called');
             const savedName = localStorage.getItem('profileName');
             const savedBio = localStorage.getItem('profileBio');
             const savedAvatar = localStorage.getItem('profileAvatar');
@@ -820,18 +795,13 @@
             // Store current user email for post filtering
             localStorage.setItem('currentUserId', currentUserEmail);
 
-            console.log('📦 Loaded from localStorage - Name:', savedName, 'Bio:', savedBio, 'Avatar:', savedAvatar ? 'Yes' : 'No');
-
             if (savedName) {
-                console.log('✅ Setting name to:', savedName);
                 profileNameDisplay.textContent = savedName;
             }
             if (savedBio) {
-                console.log('✅ Setting bio to:', savedBio);
                 profileEmailDisplay.textContent = savedBio;
             }
             if (savedAvatar) {
-                console.log('✅ Setting avatar');
                 profileAvatar.src = savedAvatar;
             }
         };
@@ -852,12 +822,7 @@
                     const targetId = target.id;
                     const attrName = mutation.attributeName;
                     
-                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
-                    console.log('   Current src:', target.src);
-                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
-                    
                     if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                        console.log('⚠️ Profile avatar changed, restoring from localStorage');
                         profileAvatar.src = savedAvatar;
                     }
                 } else if (mutation.type === 'characterData' || mutation.type === 'childList') {
@@ -865,11 +830,9 @@
                     const savedBio = localStorage.getItem('profileBio');
                     
                     if (savedName && profileNameDisplay.textContent !== savedName) {
-                        console.log('📝 Restoring name from localStorage');
                         profileNameDisplay.textContent = savedName;
                     }
                     if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                        console.log('📝 Restoring bio from localStorage');
                         profileEmailDisplay.textContent = savedBio;
                     }
                 }
@@ -887,15 +850,12 @@
             const savedBio = localStorage.getItem('profileBio');
             
             if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                console.log('🔄 Periodic check: Restoring avatar');
                 profileAvatar.src = savedAvatar;
             }
             if (savedName && profileNameDisplay.textContent !== savedName) {
-                console.log('🔄 Periodic check: Restoring name');
                 profileNameDisplay.textContent = savedName;
             }
             if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                console.log('🔄 Periodic check: Restoring bio');
                 profileEmailDisplay.textContent = savedBio;
             }
         }, 1000);
@@ -905,24 +865,19 @@
         
         if (originalPopulateUserProfile) {
             window.app.populateUserProfile = function() {
-                console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
                 originalPopulateUserProfile.call(this);
                 setTimeout(() => {
-                    console.log('🟢 Restoring localStorage data after original populateUserProfile');
                     loadProfileFromStorage();
                 }, 500);
             };
         } else {
             const checkForApp = setInterval(() => {
                 if (window.app && window.app.populateUserProfile) {
-                    console.log('✅ App found! Wrapping populateUserProfile');
                     clearInterval(checkForApp);
                     const origMethod = window.app.populateUserProfile;
                     window.app.populateUserProfile = function() {
-                        console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
                         origMethod.call(this);
                         setTimeout(() => {
-                            console.log('🟢 Restoring localStorage data after original populateUserProfile');
                             loadProfileFromStorage();
                         }, 500);
                     };
@@ -932,7 +887,6 @@
 
         // Also load when localStorage changes (in case another tab updates it)
         window.addEventListener('storage', () => {
-            console.log('💾 localStorage changed in another tab, reloading');
             loadProfileFromStorage();
         });
 
@@ -964,16 +918,9 @@
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('leftSidebar');
         
-        console.log('toggleBtn:', toggleBtn);
-        console.log('sidebar:', sidebar);
-        
         if (toggleBtn && sidebar) {
             toggleBtn.addEventListener('click', function() {
-                console.log('Button clicked!');
-                console.log('Before toggle:', sidebar.className);
                 sidebar.classList.toggle('mobile-open');
-                console.log('After toggle:', sidebar.className);
-                console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
 
