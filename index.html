@@ -94,6 +94,7 @@
                             required
                         />
                         <span class="error-message" id="forgotEmailError"></span>
+                        <span class="helper-message" id="forgotEmailHelper"></span>
                     </div>
                     <button type="submit" class="login-button">Send Reset Link</button>
                 </form>
@@ -136,6 +137,7 @@
         const closeForgotPasswordModal = document.getElementById('closeForgotPasswordModal');
         const forgotPasswordForm = document.getElementById('forgotPasswordForm');
         const resetSuccessMessage = document.getElementById('resetSuccessMessage');
+        const forgotEmailHelper = document.getElementById('forgotEmailHelper');
 
         // Open forgot password modal
         if (forgotPasswordLink) {
@@ -205,6 +207,19 @@
                     }
                 } catch (error) {
                     emailError.textContent = error.message || 'An error occurred';
+                }
+            });
+        }
+
+        // Show helper message when email is entered
+        const forgotEmailInput = document.getElementById('forgotEmail');
+        if (forgotEmailInput && forgotEmailHelper) {
+            forgotEmailInput.addEventListener('input', () => {
+                const email = forgotEmailInput.value.trim();
+                if (email) {
+                    forgotEmailHelper.textContent = 'Check your email for password reset instructions after submitting.';
+                } else {
+                    forgotEmailHelper.textContent = '';
                 }
             });
         }
