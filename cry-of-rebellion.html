@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en">
 <head>
-    <meta charset=UTF-8>
-    <meta name=viewport content=width=device-width, initial-scale=1.0>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cry of Rebellion - Readings in Philippine History</title>
-    <link rel=stylesheet href="course.css">
+    <link rel="icon" href="Images/favicon.png" type="image/png">
+    <link rel="stylesheet" href="course.css">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase -->
-    <script src=https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2></script>
-    <script src=supabase-config.js></script>
-    <script src=db-helpers.js></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="db-helpers.js"></script>
     <script src="course.js"></script>
 </head>
 <body>
@@ -131,20 +132,20 @@
                     <div class="infographic-container">
                         <div class="infographic-wrapper" id="infographicWrapper">
                             <div class="slideshow-container">
-                                <div class="slide" fade style="display: block;" data-description="August 1896: Katipunan leaders gather in secret locations northeast of Manila to plan the uprising against Spanish colonial rule.">
-                                    <img src="Images/1.png" alt="Cry of Rebellion Image 1" class="infographic-image" />
+                                <div class="slide fade" style="display: block;" data-description="August 1896: Katipunan leaders gather in secret locations northeast of Manila to plan the uprising against Spanish colonial rule.">
+                                    <img src="Images/Cry of Rebellion/1.png" alt="Cry of Rebellion Image 1" class="infographic-image" />
                                 </div>
-                                <div class="slide" fade data-description="The Cedula Tearing: A symbolic act where Filipino revolutionaries destroy Spanish tax certificates, declaring their independence from colonial authority.">
-                                    <img src="Images/2.png" alt="Cry of Rebellion Image 2" class="infographic-image" />
+                                <div class="slide fade" data-description="The exact date and location remain debated: Balintawak, Kangkong, Pugad Lawin, or Bahay Toro? Historical sources reveal conflicting accounts of this pivotal moment.">
+                                    <img src="Images/Cry of Rebellion/3.png" alt="Cry of Rebellion Image 2" class="infographic-image" />
                                 </div>
-                                <div class="slide" fade data-description="The exact date and location remain debated: Balintawak, Kangkong, Pugad Lawin, or Bahay Toro? Historical sources reveal conflicting accounts of this pivotal moment.">
-                                    <img src="Images/3.png" alt="Cry of Rebellion Image 3" class="infographic-image" />
+                                <div class="slide fade" data-description="Andres Bonifacio leads the revolutionary movement with passion and determination, inspiring thousands to join the fight for independence.">
+                                    <img src="Images/Cry of Rebellion/4.png" alt="Cry of Rebellion Image 3" class="infographic-image" />
                                 </div>
-                                <div class="slide" fade data-description="Andres Bonifacio leads the revolutionary movement with passion and determination, inspiring thousands to join the fight for independence.">
-                                    <img src="Images/4.png" alt="Cry of Rebellion Image 4" class="infographic-image" />
+                                <div class="slide fade" data-description="The legacy of the Cry of Rebellion continues to inspire generations of Filipinos in their struggle for freedom and national pride.">
+                                    <img src="Images/Cry of Rebellion/5.png" alt="Cry of Rebellion Image 4" class="infographic-image" />
                                 </div>
-                                <div class="slide" fade data-description="The legacy of the Cry of Rebellion continues to inspire generations of Filipinos in their struggle for freedom and national pride.">
-                                    <img src="Images/5.png" alt="Cry of Rebellion Image 5" class="infographic-image" />
+                                <div class="slide fade" data-description="The Cry of Rebellion marked the beginning of the Philippine Revolution, leading to years of struggle and eventual independence.">
+                                    <img src="Images/Cry of Rebellion/6.png" alt="Cry of Rebellion Image 5" class="infographic-image" />
                                 </div>
 
                                 <!-- Navigation Arrows -->
@@ -153,7 +154,7 @@
                                 
                                 <!-- Slide Counter -->
                                 <div class="slide-counter">
-                                    <span id="slideNumber">1</span> / 5
+                                    <span id="slideNumber">1</span> / <span id="totalSlides">5</span>
                                 </div>
                             </div>
 
@@ -882,6 +883,7 @@
             line-height: 1.8;
             color: #51513E;
             margin-bottom: 12px;
+            text-align: justify;
         }
 
         .content-section p:last-child {
@@ -890,10 +892,12 @@
 
         .content-section ul {
             margin-bottom: 12px;
+            text-align: justify;
         }
 
         .content-section li {
             margin-bottom: 8px;
+            text-align: justify;
         }
 
         blockquote {
@@ -1077,14 +1081,11 @@
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
 
                 if (!session) {
-                    console.log('No active session, redirecting to login');
                     window.location.href = 'index.html';
                     return;
                 }
 
-                console.log('User authenticated:', session.user.email);
             } catch (error) {
-                console.error('Auth check error:', error);
                 // If error checking auth, redirect to login to be safe
                 window.location.href = 'index.html';
             }
@@ -1121,6 +1122,7 @@
             if (dots[n]) dots[n].classList.add('active');
             
             document.getElementById('slideNumber').textContent = n + 1;
+            document.getElementById('totalSlides').textContent = slides.length;
             
             const description = slides[n].getAttribute('data-description');
             if (description) {
@@ -1350,16 +1352,9 @@
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('leftSidebar');
         
-        console.log('toggleBtn:', toggleBtn);
-        console.log('sidebar:', sidebar);
-        
         if (toggleBtn && sidebar) {
             toggleBtn.addEventListener('click', function() {
-                console.log('Button clicked!');
-                console.log('Before toggle:', sidebar.className);
                 sidebar.classList.toggle('mobile-open');
-                console.log('After toggle:', sidebar.className);
-                console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
 

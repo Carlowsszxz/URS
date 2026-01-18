@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retraction of Rizal - Readings in Philippine History</title>
+    <link rel="icon" href="Images/favicon.png" type="image/png">
     <link rel="stylesheet" href="course.css">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -566,6 +567,7 @@
             line-height: 1.8;
             color: #51513E;
             margin-bottom: 12px;
+            text-align: justify;
         }
 
         .content-section p:last-child {
@@ -574,10 +576,12 @@
 
         .content-section ul {
             margin-bottom: 12px;
+            text-align: justify;
         }
 
         .content-section li {
             margin-bottom: 8px;
+            text-align: justify;
         }
 
         blockquote {
@@ -717,8 +721,6 @@
             }
         }
     </style>
-
-    <script src="course.js"></script>
     
     <script>
         // ==================== AUTHENTICATION CHECK ====================
@@ -761,6 +763,18 @@
         let currentSlideIndex = 0;
         const SLIDE_INTERVAL = 5000; // 5 seconds
         let autoSlideTimer;
+
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.log(err));
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
 
         function initSlideshow() {
             displaySlide(0);

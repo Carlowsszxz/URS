@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Readings in Philippine History</title>
+    <link rel="icon" href="Images/favicon.png" type="image/png">
     <link rel="stylesheet" href="course.css">
     <!-- Lucide Icons - Modern Icon Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -645,7 +646,6 @@
             try {
                 // If userEmail not in localStorage, user is logged out
                 if (!localStorage.getItem('userEmail')) {
-                    console.log('No user email in localStorage, redirecting to login');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -662,12 +662,10 @@
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
 
                 if (!session) {
-                    console.log('No active session, redirecting to login');
                     window.location.href = 'index.html';
                     return;
                 }
 
-                console.log('User authenticated:', session.user.email);
             } catch (error) {
                 console.error('Auth check error:', error);
                 // If error checking auth, redirect to login to be safe
@@ -711,7 +709,6 @@
                 reader.onload = (event) => {
                     selectedAvatarImage = event.target.result;
                     avatarPreview.src = selectedAvatarImage;
-                    console.log('Image selected:', selectedAvatarImage.substring(0, 50) + '...');
                 };
                 reader.readAsDataURL(file);
             }
@@ -719,7 +716,6 @@
 
         // Open edit profile modal
         editProfileBtn.addEventListener('click', async () => {
-            console.log('Edit button clicked');
             try {
                 // Get current session
                 const session = await getCurrentSession();
@@ -729,35 +725,26 @@
                 } else {
                     // Fetch from database
                     const supabaseClient = await getSupabaseClient();
-                    console.log('🔍 Querying user_profiles for user ID:', session.user.id);
                     const { data: profileData, error } = await supabaseClient
                         .from('user_profiles')
                         .select('full_name, bio, avatar_url')
                         .eq('id', session.user.id)
                         .single();
                     
-                    console.log('📊 Query result:', { data: profileData, error });
-                    
                     if (!error && profileData) {
-                        console.log('📦 Loaded profile from database:', profileData);
                         editNameInput.value = profileData.full_name || '';
                         editBioInput.value = profileData.bio || '';
-                        console.log('✅ Set editNameInput to:', profileData.full_name);
                         // Update avatar preview with database avatar
                         if (profileData.avatar_url) {
                             avatarPreview.src = profileData.avatar_url;
-                            console.log('✅ Set avatar preview to:', profileData.avatar_url);
                         }
                     } else {
-                        console.log('❌ Could not load from database, using localStorage. Error:', error);
                         editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
                         editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
-                        console.log('📱 Fallback values - Name:', editNameInput.value, 'Bio:', editBioInput.value);
                         // Try to get avatar from localStorage
                         const savedAvatar = await getUserLocalStorage('profileAvatar');
                         if (savedAvatar) {
                             avatarPreview.src = savedAvatar;
-                            console.log('📱 Fallback avatar from localStorage:', savedAvatar);
                         }
                     }
                 }
@@ -771,13 +758,11 @@
             selectedAvatarImage = null;
             editAvatarInput.value = '';
             editProfileModal.classList.add('active');
-            console.log('Modal opened');
         });
 
         // Close modal
         const closeModal = () => {
             editProfileModal.classList.remove('active');
-            console.log('Modal closed');
         };
 
         closeEditModal.addEventListener('click', closeModal);
@@ -787,8 +772,6 @@
         saveProfileBtn.addEventListener('click', async () => {
             const newName = editNameInput.value.trim();
             const newBio = editBioInput.value.trim();
-
-            console.log('Save clicked - Name:', newName, 'Bio:', newBio, 'Avatar:', selectedAvatarImage ? 'Yes' : 'No');
 
             if (newName && newBio) {
                 try {
@@ -802,8 +785,6 @@
                         saveProfileBtn.disabled = false;
                         return;
                     }
-                    
-                    console.log('✅ User authenticated:', session.user.email);
                     
                     profileNameDisplay.textContent = newName;
                     profileEmailDisplay.textContent = newBio;
@@ -832,8 +813,6 @@
                             const currentEmail = session.user.email;
                             const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
                             
-                            console.log('📤 Uploading avatar to Supabase...', fileName);
-                            
                             // Upload to Supabase storage
                             const { data, error } = await supabaseClient.storage
                                 .from('user-avatars')
@@ -852,14 +831,12 @@
                                     localStorage.setItem(`profileAvatar_${userId}`, selectedAvatarImage);
                                 }
                             } else {
-                                console.log('✅ Avatar uploaded successfully');
                                 // Get public URL
                                 const { data: publicData } = supabaseClient.storage
                                     .from('user-avatars')
                                     .getPublicUrl(fileName);
                                 
                                 avatarUrl = publicData.publicUrl;
-                                console.log('🔗 Public URL:', avatarUrl);
                                 
                                 // Save to user-specific localStorage for quick access
                                 const session = await getCurrentSession();
@@ -870,8 +847,6 @@
                                 
                                 profileAvatar.src = avatarUrl;
                                 createPostAvatar.src = avatarUrl;
-                                
-                                console.log('✅ Avatar URL saved:', avatarUrl);
                             }
                         } catch (err) {
                             console.error('❌ Error uploading avatar:', err);
@@ -894,15 +869,6 @@
                         const currentEmail = session.user.email;
                         const userId = session.user.id;
                         
-                        console.log('💾 Saving profile to Supabase database...');
-                        console.log('📝 Save data:', {
-                            id: userId,
-                            user_email: currentEmail,
-                            full_name: newName,
-                            bio: newBio,
-                            avatar_url: avatarUrl || (await getUserLocalStorage('profileAvatar'))
-                        });
-                        
                         const { data, error } = await supabaseClient
                             .from('user_profiles')
                             .upsert({
@@ -913,14 +879,11 @@
                                 avatar_url: avatarUrl || (await getUserLocalStorage('profileAvatar'))
                             });
                         
-                        console.log('💾 Save result:', { data, error });
-                        
                         if (error) {
                             console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
                             // Still close modal since localStorage and storage were updated
                             alert('Profile updated but failed to sync to database. Changes saved locally.');
                         } else {
-                            console.log('✅ Profile saved to Supabase database');
                         }
                     } catch (err) {
                         console.warn('⚠️ Could not sync profile to database:', err.message);
@@ -928,7 +891,6 @@
                         alert('Profile updated but failed to sync to database. Changes saved locally.');
                     }
 
-                    console.log('Profile saved');
                     saveProfileBtn.disabled = false;
                     closeModal();
                 } catch (err) {
@@ -943,7 +905,6 @@
 
         // Load profile from Supabase database
         // Load profile using the centralized function
-        console.log('⏱️ Loading profile using centralized function...');
         loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
             // Update create post avatar and name after profile loads
             createPostAvatar.src = profileAvatar.src;
@@ -952,7 +913,6 @@
 
         // Also load on window load event
         window.addEventListener('load', () => {
-            console.log('⏱️ Window load event - reloading profile');
             loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
                 createPostAvatar.src = profileAvatar.src;
                 createPostName.textContent = profileNameDisplay.textContent;
@@ -960,7 +920,6 @@
         });
 
         // Watch for any changes to profile elements and restore localStorage data
-        console.log('👀 Setting up MutationObserver to watch for profile changes...');
         const observer = new MutationObserver(async (mutations) => {
             mutations.forEach(async (mutation) => {
                 const savedName = await getUserLocalStorage('profileName');
@@ -969,12 +928,10 @@
                 
                 if (mutation.type === 'characterData' || mutation.type === 'childList') {
                     if (savedName && profileNameDisplay.textContent !== savedName) {
-                        console.log('⚠️ Profile name changed from:', profileNameDisplay.textContent, 'back to:', savedName);
                         profileNameDisplay.textContent = savedName;
                         createPostName.textContent = savedName;
                     }
                     if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                        console.log('⚠️ Profile bio changed from:', profileEmailDisplay.textContent, 'back to:', savedBio);
                         profileEmailDisplay.textContent = savedBio;
                     }
                 }
@@ -984,17 +941,11 @@
                     const targetId = target.id;
                     const attrName = mutation.attributeName;
                     
-                    console.log('🔍 Attribute changed - Element:', targetId, 'Attribute:', attrName);
-                    console.log('   Current src:', target.src);
-                    console.log('   Saved avatar:', savedAvatar ? 'Yes' : 'No');
-                    
                     if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                        console.log('⚠️ Profile avatar (profileAvatar) changed from:', profileAvatar.src, 'to:', savedAvatar);
                         profileAvatar.src = savedAvatar;
                         createPostAvatar.src = savedAvatar;
                     }
                     if (savedAvatar && createPostAvatar.src !== savedAvatar) {
-                        console.log('⚠️ Create post avatar (createPostAvatar) changed from:', createPostAvatar.src, 'to:', savedAvatar);
                         createPostAvatar.src = savedAvatar;
                     }
                 }
@@ -1011,11 +962,9 @@
             const savedAvatar = localStorage.getItem('profileAvatar');
             if (savedAvatar) {
                 if (profileAvatar.src !== savedAvatar) {
-                    console.log('🔄 Periodic check: Restoring profileAvatar');
                     profileAvatar.src = savedAvatar;
                 }
                 if (createPostAvatar.src !== savedAvatar) {
-                    console.log('🔄 Periodic check: Restoring createPostAvatar from', createPostAvatar.src, 'to', savedAvatar);
                     createPostAvatar.src = savedAvatar;
                 }
                 
@@ -1023,7 +972,6 @@
                 const allPostAvatars = document.querySelectorAll('.post-avatar');
                 allPostAvatars.forEach((avatar, index) => {
                     if (avatar.src && avatar.src !== savedAvatar && !avatar.src.includes('i.pravatar.cc')) {
-                        console.log('🔄 Periodic check: Updating post avatar', index, 'to', savedAvatar.substring(0, 50));
                         avatar.src = savedAvatar;
                     }
                 });
@@ -1031,34 +979,26 @@
         }, 1000);
 
         // Override the app's profile population to preserve localStorage data
-        console.log('🔧 Attempting to override populateUserProfile...');
         const originalPopulateUserProfile = window.app?.populateUserProfile;
         
         if (originalPopulateUserProfile) {
-            console.log('✅ Found original populateUserProfile, wrapping it');
             window.app.populateUserProfile = function() {
-                console.log('🔴 populateUserProfile called - restoring localStorage after 500ms');
                 // Call original method first
                 originalPopulateUserProfile.call(this);
                 // Then restore localStorage data
                 setTimeout(() => {
-                    console.log('🟢 Restoring profile data after original populateUserProfile');
                     loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
                 }, 500);
             };
         } else {
-            console.log('❌ window.app not found yet, waiting for it...');
             // If app isn't loaded yet, keep checking
             const checkForApp = setInterval(() => {
                 if (window.app && window.app.populateUserProfile) {
-                    console.log('✅ App found! Wrapping populateUserProfile');
                     clearInterval(checkForApp);
                     const origMethod = window.app.populateUserProfile;
                     window.app.populateUserProfile = function() {
-                        console.log('🔴 populateUserProfile called - restoring profile data after 500ms');
                         origMethod.call(this);
                         setTimeout(() => {
-                            console.log('🟢 Restoring profile data after original populateUserProfile');
                             loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
                         }, 500);
                     };
@@ -1068,7 +1008,6 @@
 
         // Also load when localStorage changes (in case another tab updates it)
         window.addEventListener('storage', () => {
-            console.log('💾 localStorage changed in another tab, reloading profile');
             loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
         });
 
@@ -1088,7 +1027,6 @@
                                     const avatars = node.querySelectorAll('.avatar, img[alt]');
                                     avatars.forEach((avatar) => {
                                         if (avatar.src && avatar.src.includes('i.pravatar.cc') && avatar.alt === profileEmail.textContent) {
-                                            console.log('📸 Found post avatar for current user, replacing with custom avatar');
                                             avatar.src = savedAvatar;
                                         }
                                     });
@@ -1100,7 +1038,6 @@
             });
             
             postObserver.observe(forumContainer, { childList: true, subtree: false });
-            console.log('✅ Post avatar observer initialized');
         }
 
         // ==================== SEARCH FUNCTIONALITY ====================
@@ -1343,16 +1280,9 @@
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('leftSidebar');
         
-        console.log('toggleBtn:', toggleBtn);
-        console.log('sidebar:', sidebar);
-        
         if (toggleBtn && sidebar) {
             toggleBtn.addEventListener('click', function() {
-                console.log('Button clicked!');
-                console.log('Before toggle:', sidebar.className);
                 sidebar.classList.toggle('mobile-open');
-                console.log('After toggle:', sidebar.className);
-                console.log('Computed display:', window.getComputedStyle(sidebar).display);
             });
         }
 

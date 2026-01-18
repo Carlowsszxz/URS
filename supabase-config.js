@@ -57,15 +57,12 @@ async function loadUserProfile(nameElement, emailElement, avatarElement) {
 
         // Then fetch from database to ensure data is current
         try {
-            console.log('🔍 loadUserProfile querying user_profiles for userId:', userId);
             const { data: profileData, error } = await supabaseClient
                 .from('user_profiles')
                 .select('full_name, bio, avatar_url')
                 .eq('id', userId)
                 .single();
             
-            console.log('📊 loadUserProfile query result:', { data: profileData, error });
-
             if (!error && profileData) {
                 const name = profileData.full_name || session.session.user.user_metadata?.full_name || session.session.user.email?.split('@')[0] || 'User';
                 const bio = profileData.bio || '';
@@ -84,7 +81,6 @@ async function loadUserProfile(nameElement, emailElement, avatarElement) {
                 return true;
             }
         } catch (dbError) {
-            console.log('Database profile load failed, using cached/session data');
         }
 
         // Fallback to session data if database fails
@@ -111,7 +107,6 @@ async function loadUserProfile(nameElement, emailElement, avatarElement) {
 // Listen for auth changes
 if (window.supabaseClient) {
     window.supabaseClient.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
         
         // Store session info for easy access
         if (session) {
@@ -125,4 +120,4 @@ if (window.supabaseClient) {
     });
 }
 
-console.log('Supabase initialized:', SUPABASE_URL);
+

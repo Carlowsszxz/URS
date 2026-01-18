@@ -46,12 +46,10 @@ class CourseInterface {
         
         if (isEducationalPage) {
             // Allow access to educational pages without auth, but try to load user data if available
-            console.log('Educational page - loading user data if available');
             try {
                 const session = await getCurrentSession();
                 if (session) {
                     this.currentUser = session.user;
-                    console.log('Loaded user data:', this.currentUser.email);
                 } else {
                     // Set default guest user for educational pages
                     this.currentUser = {
@@ -59,10 +57,8 @@ class CourseInterface {
                         email: 'guest@example.com',
                         user_metadata: { full_name: 'Guest User' }
                     };
-                    console.log('Using guest user for educational page');
                 }
             } catch (error) {
-                console.log('Could not load session, using guest user');
                 this.currentUser = {
                     id: 'guest',
                     email: 'guest@example.com',
@@ -80,7 +76,6 @@ class CourseInterface {
                 return;
             }
             this.currentUser = session.user;
-            console.log('Authenticated as:', this.currentUser.email);
         } catch (error) {
             console.error('Auth check failed:', error);
             window.location.href = 'index.html';
@@ -136,7 +131,6 @@ class CourseInterface {
                         }
                     }
                 } catch (err) {
-                    console.log('Could not fetch profile from database, using currentUser data');
                 }
 
                 // Fallback to currentUser data
@@ -234,14 +228,10 @@ class CourseInterface {
         
         // Close dropdowns when clicking elsewhere
         document.addEventListener('click', (e) => {
-            console.log('📍 Document click detected');
             if (!e.target.closest('.nav-item-dropdown')) {
-                console.log('   - Click was outside dropdowns, closing all');
                 document.querySelectorAll('.nav-item-dropdown.open').forEach(dropdown => {
                     dropdown.classList.remove('open');
                 });
-            } else {
-                console.log('   - Click was inside dropdown area');
             }
         });
 
@@ -561,7 +551,6 @@ class CourseInterface {
     }
 
     async createForumPostElement(post) {
-        console.log('🏗️ createForumPostElement called for post:', post.author_name);
         const postDiv = document.createElement('div');
         postDiv.className = 'forum-post';
         
@@ -576,13 +565,9 @@ class CourseInterface {
         // Determine if this post is from the current user
         let isCurrentUserPost = false;
         
-        console.log('🔎 Post author_id:', post.author_id, 'Current user:', currentUserEmail);
-        
         if (currentUserEmail && post.author_id === currentUserEmail) {
             isCurrentUserPost = true;
-            console.log('✅ Post from current user detected');
             if (savedAvatar) {
-                console.log('🎨 Using saved avatar for current user post');
                 avatarSrc = savedAvatar;
             }
         } else {
@@ -596,14 +581,12 @@ class CourseInterface {
                     .single();
                 
                 if (!error && profileData) {
-                    console.log('📝 Fetched latest name from database:', profileData.full_name);
                     displayName = profileData.full_name;
                     if (profileData.avatar_url) {
                         avatarSrc = profileData.avatar_url;
                     }
                 }
             } catch (err) {
-                console.log('Could not fetch latest name, using stored name:', err);
             }
         }
         
@@ -988,11 +971,9 @@ class CourseInterface {
                     const profileData = profileDataArray[0];
                     if (profileData?.avatar_url) {
                         authorAvatarUrl = profileData.avatar_url;
-                        console.log('✅ Fetched avatar URL from database:', authorAvatarUrl);
                     }
                 }
             } catch (err) {
-                console.log('ℹ️ Using localStorage avatar URL');
             }
             
             if (!authorAvatarUrl) {
@@ -1059,18 +1040,9 @@ class CourseInterface {
     async uploadImagesToStorage() {
         const imageUrls = [];
         
-        // Debug: Check authentication status
-        const session = await window.supabaseClient.auth.getSession();
-        console.log('DEBUG: Session exists?', !!session.data.session);
-        console.log('DEBUG: User ID:', session.data.session?.user?.id);
-        
         for (const imageObj of this.selectedImages) {
             try {
                 const fileName = `posts/${Date.now()}-${Math.random().toString(36).substring(7)}-${imageObj.file.name}`;
-                
-                console.log('DEBUG: Attempting upload to:', fileName);
-                console.log('DEBUG: File size:', imageObj.file.size);
-                console.log('DEBUG: File type:', imageObj.file.type);
                 
                 // Upload with explicit auth
                 const { data, error } = await window.supabaseClient.storage
@@ -1093,7 +1065,6 @@ class CourseInterface {
                     .from('post-images')
                     .getPublicUrl(fileName);
 
-                console.log('DEBUG: Upload successful, URL:', urlData.publicUrl);
                 imageUrls.push(urlData.publicUrl);
             } catch (error) {
                 console.error('Failed to upload image:', error);
@@ -1119,7 +1090,6 @@ class CourseInterface {
             }
 
             if (!posts || posts.length === 0) {
-                console.log('No posts found');
                 return;
             }
 
@@ -1161,7 +1131,6 @@ class CourseInterface {
             // Reinitialize Lucide icons for dynamically loaded content
             this.reinitializeLucideIcons();
 
-            console.log(`Loaded ${posts.length} posts from database`);
         } catch (error) {
             console.error('Failed to load posts:', error);
         }
@@ -1296,12 +1265,10 @@ class CourseInterface {
                 const savedName = localStorage.getItem('profileName');
                 if (savedName) {
                     authorName = savedName;
-                    console.log('📝 Using current profile name for post display:', authorName);
                 }
                 const savedAvatar = localStorage.getItem('profileAvatar');
                 if (savedAvatar) {
                     authorAvatar = savedAvatar;
-                    console.log('🎨 Using current profile avatar for post display');
                 }
             } else {
                 // For other users' posts, fetch the latest name from database
@@ -1314,7 +1281,6 @@ class CourseInterface {
                             .single();
                         
                         if (!error && profileData) {
-                            console.log('📝 Fetched latest name from database:', profileData.full_name);
                             const nameEl = postCard.querySelector('.post-meta strong');
                             if (nameEl) {
                                 nameEl.textContent = profileData.full_name;
@@ -1327,7 +1293,6 @@ class CourseInterface {
                             }
                         }
                     } catch (err) {
-                        console.log('Could not fetch latest name from database');
                     }
                 })();
             }
@@ -1346,7 +1311,6 @@ class CourseInterface {
                             const avatarImg = postCard.querySelector('.avatar');
                             if (avatarImg) {
                                 avatarImg.src = profileData.avatar_url;
-                                console.log('✅ Updated post avatar from user_profiles:', profileData.avatar_url);
                             }
                         }
                     }
@@ -1363,12 +1327,7 @@ class CourseInterface {
                         <span class="post-time">• ${postTime}</span>
                     </div>
                     ${isAuthor ? `<button class="delete-post-btn" data-post-id="${postData.id}" title="Delete post">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 6h18"></path>
-                            <path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                        </svg>
+                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                     </button>` : ''}
                 </div>
 
@@ -1495,7 +1454,6 @@ class CourseInterface {
                         }
                     }
                 } catch (err) {
-                    console.log('Could not fetch latest name from database');
                 }
             })();
         }
@@ -1510,12 +1468,7 @@ class CourseInterface {
                     <span class="post-time">• ${postTime}</span>
                 </div>
                 ${isAuthor ? `<button class="delete-post-btn" data-post-id="${postData.id}" title="Delete post">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 6h18"></path>
-                        <path d="M8 6v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"></path>
-                        <line x1="10" y1="11" x2="10" y2="17"></line>
-                        <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
+                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                 </button>` : ''}
             </div>
 
@@ -1975,7 +1928,6 @@ class CourseInterface {
                         }
                     }
                 } catch (err) {
-                    console.log('Could not fetch latest name from database');
                 }
             })();
         }
@@ -2220,8 +2172,6 @@ class CourseInterface {
                 throw new Error('You must be logged in to save your profile. Please refresh the page and log in again.');
             }
 
-            console.log('✅ User authenticated:', session.user.email);
-
             // Save to localStorage for games
             localStorage.setItem('userName', newName);
             localStorage.setItem('profileName', newName);
@@ -2254,7 +2204,6 @@ class CourseInterface {
                 if (error) {
                     console.warn('⚠️ Could not sync to database:', error.message);
                 } else {
-                    console.log('✅ Profile saved to database');
                 }
             } catch (dbErr) {
                 console.warn('⚠️ Database sync failed:', dbErr.message);

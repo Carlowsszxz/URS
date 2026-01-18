@@ -141,7 +141,6 @@ class LoginForm {
 
         setTimeout(() => {
             // In a real app, redirect to dashboard
-            console.log('Redirecting to dashboard...');
             // window.location.href = '/dashboard';
         }, 1500);
     }
