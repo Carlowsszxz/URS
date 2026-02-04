@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reference Materials - Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
-    <link rel="stylesheet" href="course.css">
+    <link rel="stylesheet" href="Styles/course.css">
     <!-- Lucide Icons - Modern Icon Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="db-helpers.js"></script>
-    <script src="course.js"></script>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
+    <script src="JS/course.js"></script>
 </head>
 <body>
     <!-- Header Navigation -->
     <header class="header">
         <div class="header-container">
-            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 1001;">
+            <button id="referenceMobileToggle" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; z-index: 1001; padding: 0;">
                 ☰
             </button>
 
@@ -30,12 +30,6 @@
             </div>
 
             <div class="header-actions">
-                <div class="header-search">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search users..." />
-                    <button class="search-btn" id="searchBtn" title="Search">
-                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
-                    </button>
-                </div>
                 
                 <button class="sidebar-toggle-right" id="sidebarToggleRight" title="Show more">
                     <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
@@ -67,6 +61,10 @@
                     <i data-lucide="radio" class="nav-icon-svg"></i>
                     <span>Feed</span>
                 </a>
+                <a href="quizzes.html" class="nav-item" data-section="quizzes">
+                    <i data-lucide="clipboard-list" class="nav-icon-svg"></i>
+                    <span>Quizzes</span>
+                </a>
                 <div class="nav-item-dropdown">
                     <div class="nav-item" data-section="topic">
                         <i data-lucide="book-open" class="nav-icon-svg"></i>
@@ -87,17 +85,24 @@
                         <i data-lucide="chevron-down" class="dropdown-arrow"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
-                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
-                            Worksheets
-                        </a>
                         <a href="games.html" class="dropdown-item" data-section="games">
                             <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
                             Games
                         </a>
+                        
                         <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
                             <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
                             Interactive Tasks
+                        </a>
+
+                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Worksheets
+                        </a>
+
+                        <a href="handouts.html" class="dropdown-item" data-section="handouts">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Handouts
                         </a>
                     </div>
                 </div>
@@ -108,7 +113,7 @@
                 </a>
 
                 <a href="reference.html" class="nav-item active" data-section="reference">
-                    <i data-lucide="book-open" class="nav-icon-svg"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="book-open" aria-hidden="true" class="lucide lucide-book-open nav-icon-svg"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
                     <span>Reference</span>
                 </a>
             </nav>
@@ -125,304 +130,109 @@
             <div class="reference-controls">
                 <div class="search-container">
                     <input type="text" id="referenceSearch" placeholder="Search reference materials..." class="reference-search-input">
-                    <button class="reference-search-btn">
-                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
-                    </button>
                 </div>
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="timeline">Timeline</button>
-                    <button class="filter-btn" data-filter="figures">Key Figures</button>
-                    <button class="filter-btn" data-filter="documents">Documents</button>
-                    <button class="filter-btn" data-filter="glossary">Glossary</button>
+                    <button class="filter-btn" data-filter="books">Books</button>
+                    <button class="filter-btn" data-filter="videos">Videos</button>
                 </div>
             </div>
 
             <!-- Reference Content Sections -->
             <div class="reference-content">
 
-                <!-- Timeline Section -->
-                <section class="reference-section" data-category="timeline">
+                <!-- Books Section -->
+                <section class="reference-section" data-category="books">
                     <div class="section-header">
-                        <h2><i data-lucide="calendar" style="width: 24px; height: 24px;"></i> Historical Timeline</h2>
-                        <p>Key events in Philippine history from pre-colonial times to the modern era</p>
+                        <h2><i data-lucide="book" style="width: 24px; height: 24px;"></i> Reference Books</h2>
+                        <p>Books referenced and used throughout the RPH Interactive Learning Hub</p>
                     </div>
 
-                    <div class="timeline-container">
-                        <div class="timeline-item">
-                            <div class="timeline-date">1521</div>
-                            <div class="timeline-content">
-                                <h3>Ferdinand Magellan's Arrival</h3>
-                                <p>Portuguese explorer Ferdinand Magellan arrives in the Philippines, claiming the islands for Spain and beginning the Spanish colonial period.</p>
+                    <div class="books-grid">
+                        <div class="reference-card">
+                            <div class="book-icon">
+                                <i data-lucide="book-open" style="width: 48px; height: 48px;"></i>
+                            </div>
+                            <div class="book-info">
+                                <h3>Readings in Philippine History</h3>
+                                <p class="book-authors">J. L. Candelaria & V. C. Alporha</p>
+                                <p class="book-details">1st Edition, 2018, Rex Bookstore</p>
+                                <p class="book-description">A comprehensive textbook covering key events and figures in Philippine colonial history.</p>
                             </div>
                         </div>
 
-                        <div class="timeline-item">
-                            <div class="timeline-date">1565</div>
-                            <div class="timeline-content">
-                                <h3>Spanish Colonization Begins</h3>
-                                <p>Miguel López de Legazpi establishes the first permanent Spanish settlement in Cebu, marking the beginning of 333 years of Spanish rule.</p>
+                        <div class="reference-card">
+                            <div class="book-icon">
+                                <i data-lucide="book-open" style="width: 48px; height: 48px;"></i>
                             </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-date">1896</div>
-                            <div class="timeline-content">
-                                <h3>Philippine Revolution</h3>
-                                <p>The Cry of Pugad Lawin sparks the Philippine Revolution against Spanish rule, led by figures like José Rizal, Andrés Bonifacio, and Emilio Aguinaldo.</p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-date">1898</div>
-                            <div class="timeline-content">
-                                <h3>Declaration of Independence</h3>
-                                <p>Emilio Aguinaldo declares Philippine independence from Spain on June 12, though this leads to the Philippine-American War.</p>
-                            </div>
-                        </div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-date">1946</div>
-                            <div class="timeline-content">
-                                <h3>Independence from the United States</h3>
-                                <p>The Philippines gains full independence on July 4, becoming the first Asian country to achieve independence from Western colonial powers.</p>
+                            <div class="book-info">
+                                <h3>Understanding Philippine History: Readings and Discourse</h3>
+                                <p class="book-authors">A. C. Rosales, J. R. Viray & R. R. Sebastian</p>
+                                <p class="book-details">2020, Lorimar Publishing</p>
+                                <p class="book-description">An in-depth exploration of Philippine historical narratives and discourses.</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Key Figures Section -->
-                <section class="reference-section" data-category="figures">
+                <!-- Videos Section -->
+                <section class="reference-section" data-category="videos">
                     <div class="section-header">
-                        <h2><i data-lucide="users" style="width: 24px; height: 24px;"></i> Key Historical Figures</h2>
-                        <p>Important individuals who shaped Philippine history</p>
+                        <h2><i data-lucide="play-circle" style="width: 24px; height: 24px;"></i> Video Resources</h2>
+                        <p>Educational videos covering key Philippine history topics</p>
                     </div>
 
-                    <div class="figures-grid">
-                        <div class="figure-card">
-                            <div class="figure-image">
-                                <img src="https://i.pravatar.cc/120?img=1" alt="José Rizal">
+                    <div class="videos-grid">
+                        <div class="reference-card">
+                            <div class="video-thumbnail">
+                                <i data-lucide="play" style="width: 32px; height: 32px;"></i>
                             </div>
-                            <div class="figure-info">
-                                <h3>José Rizal</h3>
-                                <p class="figure-role">National Hero</p>
-                                <p class="figure-description">Writer, physician, and revolutionary whose novels "Noli Me Tangere" and "El Filibusterismo" exposed Spanish colonial abuses and inspired the Philippine Revolution.</p>
-                                <p class="figure-dates">1861-1896</p>
-                            </div>
-                        </div>
-
-                        <div class="figure-card">
-                            <div class="figure-image">
-                                <img src="https://i.pravatar.cc/120?img=2" alt="Andrés Bonifacio">
-                            </div>
-                            <div class="figure-info">
-                                <h3>Andrés Bonifacio</h3>
-                                <p class="figure-role">Revolutionary Leader</p>
-                                <p class="figure-description">Founder of the Katipunan secret society and leader of the 1896 Philippine Revolution. Known as the "Father of the Philippine Revolution."</p>
-                                <p class="figure-dates">1863-1897</p>
+                            <div class="video-info">
+                                <h3>Ang Unang Sigaw Ng Himagsikan Sa Balintawak, Caloocan</h3>
+                                <p class="video-creator">Xiao Time</p>
+                                <p class="video-date">May 28, 2020</p>
+                                <p class="video-description">A detailed video on the Cry of Rebellion in Balintawak, Caloocan.</p>
+                                <a href="https://youtu.be/Dtc9q_V8_hs?si=V15c_dwqkPLp6QgW" class="video-link" target="_blank">Watch on YouTube</a>
                             </div>
                         </div>
 
-                        <div class="figure-card">
-                            <div class="figure-image">
-                                <img src="https://i.pravatar.cc/120?img=3" alt="Emilio Aguinaldo">
+                        <div class="reference-card">
+                            <div class="video-thumbnail">
+                                <i data-lucide="play" style="width: 32px; height: 32px;"></i>
                             </div>
-                            <div class="figure-info">
-                                <h3>Emilio Aguinaldo</h3>
-                                <p class="figure-role">First President</p>
-                                <p class="figure-description">Military leader who became the first President of the Philippines. Led the fight against both Spanish and American forces.</p>
-                                <p class="figure-dates">1869-1964</p>
-                            </div>
-                        </div>
-
-                        <div class="figure-card">
-                            <div class="figure-image">
-                                <img src="https://i.pravatar.cc/120?img=4" alt="Apolinario Mabini">
-                            </div>
-                            <div class="figure-info">
-                                <h3>Apolinario Mabini</h3>
-                                <p class="figure-role">Prime Minister</p>
-                                <p class="figure-description">Brilliant paralytic known as the "Sublime Paralytic" and "Brains of the Revolution." Served as Prime Minister of the First Philippine Republic.</p>
-                                <p class="figure-dates">1864-1903</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Important Documents Section -->
-                <section class="reference-section" data-category="documents">
-                    <div class="section-header">
-                        <h2><i data-lucide="file-text" style="width: 24px; height: 24px;"></i> Important Documents</h2>
-                        <p>Key documents that shaped Philippine history and governance</p>
-                    </div>
-
-                    <div class="documents-grid">
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i data-lucide="scroll-text" style="width: 32px; height: 32px;"></i>
-                            </div>
-                            <div class="document-info">
-                                <h3>Malolos Constitution</h3>
-                                <p class="document-date">1899</p>
-                                <p class="document-description">The first republican constitution in Asia, establishing the First Philippine Republic under Emilio Aguinaldo.</p>
-                                <a href="#" class="document-link">View Document</a>
+                            <div class="video-info">
+                                <h3>Ang Pag-aaklas Sa Cavite (Cavite Mutiny)</h3>
+                                <p class="video-creator">Xiao Time</p>
+                                <p class="video-date">June 4, 2020</p>
+                                <p class="video-description">Exploration of the Cavite Mutiny and its historical significance.</p>
+                                <a href="https://youtu.be/5CwmcUCwuv8?si=OIpVryseX3K8t8MR" class="video-link" target="_blank">Watch on YouTube</a>
                             </div>
                         </div>
 
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i data-lucide="book-open" style="width: 32px; height: 32px;"></i>
+                        <div class="reference-card">
+                            <div class="video-thumbnail">
+                                <i data-lucide="play" style="width: 32px; height: 32px;"></i>
                             </div>
-                            <div class="document-info">
-                                <h3>Noli Me Tangere</h3>
-                                <p class="document-date">1887</p>
-                                <p class="document-description">José Rizal's seminal novel exposing Spanish colonial abuses and awakening Filipino national consciousness.</p>
-                                <a href="#" class="document-link">Read Excerpt</a>
-                            </div>
-                        </div>
-
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i data-lucide="flag" style="width: 32px; height: 32px;"></i>
-                            </div>
-                            <div class="document-info">
-                                <h3>Act of Declaration of Philippine Independence</h3>
-                                <p class="document-date">1898</p>
-                                <p class="document-description">Document declaring Philippine independence from Spain, read by Ambrosio Rianzares Bautista in Kawit, Cavite.</p>
-                                <a href="#" class="document-link">View Document</a>
+                            <div class="video-info">
+                                <h3>Retraction Ni Jose Rizal</h3>
+                                <p class="video-creator">Xiao Time HD</p>
+                                <p class="video-date">July 20, 2022</p>
+                                <p class="video-description">Discussion on Jose Rizal's retraction and its context.</p>
+                                <a href="https://youtu.be/YPLn_u0x5k4?si=mNLdBMtkna99A620" class="video-link" target="_blank">Watch on YouTube</a>
                             </div>
                         </div>
 
-                        <div class="document-card">
-                            <div class="document-icon">
-                                <i data-lucide="file-check" style="width: 32px; height: 32px;"></i>
+                        <div class="reference-card">
+                            <div class="video-thumbnail">
+                                <i data-lucide="play" style="width: 32px; height: 32px;"></i>
                             </div>
-                            <div class="document-info">
-                                <h3>Treaty of Paris</h3>
-                                <p class="document-date">1898</p>
-                                <p class="document-description">Treaty that ended the Spanish-American War and ceded the Philippines to the United States for $20 million.</p>
-                                <a href="#" class="document-link">View Treaty</a>
+                            <div class="video-info">
+                                <h3>Ang KASAYSAYAN unang MISA Sa PILIPINAS | March 31, 1521 | Easter Sunday</h3>
+                                <p class="video-creator">Knowledge Power TV</p>
+                                <p class="video-date">April 3, 2021</p>
+                                <p class="video-description">Historical account of the first mass in the Philippines on Easter Sunday 1521.</p>
+                                <a href="https://youtu.be/qQgYPV-mAUY?si=tmwYUGVafR-eEvc-" class="video-link" target="_blank">Watch on YouTube</a>
                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Glossary Section -->
-                <section class="reference-section" data-category="glossary">
-                    <div class="section-header">
-                        <h2><i data-lucide="book" style="width: 24px; height: 24px;"></i> Historical Glossary</h2>
-                        <p>Key terms and concepts in Philippine history</p>
-                    </div>
-
-                    <div class="glossary-container">
-                        <div class="glossary-item">
-                            <h3>Encomienda System</h3>
-                            <p>A Spanish colonial system where land and native inhabitants were granted to Spanish encomenderos who were responsible for their conversion to Christianity and protection.</p>
-                        </div>
-
-                        <div class="glossary-item">
-                            <h3>Galleon Trade</h3>
-                            <p>The trans-Pacific trade route established by Spain connecting Manila to Acapulco, Mexico, bringing silver from the Americas and goods from Asia.</p>
-                        </div>
-
-                        <div class="glossary-item">
-                            <h3>Ilustrados</h3>
-                            <p>Educated Filipinos who studied in Europe during the Spanish colonial period and became advocates for reform and eventual independence.</p>
-                        </div>
-
-                        <div class="glossary-item">
-                            <h3>Katipunan</h3>
-                            <p>A secret revolutionary society founded by Andrés Bonifacio in 1892 that organized the Philippine Revolution against Spanish rule.</p>
-                        </div>
-
-                        <div class="glossary-item">
-                            <h3>Propaganda Movement</h3>
-                            <p>A reform movement led by Filipino intellectuals in the late 19th century that sought peaceful change through education and legal means.</p>
-                        </div>
-
-                        <div class="glossary-item">
-                            <h3>Reduccion</h3>
-                            <p>The Spanish policy of concentrating indigenous populations into centralized settlements called reducciones for easier administration and Christianization.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Maps Section -->
-                <section class="reference-section" data-category="maps">
-                    <div class="section-header">
-                        <h2><i data-lucide="map" style="width: 24px; height: 24px;"></i> Historical Maps</h2>
-                        <p>Geographical context for key historical events</p>
-                    </div>
-
-                    <div class="maps-grid">
-                        <div class="map-card">
-                            <div class="map-placeholder">
-                                <i data-lucide="map-pin" style="width: 48px; height: 48px;"></i>
-                                <p>Map of Spanish Colonial Philippines</p>
-                            </div>
-                            <div class="map-info">
-                                <h3>Spanish Colonial Divisions</h3>
-                                <p>Shows the administrative divisions during the Spanish colonial period (1565-1898).</p>
-                            </div>
-                        </div>
-
-                        <div class="map-card">
-                            <div class="map-placeholder">
-                                <i data-lucide="navigation" style="width: 48px; height: 48px;"></i>
-                                <p>Route of the Philippine Revolution</p>
-                            </div>
-                            <div class="map-info">
-                                <h3>Revolutionary Campaigns</h3>
-                                <p>Key battle sites and campaigns during the 1896-1898 Philippine Revolution.</p>
-                            </div>
-                        </div>
-
-                        <div class="map-card">
-                            <div class="map-placeholder">
-                                <i data-lucide="anchor" style="width: 48px; height: 48px;"></i>
-                                <p>Galleon Trade Routes</p>
-                            </div>
-                            <div class="map-info">
-                                <h3>Manila-Acapulco Trade</h3>
-                                <p>The maritime route that connected Asia to the Americas via the Philippines.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Bibliography Section -->
-                <section class="reference-section" data-category="bibliography">
-                    <div class="section-header">
-                        <h2><i data-lucide="library" style="width: 24px; height: 24px;"></i> Bibliography</h2>
-                        <p>Recommended readings for further study</p>
-                    </div>
-
-                    <div class="bibliography-container">
-                        <div class="bib-category">
-                            <h3>Primary Sources</h3>
-                            <ul>
-                                <li><strong>Rizal, José.</strong> <em>Noli Me Tangere</em>. 1887.</li>
-                                <li><strong>Rizal, José.</strong> <em>El Filibusterismo</em>. 1891.</li>
-                                <li><strong>Zaide, Gregorio F.</strong> <em>Documentary Sources of Philippine History</em>. 1990.</li>
-                            </ul>
-                        </div>
-
-                        <div class="bib-category">
-                            <h3>Secondary Sources</h3>
-                            <ul>
-                                <li><strong>Agoncillo, Teodoro A.</strong> <em>The Revolt of the Masses: The Story of Bonifacio and the Katipunan</em>. 1956.</li>
-                                <li><strong>Constantino, Renato.</strong> <em>The Philippines: A Past Revisited</em>. 1975.</li>
-                                <li><strong>Ileto, Reynaldo C.</strong> <em>Pasyon and Revolution: Popular Movements in the Philippines, 1840-1910</em>. 1979.</li>
-                            </ul>
-                        </div>
-
-                        <div class="bib-category">
-                            <h3>Modern Scholarship</h3>
-                            <ul>
-                                <li><strong>Anderson, Benedict.</strong> <em>Under Three Flags: Anarchism and the Anti-Colonial Imagination</em>. 2005.</li>
-                                <li><strong>Francisco, Juan R.</strong> <em>Philippine History: Colonial Period</em>. 2010.</li>
-                                <li><strong>McCoy, Alfred W.</strong> <em>An Anarchy of Families: State and Family in the Philippines</em>. 1993.</li>
-                            </ul>
                         </div>
                     </div>
                 </section>
@@ -437,7 +247,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js"></script>
+    <script src="JS/script.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
@@ -456,89 +266,6 @@
             loadUserProfile(nameEl, emailEl, avatarEl);
         });
 
-        // ==================== SEARCH FUNCTIONALITY ====================
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-
-        // Search through reference content
-        function performReferenceSearch() {
-            const searchTerm = searchInput.value.trim().toLowerCase();
-            if (!searchTerm) return;
-
-            // Get all reference content elements
-            const referenceCards = document.querySelectorAll('.reference-card');
-            const timelineItems = document.querySelectorAll('.timeline-item');
-            const figureCards = document.querySelectorAll('.figure-card');
-            const glossaryTerms = document.querySelectorAll('.glossary-term');
-
-            let foundResults = false;
-
-            // Search in reference cards
-            referenceCards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    card.style.backgroundColor = '#fff3cd';
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    foundResults = true;
-                } else {
-                    card.style.backgroundColor = '';
-                }
-            });
-
-            // Search in timeline items
-            timelineItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    item.style.backgroundColor = '#fff3cd';
-                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    foundResults = true;
-                } else {
-                    item.style.backgroundColor = '';
-                }
-            });
-
-            // Search in figure cards
-            figureCards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    card.style.backgroundColor = '#fff3cd';
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    foundResults = true;
-                } else {
-                    card.style.backgroundColor = '';
-                }
-            });
-
-            // Search in glossary terms
-            glossaryTerms.forEach(term => {
-                const text = term.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    term.style.backgroundColor = '#fff3cd';
-                    term.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    foundResults = true;
-                } else {
-                    term.style.backgroundColor = '';
-                }
-            });
-
-            if (!foundResults) {
-                alert('No results found for: ' + searchTerm);
-            }
-        }
-
-        // Add event listeners
-        if (searchBtn) {
-            searchBtn.addEventListener('click', performReferenceSearch);
-        }
-
-        if (searchInput) {
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    performReferenceSearch();
-                }
-            });
-        }
-
         // ==================== RIGHT SIDEBAR TOGGLE ====================
         const sidebarToggleRight = document.getElementById('sidebarToggleRight');
         const rightSidebar = document.querySelector('.right-sidebar');
@@ -550,11 +277,11 @@
         }
 
         // ==================== LOGOUT BUTTON ====================
-        const logoutBtn = document.querySelector('.logout-btn');
-        console.log('Logout button found:', logoutBtn);
-        if (logoutBtn) {
+        const referenceLogoutBtn = document.querySelector('.logout-btn');
+        console.log('Logout button found:', referenceLogoutBtn);
+        if (referenceLogoutBtn) {
             console.log('Adding logout event listener');
-            logoutBtn.addEventListener('click', async () => {
+            referenceLogoutBtn.addEventListener('click', async () => {
                 console.log('Logout button clicked');
                 try {
                     // Clear all local storage
@@ -581,24 +308,35 @@
             });
         } else {
             console.error('Logout button not found!');
+        }
         // ==================== LEFT SIDEBAR TOGGLE ====================
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('leftSidebar');
+        const referenceMobileToggle = document.getElementById('referenceMobileToggle');
+        const referenceSidebar = document.getElementById('leftSidebar');
 
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('mobile-open');
+        console.log('referenceMobileToggle:', referenceMobileToggle);
+        console.log('referenceSidebar:', referenceSidebar);
+
+        if (referenceMobileToggle && referenceSidebar) {
+            referenceMobileToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Mobile toggle button clicked!');
+                console.log('Before toggle:', referenceSidebar.className);
+                referenceSidebar.classList.toggle('mobile-open');
+                console.log('After toggle:', referenceSidebar.className);
             });
+        } else {
+            console.warn('Mobile toggle or sidebar element not found');
         }
 
         // ==================== REFERENCE PAGE FUNCTIONALITY ====================
 
         // Search functionality
-        const searchInput = document.getElementById('referenceSearch');
+        const referenceSearchInput = document.getElementById('referenceSearch');
         const referenceSections = document.querySelectorAll('.reference-section');
 
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
+        if (referenceSearchInput) {
+            referenceSearchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
 
                 referenceSections.forEach(section => {
@@ -631,8 +369,8 @@
                 });
 
                 // Clear search when filtering
-                if (searchInput) {
-                    searchInput.value = '';
+                if (referenceSearchInput) {
+                    referenceSearchInput.value = '';
                 }
             });
         });
@@ -646,8 +384,8 @@
         }
 
         // Enhanced search with highlighting
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
+        if (referenceSearchInput) {
+            referenceSearchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
 
                 referenceSections.forEach(section => {
@@ -679,5 +417,15 @@
             });
         }
     </script>
+    <style>
+        @media (max-width: 768px) {
+            #referenceMobileToggle {
+                display: flex !important;
+            }
+        }
+    </style>
 </body>
 </html>
+
+
+

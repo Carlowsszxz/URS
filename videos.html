@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Videos - Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
-    <link rel="stylesheet" href="course.css">
-    <!-- Lucide Icons -->
+    <link rel="stylesheet" href="Styles/course.css">
+    <link rel="stylesheet" href="Styles/videos.css">
+    <!-- Lucide Icons - Modern Icon Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="db-helpers.js"></script>
-    <script src="course.js"></script>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -29,13 +29,6 @@
             </div>
 
             <div class="header-actions">
-                <button class="notification-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="notification-badge">2</span>
-                </button>
                 <button class="logout-btn" title="Logout">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -57,76 +50,82 @@
 
     <div class="main-layout">
         <!-- Left Sidebar -->
-        <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
-            <div class="user-profile">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User Avatar" class="profile-avatar" id="profileAvatar" />
+            <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
+                <div class="user-profile">
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar" />
                 <div class="profile-info">
-                    <p class="profile-name" id="profileName">Loading...</p>
+                    <h4 class="profile-name" id="profileName">Loading...</h4>
                     <p class="profile-email" id="profileEmail">Loading...</p>
                 </div>
                 <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
                 </button>
             </div>
 
-            <nav class="sidebar-nav">
-                <a href="course.html" class="nav-item" data-section="feed">
-                    <i data-lucide="radio" class="nav-icon-svg"></i>
-                    <span>Feed</span>
-                </a>
-                <div class="nav-item-dropdown">
-                    <div class="nav-item" data-section="topic">
+                <nav class="sidebar-nav">
+                    <a href="course.html" class="nav-item" data-section="feed">
+                        <i data-lucide="radio" class="nav-icon-svg"></i>
+                        <span>Feed</span>
+                    </a>
+                    <a href="quizzes.html" class="nav-item" data-section="quizzes">
+                        <i data-lucide="clipboard-list" class="nav-icon-svg"></i>
+                        <span>Quizzes</span>
+                    </a>
+                    <div class="nav-item-dropdown">
+                        <div class="nav-item" data-section="topic">
+                            <i data-lucide="book-open" class="nav-icon-svg"></i>
+                            <span>Topic</span>
+                            <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="first-mass.html" class="dropdown-item">First Mass</a>
+                            <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+
+                            <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
+                            <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
+                        </div>
+                    </div>
+                    <div class="nav-item-dropdown">
+                        <div class="nav-item" data-section="activities">
+                            <i data-lucide="calendar" class="nav-icon-svg"></i>
+                            <span>Learning Hub</span>
+                            <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="games.html" class="dropdown-item" data-section="games">
+                                <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
+                                Games
+                            </a>
+                            
+                            <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
+                                <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                                Interactive Tasks
+                            </a>
+
+                            <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
+                                <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                                Worksheets
+                            </a>
+
+                            <a href="handouts.html" class="dropdown-item" data-section="handouts">
+                                <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                                Handouts
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="videos.html" class="nav-item active" data-section="videos">
+                        <i data-lucide="play-circle" class="nav-icon-svg"></i>
+                        <span>Videos</span>
+                    </a>
+
+                    <a href="reference.html" class="nav-item" data-section="reference">
                         <i data-lucide="book-open" class="nav-icon-svg"></i>
-                        <span>Topic</span>
-                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
-                    </div>
-                    <div class="dropdown-menu">
-                           <a href="first-mass.html" class="dropdown-item">First Mass</a>
-                        <a href="cavite-mutiny.html" class="dropdown-item">Cavite Mutiny</a>
+                        <span>Reference</span>
+                    </a>
+                </nav>
 
-                        <a href="retraction-of-rizal.html" class="dropdown-item">Retraction of Rizal</a>
-                        <a href="cry-of-rebellion.html" class="dropdown-item">Cry of Rebellion</a>
-                   </div>
-                </div>
-                <div class="nav-item-dropdown">
-                    <div class="nav-item" data-section="activities">
-                        <i data-lucide="calendar" class="nav-icon-svg"></i>
-                        <span>Learning Hub</span>
-                        <i data-lucide="chevron-down" class="dropdown-arrow"></i>
-                    </div>
-                    <div class="dropdown-menu">
-                        <a href="games.html" class="dropdown-item" data-section="games">
-                            <i data-lucide="gamepad-2" style="width: 16px; height: 16px;"></i>
-                            Games
-                        </a>
-                        
-                        <a href="interactive-tasks.html" class="dropdown-item" data-section="interactive">
-                            <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
-                            Interactive Tasks
-                        </a>
-
-                        <a href="worksheets.html" class="dropdown-item" data-section="worksheets">
-                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
-                            Worksheets
-                        </a>
-                    </div>
-                </div>
-
-                <a href="videos.html" class="nav-item active" data-section="videos">
-                    <i data-lucide="play-circle" class="nav-icon-svg"></i>
-                    <span>Videos</span>
-                </a>
-
-                <a href="reference.html" class="nav-item" data-section="reference">
-                    <i data-lucide="book-open" class="nav-icon-svg"></i>
-                    <span>Reference</span>
-                </a>
-            </nav>
-
-        </aside>
+            </aside>
 
         <main class="main-content">
             <!-- Videos Section -->
@@ -250,25 +249,20 @@
                     <button class="modal-close" id="closeEditModal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>Profile Picture</label>
-                        <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
-                        <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
-                            💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+                        <h3 style="margin: 0 0 16px 0; color: #333;">Edit Your Profile</h3>
+                        <p style="margin: 0 0 20px 0; color: #666; line-height: 1.6;">
+                            To edit your profile information, please visit the <a href="course.html" style="color: #5C3422; text-decoration: underline; font-weight: 500;">Feed page</a>.
                         </p>
-                    </div>
-                    <div class="form-group">
-                        <label for="editName">Full Name</label>
-                        <input type="text" id="editName" placeholder="Your name" />
-                    </div>
-                    <div class="form-group">
-                        <label for="editBio">Bio</label>
-                        <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+                        <p style="margin: 0; color: #999; font-size: 14px;">
+                            You can update your profile picture, name, and bio there.
+                        </p>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
-                    <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+                    <button class="btn-save" onclick="window.location.href='course.html'">Go to Feed</button>
                 </div>
             </div>
         </div>
@@ -317,361 +311,7 @@
         </aside>
     </div>
 
-    <style>
-        .videos-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 32px;
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-
-        .video-card {
-            background: #ffffff;
-            border: 2px solid #D6DCE1;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(92, 52, 34, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .video-card:hover {
-            border-color: #5C3422;
-            box-shadow: 0 12px 32px rgba(92, 52, 34, 0.2);
-            transform: translateY(-4px);
-        }
-
-        .video-wrapper {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .video-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .video-info {
-            padding: 24px;
-        }
-
-        .video-info h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #51513E;
-            margin: 0 0 12px 0;
-            letter-spacing: -0.3px;
-        }
-
-        .video-info p {
-            font-size: 14px;
-            color: #51513E;
-            line-height: 1.6;
-            margin: 0 0 16px 0;
-        }
-
-        .video-meta {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .video-duration {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #51513E;
-            background: #D6DCE1;
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-
-        .topic-header {
-            margin-bottom: 24px;
-        }
-
-        .topic-header h2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #51513E;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .topic-subtitle {
-            font-size: 16px;
-            color: #7A6B5F;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        @media (max-width: 1200px) {
-            .videos-container {
-                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .videos-container {
-                grid-template-columns: 1fr;
-                gap: 24px;
-            }
-
-            .video-wrapper {
-                aspect-ratio: 16 / 9;
-            }
-
-            .video-info h3 {
-                font-size: 16px;
-            }
-
-            .video-info p {
-                font-size: 13px;
-            }
-
-            .topic-header h2 {
-                font-size: 24px;
-            }
-        }
-    </style>
-
-    <script>
-        // Initialize Lucide icons
-        setTimeout(() => {
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }, 100);
-
-        // ==================== AUTHENTICATION CHECK ====================
-        // Check if user is logged in via Supabase session
-        async function checkAuth() {
-            try {
-                // If userEmail not in localStorage, user is logged out
-                if (!localStorage.getItem('userEmail')) {
-                    console.log('No user email in localStorage, redirecting to login');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                // Wait a bit to ensure Supabase is fully initialized
-                await new Promise(resolve => setTimeout(resolve, 100));
-
-                if (!window.supabaseClient) {
-                    console.error('Supabase client not initialized');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-
-                if (!session) {
-                    console.log('No active session, redirecting to login');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                console.log('User authenticated:', session.user.email);
-            } catch (error) {
-                console.error('Auth check error:', error);
-                // If error checking auth, redirect to login to be safe
-                window.location.href = 'index.html';
-            }
-        }
-
-        // ==================== PROFILE EDITING SYSTEM ====================
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const editProfileModal = document.getElementById('editProfileModal');
-        const closeEditModal = document.getElementById('closeEditModal');
-        const editAvatarInput = document.getElementById('editAvatar');
-        const avatarPreview = document.getElementById('avatarPreview');
-        const editNameInput = document.getElementById('editName');
-        const editBioInput = document.getElementById('editBio');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-
-        const profileNameDisplay = document.querySelector('.profile-name');
-        const profileEmailDisplay = document.querySelector('.profile-email');
-        const profileAvatar = document.querySelector('.profile-avatar');
-
-        // ==================== LOAD PROFILE FROM localStorage ====================
-        function loadProfileFromStorage() {
-            console.log('🔍 Loading profile from localStorage...');
-            const savedName = localStorage.getItem('profileName');
-            const savedBio = localStorage.getItem('profileBio');
-            const savedAvatar = localStorage.getItem('profileAvatar');
-
-            if (savedName && profileNameDisplay) profileNameDisplay.textContent = savedName;
-            if (savedBio && profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
-            if (savedAvatar && profileAvatar) profileAvatar.src = savedAvatar;
-        }
-
-        // ==================== EDIT PROFILE MODAL MANAGEMENT ====================
-        if (editProfileBtn) {
-            editProfileBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                editProfileModal.style.display = 'flex';
-                editNameInput.value = localStorage.getItem('profileName') || '';
-                editBioInput.value = localStorage.getItem('profileBio') || '';
-                const savedAvatar = localStorage.getItem('profileAvatar');
-                if (savedAvatar) avatarPreview.src = savedAvatar;
-            });
-        }
-
-        if (closeEditModal) {
-            closeEditModal.addEventListener('click', function() {
-                editProfileModal.style.display = 'none';
-            });
-        }
-
-        if (cancelEditBtn) {
-            cancelEditBtn.addEventListener('click', function() {
-                editProfileModal.style.display = 'none';
-            });
-        }
-
-        editProfileModal.addEventListener('click', function(e) {
-            if (e.target === editProfileModal) {
-                editProfileModal.style.display = 'none';
-            }
-        });
-
-        // ==================== AVATAR FILE UPLOAD ====================
-        if (editAvatarInput) {
-            editAvatarInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const base64String = event.target.result;
-                        avatarPreview.src = base64String;
-                        console.log('📝 Avatar preview updated');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        // ==================== SAVE PROFILE CHANGES ====================
-        if (saveProfileBtn) {
-            saveProfileBtn.addEventListener('click', function() {
-                alert('To change your profile, please navigate to the Feed page (course.html). Click on your profile picture in the sidebar to edit your profile there.');
-                editProfileModal.style.display = 'none';
-            });
-        }
-
-        // ==================== MUTATIONOBSERVER: RESTORE PROFILE ON CHANGES ====================
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.target === profileNameDisplay && profileNameDisplay.textContent !== localStorage.getItem('profileName')) {
-                    console.log('🔍 Profile Name changed by Supabase, restoring from localStorage...');
-                    profileNameDisplay.textContent = localStorage.getItem('profileName') || profileNameDisplay.textContent;
-                }
-                if (mutation.target === profileEmailDisplay && profileEmailDisplay.textContent !== localStorage.getItem('profileBio')) {
-                    console.log('🔍 Profile Bio changed by Supabase, restoring from localStorage...');
-                    profileEmailDisplay.textContent = localStorage.getItem('profileBio') || profileEmailDisplay.textContent;
-                }
-                if (mutation.target === profileAvatar && profileAvatar.src !== localStorage.getItem('profileAvatar')) {
-                    console.log('🔍 Profile Avatar changed by Supabase, restoring from localStorage...');
-                    profileAvatar.src = localStorage.getItem('profileAvatar') || profileAvatar.src;
-                }
-            });
-        });
-
-        observer.observe(profileNameDisplay, { attributes: true, childList: true, subtree: true });
-        observer.observe(profileEmailDisplay, { attributes: true, childList: true, subtree: true });
-        observer.observe(profileAvatar, { attributes: true, childList: true, subtree: true });
-
-        // ==================== PERIODIC RESTORATION: Every 1000ms ====================
-        setInterval(function() {
-            const currentName = profileNameDisplay ? profileNameDisplay.textContent : '';
-            const savedName = localStorage.getItem('profileName');
-            if (currentName !== savedName && savedName) {
-                console.log('🔄 Periodic: Restoring profile name from localStorage');
-                if (profileNameDisplay) profileNameDisplay.textContent = savedName;
-            }
-
-            const currentBio = profileEmailDisplay ? profileEmailDisplay.textContent : '';
-            const savedBio = localStorage.getItem('profileBio');
-            if (currentBio !== savedBio && savedBio) {
-                console.log('🔄 Periodic: Restoring profile bio from localStorage');
-                if (profileEmailDisplay) profileEmailDisplay.textContent = savedBio;
-            }
-
-            const currentAvatar = profileAvatar ? profileAvatar.src : '';
-            const savedAvatar = localStorage.getItem('profileAvatar');
-            if (currentAvatar !== savedAvatar && savedAvatar) {
-                console.log('🔄 Periodic: Restoring profile avatar from localStorage');
-                if (profileAvatar) profileAvatar.src = savedAvatar;
-            }
-        }, 1000);
-
-        // ==================== OVERRIDE: SUPABASE populateUserProfile ====================
-        const checkForApp = setInterval(function() {
-            if (window.app && window.app.populateUserProfile) {
-                clearInterval(checkForApp);
-                const originalPopulate = window.app.populateUserProfile.bind(window.app);
-                window.app.populateUserProfile = function() {
-                    console.log('🔴 populateUserProfile called by Supabase');
-                    originalPopulate();
-                    setTimeout(function() {
-                        loadProfileFromStorage();
-                        console.log('🟢 Profile restored from localStorage after Supabase call');
-                    }, 500);
-                };
-            }
-        }, 100);
-
-        // ==================== STORAGE EVENT LISTENER: Cross-tab Synchronization ====================
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'profileName' || e.key === 'profileBio' || e.key === 'profileAvatar') {
-                console.log('💾 Storage changed in another tab, reloading profile...');
-                loadProfileFromStorage();
-            }
-        });
-
-        // ==================== LOGOUT BUTTON ====================
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                try {
-                    // Clear all local storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    
-                    // Sign out from Supabase globally
-                    const supabaseClient = await getSupabaseClient();
-                    const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                    if (error) {
-                        console.error('Supabase signOut error:', error);
-                    }
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    // Force redirect to index after clearing everything
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-
-        // ==================== LEFT SIDEBAR TOGGLE ====================
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('leftSidebar');
-        
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('mobile-open');
-            });
-        }
-
-        // Check authentication on page load
-        checkAuth();
-    </script>
+    <script src="JS/course.js"></script>
+    <script src="JS/videos.js"></script>
 </body>
 </html>

@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>First Catholic Mass - Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
-    <link rel="stylesheet" href="course.css">
+    <link rel="stylesheet" href="Styles/course.css">
+    <link rel="stylesheet" href="Styles/first-mass.css">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="db-helpers.js"></script>
-    <script src="course.js"></script>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
+    <script src="JS/course.js"></script>
 </head>
 <body>
     <!-- Header Navigation -->
     <header class="header">
         <div class="header-container">
-            <button id="toggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 1001;">
+            <button class="sidebar-toggle-btn" id="firstMassToggleSidebar" style="background: none; border: none; color: #5C3422; cursor: pointer; font-size: 24px; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; z-index: 1001;">
                 ☰
             </button>
 
@@ -52,13 +53,13 @@
         <!-- Left Sidebar -->
         <aside class="left-sidebar mobile-sidebar" id="leftSidebar">
             <div class="user-profile">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23e0e0e0' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='20' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="User Avatar" class="profile-avatar" id="profileAvatar" />
+                <img src="https://i.pravatar.cc/80?img=20" alt="User avatar" class="profile-avatar" id="profileAvatar">
                 <div class="profile-info">
-                    <p class="profile-name" id="profileName">Loading...</p>
-                    <p class="profile-email" id="profileEmail">Loading...</p>
+                    <h4 class="profile-name" id="profileName">Loading</h4>
+                    <p class="profile-email" id="profileEmail">Loading</p>
                 </div>
                 <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
-                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="edit-2" aria-hidden="true" style="width: 16px; height: 16px;" class="lucide lucide-edit-2"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg>
                 </button>
             </div>
 
@@ -66,6 +67,10 @@
                 <a href="course.html" class="nav-item" data-section="feed">
                     <i data-lucide="radio" class="nav-icon-svg"></i>
                     <span>Feed</span>
+                </a>
+                <a href="quizzes.html" class="nav-item" data-section="quizzes">
+                    <i data-lucide="clipboard-list" class="nav-icon-svg"></i>
+                    <span>Quizzes</span>
                 </a>
                 <div class="nav-item-dropdown open">
                     <div class="nav-item" data-section="topic">
@@ -102,6 +107,11 @@
                             <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
                             Worksheets
                         </a>
+
+                        <a href="handouts.html" class="dropdown-item" data-section="handouts">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Handouts
+                        </a>
                     </div>
                 </div>
 
@@ -134,7 +144,7 @@
                     <div class="infographic-container">
                         <div class="infographic-wrapper" id="infographicWrapper">
                             <div class="slideshow-container">
-                                <div class="slide" data-description="March 16, 1521: Magellan's expedition sights land in the Philippines near Ladrones. The voyage began a momentous chapter in Philippine history.">
+                                <div class="slide fade" data-description="March 16, 1521: Magellan's expedition sights land in the Philippines near Ladrones. The voyage began a momentous chapter in Philippine history.">
                                     <img src="Images/6.png" alt="First Mass Image 1" class="infographic-image slide-image" />
                                 </div>
                                 <div class="slide" data-description="March 31, 1521 (Easter Sunday): A priest prepares for Mass on an island. This day would become known as the celebration of the first Catholic Mass in the Philippines.">
@@ -163,6 +173,15 @@
                             <div class="infographic-caption">
                                 <h4>Magellan's Arrival and the First Catholic Mass</h4>
                                 <p id="slideDescription" class="slide-description">March 16, 1521: Magellan's expedition sights land in the Philippines near Ladrones. The voyage began a momentous chapter in Philippine history.</p>
+                            </div>
+
+                            <!-- Slideshow Dots -->
+                            <div class="slideshow-dots">
+                                <span class="dot active" onclick="currentSlide(0)"></span>
+                                <span class="dot" onclick="currentSlide(1)"></span>
+                                <span class="dot" onclick="currentSlide(2)"></span>
+                                <span class="dot" onclick="currentSlide(3)"></span>
+                                <span class="dot" onclick="currentSlide(4)"></span>
                             </div>
                         </div>
                     </div>
@@ -293,642 +312,32 @@
         </aside>
     </div>
 
-    <style>
-        .content-with-infographic {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-            margin-top: 32px;
-            margin-bottom: 32px;
-            justify-items: center;
-        }
 
-        .infographic-container {
-            grid-column: 1;
-            width: 100%;
-            max-width: 700px;
-            position: relative;
-        }
 
-        .infographic-wrapper {
-            background: #ffffff;
-            border: 3px solid #D6DCE1;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(92, 52, 34, 0.12);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: auto;
-            background: #D6DCE1;
-        }
-
-        .slide {
-            display: none;
-            width: 100%;
-            animation: fade 1s;
-        }
-
-        .slide.fade {
-            display: block;
-            animation: fade 1s;
-        }
-
-        @keyframes fade {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
-        }
-
-        .infographic-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .slide:hover .infographic-image {
-            transform: scale(1.05);
-        }
-
-        .slide:hover .infographic-image {
-            transform: scale(1.02);
-        }
-
-        .prev, .next {
-            cursor: pointer;
-            position: absolute;
-            top: 50%;
-            width: auto;
-            margin-top: -22px;
-            padding: 16px;
-            color: #51513E;
-            font-weight: bold;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            border-radius: 3px;
-            background-color: rgba(92, 52, 34, 0.7);
-            user-select: none;
-            z-index: 10;
-        }
-
-        .next {
-            right: 0;
-        }
-
-        .prev {
-            left: 0;
-        }
-
-        .prev:hover, .next:hover {
-            background-color: rgba(92, 52, 34, 0.95);
-            transform: scale(1.1);
-        }
-
-        .slide-counter {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(81, 81, 62, 0.8);
-            color: #D6DCE1;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            z-index: 10;
-        }
-
-        .fullscreen-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(81, 81, 62, 0.8);
-            color: #D6DCE1;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .fullscreen-btn:hover {
-            background: rgba(81, 81, 62, 1);
-            transform: scale(1.1);
-        }
-
-        .slideshow-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px;
-            background: #ffffff;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #D6DCE1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background-color: #51513E;
-            transform: scale(1.2);
-        }
-
-        .dot:hover {
-            background-color: #999;
-        }
-
-        .infographic-caption {
-            padding: 28px 28px;
-            background: linear-gradient(135deg, #D6DCE1 0%, #ffffff 100%);
-            border-top: 2px solid #D6DCE1;
-            transition: all 0.4s ease;
-        }
-
-        .infographic-caption h4 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #423833;
-            margin: 0 0 12px 0;
-            letter-spacing: -0.3px;
-        }
-
-        .infographic-caption p {
-            font-size: 14px;
-            color: #423833;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .educational-content {
-            background: linear-gradient(135deg, #E2D5C2 0%, #D4BBAC 100%);
-            border: 2px solid #98755B;
-            border-radius: 12px;
-            padding: 40px;
-            margin-top: 40px;
-            line-height: 1.8;
-            color: #442913;
-        }
-
-        .educational-content h3 {
-            font-size: 28px;
-            color: #5C3422;
-            margin-bottom: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            border-bottom: 3px solid #5C3422;
-            padding-bottom: 16px;
-            text-align: center;
-        }
-
-        .content-section {
-            margin-bottom: 32px;
-            line-height: 1.8;
-        }
-
-        .content-section h4 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #51513E;
-            margin-bottom: 16px;
-            letter-spacing: -0.3px;
-        }
-
-        .content-section p {
-            font-size: 15px;
-            color: #51513E;
-            margin-bottom: 16px;
-            line-height: 1.8;
-            text-align: justify;
-        }
-
-        .content-section ul {
-            font-size: 15px;
-            line-height: 1.8;
-            text-align: justify;
-        }
-
-        .content-section li {
-            text-align: justify;
-        }
-
-        .highlight {
-            background: #D6DCE1;
-            color: #423833;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .key-term {
-            color: #51513E;
-            font-weight: 700;
-            border-bottom: 2px solid #D6DCE1;
-            padding-bottom: 2px;
-        }
-
-        .emphasis {
-            color: #423833;
-            font-weight: 600;
-            font-style: italic;
-        }
-
-        .fact-callout {
-            background: linear-gradient(135deg, #FEF5E7 0%, #F9F0E3 100%);
-            border-left: 4px solid #51513E;
-            border-radius: 6px;
-            padding: 16px 20px;
-            margin: 20px 0;
-            font-size: 14px;
-            color: #423833;
-            box-shadow: 0 2px 8px rgba(81, 81, 62, 0.1);
-        }
-
-        .fact-callout strong {
-            color: #51513E;
-        }
-
-        .fact-callout.importance-high {
-            background: linear-gradient(135deg, #FCE8E4 0%, #F9E4DF 100%);
-            border-left-color: #423833;
-            box-shadow: 0 4px 12px rgba(92, 52, 34, 0.15);
-        }
-
-        .fact-callout.conclusion-box {
-            background: linear-gradient(135deg, #E8F4F0 0%, #E0EEEA 100%);
-            border-left-color: #423833;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .perspective-section {
-            position: relative;
-            border-left: 4px solid #D6DCE1;
-            padding-left: 20px;
-            margin-left: 0;
-        }
-
-        .perspective-section.historians-perspective {
-            border-left-color: #423833;
-            background: rgba(92, 52, 34, 0.04);
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .perspective-label {
-            font-weight: 700;
-            color: #51513E;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .perspective-section h4 {
-            margin-top: 0;
-        }
-
-        .perspective-section blockquote {
-            margin: 16px 0;
-            padding: 16px 20px;
-            border-left: 3px solid #51513E;
-            background: rgba(214, 220, 225, 0.3);
-            font-style: italic;
-            color: #51513E;
-        }
-
-        .perspective-section blockquote footer {
-            display: block;
-            margin-top: 8px;
-            font-style: normal;
-            font-weight: 600;
-            color: #423833;
-            font-size: 13px;
-        }
-
-        @media (max-width: 1200px) {
-            .content-with-infographic {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-
-    <script>
-        // ==================== AUTHENTICATION CHECK ====================
-        // Check if user is logged in via Supabase session
-        async function checkAuth() {
-            try {
-                // If userEmail not in localStorage, user is logged out
-                if (!localStorage.getItem('userEmail')) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                // Wait a bit to ensure Supabase is fully initialized
-                await new Promise(resolve => setTimeout(resolve, 100));
-
-                if (!window.supabaseClient) {
-                    console.error('Supabase client not initialized');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-
-                if (!session) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-            } catch (error) {
-                console.error('Auth check error:', error);
-                // If error checking auth, redirect to login to be safe
-                window.location.href = 'index.html';
-            }
-        }
-
-        let currentSlideIndex = 1;
-
-        function changeSlide(n) {
-            currentSlideIndex += n;
-            showSlide();
-        }
-
-        function currentSlide(n) {
-            currentSlideIndex = n + 1;
-            showSlide();
-        }
-
-        function showSlide() {
-            const slides = document.querySelectorAll('.slide');
-            const dots = document.querySelectorAll('.dot');
-
-            if (currentSlideIndex > slides.length) {
-                currentSlideIndex = 1;
-            }
-            if (currentSlideIndex < 1) {
-                currentSlideIndex = slides.length;
-            }
-
-            slides.forEach(slide => slide.classList.remove('fade'));
-            
-            // Only manipulate dots if they exist
-            if (dots.length > 0) {
-                dots.forEach(dot => dot.classList.remove('active'));
-                dots[currentSlideIndex - 1].classList.add('active');
-            }
-
-            slides[currentSlideIndex - 1].classList.add('fade');
-
-            const description = slides[currentSlideIndex - 1].getAttribute('data-description');
-            document.getElementById('slideDescription').textContent = description;
-            document.getElementById('slideNumber').textContent = currentSlideIndex;
-        }
-
-        // Auto-advance slides every 5 seconds
-        setInterval(() => {
-            changeSlide(1);
-        }, 5000);
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
-
-        // Initialize slideshow
-        showSlide(currentSlideIndex);
-        
-        // Initialize Lucide icons
-        setTimeout(() => {
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }, 200);
-    </script>
 
     <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Edit Profile</h2>
-                <button class="modal-close" id="closeEditModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Profile Picture</label>
-                    <img id="avatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='%23999' text-anchor='middle' dy='.3em'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;" />
-                    <p style="margin: 0; color: #666; font-size: 14px; background: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #5C3422;">
-                        💡 <strong>To change your profile picture,</strong> go to the <a href="course.html" style="color: #5C3422; text-decoration: underline;">Feed page</a>
-                    </p>
+                    <button class="modal-close" id="closeEditModal">×</button>
                 </div>
-                <div class="form-group">
-                    <label for="editName">Full Name</label>
-                    <input type="text" id="editName" placeholder="Your name" />
+                <div class="modal-body">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">👤</div>
+                        <h3 style="margin: 0 0 16px 0; color: #333;">Edit Your Profile</h3>
+                        <p style="margin: 0 0 20px 0; color: #666; line-height: 1.6;">
+                            To edit your profile information, please visit the <a href="course.html" style="color: #5C3422; text-decoration: underline; font-weight: 500;">Feed page</a>.
+                        </p>
+                        <p style="margin: 0; color: #999; font-size: 14px;">
+                            You can update your profile picture, name, and bio there.
+                        </p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="editBio">Bio</label>
-                    <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
-                <button class="btn-save" id="saveProfileBtn">Save Changes</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Profile editing functionality
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const editProfileModal = document.getElementById('editProfileModal');
-        const closeEditModal = document.getElementById('closeEditModal');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const avatarPreview = document.getElementById('avatarPreview');
-        const editNameInput = document.getElementById('editName');
-        const editBioInput = document.getElementById('editBio');
-        const profileNameDisplay = document.getElementById('profileName');
-        const profileEmailDisplay = document.getElementById('profileEmail');
-        const profileAvatar = document.getElementById('profileAvatar');
-
-        let selectedAvatarImage = null;
-
-        // Open edit profile modal
-        editProfileBtn.addEventListener('click', () => {
-            editNameInput.value = profileNameDisplay.textContent;
-            editBioInput.value = profileEmailDisplay.textContent;
-            avatarPreview.src = profileAvatar.src;
-            selectedAvatarImage = null;
-            editProfileModal.classList.add('active');
-        });
-
-        // Close modal
-        const closeModal = () => {
-            editProfileModal.classList.remove('active');
-        };
-
-        closeEditModal.addEventListener('click', closeModal);
-        cancelEditBtn.addEventListener('click', closeModal);
-
-        // Save profile changes
-        saveProfileBtn.addEventListener('click', () => {
-            alert('To change your profile, please navigate to the Feed page (course.html). Click on your profile picture in the sidebar to edit your profile there.');
-            closeModal();
-        });
-
-        // Load profile from localStorage on page load
-        const loadProfileFromStorage = () => {
-            const savedName = localStorage.getItem('profileName');
-            const savedBio = localStorage.getItem('profileBio');
-            const savedAvatar = localStorage.getItem('profileAvatar');
-            const currentUserEmail = profileEmailDisplay.textContent || '';
-
-            // Store current user email for post filtering
-            localStorage.setItem('currentUserId', currentUserEmail);
-
-            if (savedName) {
-                profileNameDisplay.textContent = savedName;
-            }
-            if (savedBio) {
-                profileEmailDisplay.textContent = savedBio;
-            }
-            if (savedAvatar) {
-                profileAvatar.src = savedAvatar;
-            }
-        };
-
-        // Load immediately
-        loadProfileFromStorage();
-
-        // Also load on window load event
-        window.addEventListener('load', loadProfileFromStorage);
-
-        // Enhanced MutationObserver with debugging and periodic restoration
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                const savedAvatar = localStorage.getItem('profileAvatar');
-                
-                if (mutation.type === 'attributes') {
-                    const target = mutation.target;
-                    const targetId = target.id;
-                    const attrName = mutation.attributeName;
-                    
-                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                        profileAvatar.src = savedAvatar;
-                    }
-                } else if (mutation.type === 'characterData' || mutation.type === 'childList') {
-                    const savedName = localStorage.getItem('profileName');
-                    const savedBio = localStorage.getItem('profileBio');
-                    
-                    if (savedName && profileNameDisplay.textContent !== savedName) {
-                        profileNameDisplay.textContent = savedName;
-                    }
-                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                        profileEmailDisplay.textContent = savedBio;
-                    }
-                }
-            });
-        });
-
-        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
-        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
-        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
-
-        // Periodic verification and restoration
-        setInterval(() => {
-            const savedAvatar = localStorage.getItem('profileAvatar');
-            const savedName = localStorage.getItem('profileName');
-            const savedBio = localStorage.getItem('profileBio');
-            
-            if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                profileAvatar.src = savedAvatar;
-            }
-            if (savedName && profileNameDisplay.textContent !== savedName) {
-                profileNameDisplay.textContent = savedName;
-            }
-            if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                profileEmailDisplay.textContent = savedBio;
-            }
-        }, 1000);
-
-        // Override the app's profile population to preserve localStorage data
-        const originalPopulateUserProfile = window.app?.populateUserProfile;
-        
-        if (originalPopulateUserProfile) {
-            window.app.populateUserProfile = function() {
-                originalPopulateUserProfile.call(this);
-                setTimeout(() => {
-                    loadProfileFromStorage();
-                }, 500);
-            };
-        } else {
-            const checkForApp = setInterval(() => {
-                if (window.app && window.app.populateUserProfile) {
-                    clearInterval(checkForApp);
-                    const origMethod = window.app.populateUserProfile;
-                    window.app.populateUserProfile = function() {
-                        origMethod.call(this);
-                        setTimeout(() => {
-                            loadProfileFromStorage();
-                        }, 500);
-                    };
-                }
-            }, 100);
-        }
-
-        // Also load when localStorage changes (in case another tab updates it)
-        window.addEventListener('storage', () => {
-            loadProfileFromStorage();
-        });
-
-        // ==================== LOGOUT BUTTON ====================
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                try {
-                    // Clear all local storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    
-                    // Sign out from Supabase globally
-                    const supabaseClient = await getSupabaseClient();
-                    const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                    if (error) {
-                        console.error('Supabase signOut error:', error);
-                    }
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    // Force redirect to index after clearing everything
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-
-        // ==================== LEFT SIDEBAR TOGGLE ====================
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('leftSidebar');
-        
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('mobile-open');
-            });
-        }
-
-        // Check authentication on page load
-        checkAuth();
-    </script>
+                <div class="modal-footer">
+                    <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    <button class="btn-save" onclick="window.location.href='course.html'">Go to Feed</button>
+    <script src="JS/first-mass.js"></script>
 </body>
 </html>

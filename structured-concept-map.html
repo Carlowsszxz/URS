@@ -1,0 +1,2820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structured Concept Map - Readings in Philippine History</title>
+    <link rel="icon" href="Images/favicon.png" type="image/png">
+    <link rel="stylesheet" href="Styles/course.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: #E2D5C2;
+            color: #5C3422;
+        }
+
+        /* HEADER */
+        .header {
+            background: #FFFFFF;
+            color: #5C3422;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(92, 52, 34, 0.08);
+            border-bottom: 1px solid #E2D5C2;
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        .header-title-link {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .header-title-link:hover {
+            color: #5C3422;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #5C3422, #7A5B47);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(92, 52, 34, 0.15);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #4a2a1a, #5C3422);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(92, 52, 34, 0.25);
+        }
+
+        .back-icon {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2;
+        }
+
+        .user-profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .user-profile-mini:hover {
+            background: #E2D5C2;
+        }
+
+        .profile-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info-mini {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name-mini {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5C3422;
+            line-height: 1.2;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #5C3422;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #E2D5C2;
+        }
+
+        /* Contributions Panel */
+        .contributions-panel {
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(92, 52, 34, 0.08);
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 1px solid #E2D5C2;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, #5C3422, #7A5B47);
+            color: white;
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .panel-header:hover {
+            background: linear-gradient(135deg, #4a2a1a, #5C3422);
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .panel-toggle {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .contributions-panel.collapsed .panel-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .panel-content {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .contributions-panel.collapsed .panel-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .contribution-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #F8F6F4;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #E2D5C2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7A5B47;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5C3422;
+        }
+
+        .contribution-history h4 {
+            margin: 0 0 12px 0;
+            color: #5C3422;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .contribution-item {
+            background: #F8F6F4;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #2E8B57;
+            font-size: 12px;
+        }
+
+        .contribution-item .term {
+            font-weight: 600;
+            color: #5C3422;
+        }
+
+        .contribution-item .category {
+            color: #7A5B47;
+            font-style: italic;
+        }
+
+        .contribution-item .timestamp {
+            color: #999;
+            font-size: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 36px;
+            font-weight: 900;
+            color: #5C3422;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .page-title p {
+            font-size: 18px;
+            color: #7A5B47;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Concept Map Container */
+        .concept-map-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(68, 41, 19, 0.12);
+            overflow: hidden;
+        }
+
+        /* SVG Canvas for Connections */
+        .connections-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connections-canvas svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Concept Nodes */
+        .concept-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .concept-input {
+            width: 140px;
+            padding: 12px 16px;
+            border: 2px solid #E2D5C2;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s ease;
+            background: #FFFFFF;
+            color: #5C3422;
+        }
+
+        .concept-input:focus {
+            border-color: #2E8B57;
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+        }
+
+        .concept-input[readonly] {
+            background: #F5F5F5;
+            border-color: #CCCCCC;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
+        .concept-input::placeholder {
+            color: #7A5B47;
+            opacity: 0.7;
+        }
+
+        /* Attribution Display */
+        .contribution-attribution {
+            font-size: 9px;
+            color: #7A5B47;
+            text-align: center;
+            margin-top: 2px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .concept-input[readonly] + .contribution-attribution {
+            display: block;
+        }
+
+        .concept-label {
+            font-size: 12px;
+            color: #7A5B47;
+            font-weight: 500;
+            text-align: center;
+            max-width: 140px;
+            line-height: 1.3;
+        }
+
+        /* Central Node */
+        .central-node {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .central-node .concept-input {
+            width: 160px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2E8B57, #1a4d3a);
+            color: white;
+            border-color: #2E8B57;
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .central-node .concept-input:focus {
+            border-color: #2E8B57;
+            box-shadow: none;
+            outline: none;
+        }
+
+        /* Surrounding Nodes - Positioned in Circle */
+        .surrounding-node-1 { top: 15%; left: 50%; transform: translateX(-50%); }
+        .surrounding-node-2 { top: 35%; left: 85%; transform: translateX(-50%); }
+        .surrounding-node-3 { top: 65%; left: 85%; transform: translateX(-50%); }
+        .surrounding-node-4 { top: 85%; left: 50%; transform: translateX(-50%); }
+        .surrounding-node-5 { top: 65%; left: 15%; transform: translateX(-50%); }
+        .surrounding-node-6 { top: 35%; left: 15%; transform: translateX(-50%); }
+
+        /* Branches */
+        .branches-container {
+            margin-top: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 5px;
+            scrollbar-width: thin;
+            scrollbar-color: #2E8B57 #f0f0f0;
+        }
+
+        .branches-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .branches-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .branches-container::-webkit-scrollbar-thumb {
+            background: #2E8B57;
+            border-radius: 3px;
+        }
+
+        .branches-container::-webkit-scrollbar-thumb:hover {
+            background: #1a4d3a;
+        }
+
+        .branch-input-container {
+            position: relative;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Status: Available */
+        .status-available {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .status-available .branch-status {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        /* Status: Claimed */
+        .status-claimed {
+            border-color: #2196F3;
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .status-claimed .branch-owner {
+            color: #2196F3;
+            font-weight: 600;
+        }
+
+        /* Status: Completed */
+        .status-completed {
+            border-color: #9C27B0;
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .status-completed .branch-owner {
+            color: #9C27B0;
+            font-weight: 600;
+        }
+
+        .branch-status, .branch-owner {
+            font-size: 11px;
+            min-width: 80px;
+            text-align: left;
+        }
+
+        .branch-input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 2px solid #E8F5E8;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .branch-input:focus {
+            border-color: #2E8B57;
+            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.1);
+        }
+
+        .claim-branch-btn, .unclaim-branch-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .claim-branch-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .claim-branch-btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .unclaim-branch-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .unclaim-branch-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-1px);
+        }
+
+        .completion-badge {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #9C27B0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .main-completion-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #9C27B0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Collaboration Stats and Suggestions */
+        .collaboration-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-size: 14px;
+        }
+
+        .stats-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .stats-content {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Suggestion Indicators */
+        .branch-suggestion {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #FF6B35;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+            animation: pulse 2s infinite;
+            z-index: 10;
+        }
+
+        .branch-suggestion.completion-hint {
+            background: #2196F3;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-4px); }
+            60% { transform: translateY(-2px); }
+        }
+
+        /* Collaboration Complete Celebration */
+        .collaboration-complete {
+            margin-top: 12px;
+            padding: 12px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .celebration-content {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            animation: slideIn 0.5s ease;
+        }
+
+        .welcome-header {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .welcome-close {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s ease;
+        }
+
+        .welcome-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Enhanced branch status indicators */
+        .branch-input-container.status-available {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.08);
+            position: relative;
+        }
+
+        .branch-input-container.status-claimed {
+            border-color: #2196F3;
+            background: rgba(33, 150, 243, 0.08);
+            position: relative;
+        }
+
+        .branch-input-container.status-completed {
+            border-color: #9C27B0;
+            background: rgba(156, 39, 176, 0.08);
+            position: relative;
+        }
+
+        /* Available branch highlight */
+        .branch-input-container.status-available::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            animation: glow 2s infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+            to { box-shadow: 0 0 15px rgba(76, 175, 80, 0.6); }
+        }
+
+        .main-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .main-input-container.status-completed {
+            position: relative;
+        }
+
+        .branch-input:focus {
+            border-color: #2E8B57;
+            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.1);
+        }
+
+        .branch-input[readonly] {
+            background: #F5F5F5;
+            border-color: #CCCCCC;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
+        /* Validation Feedback Styles */
+        .input-correct {
+            border-color: #22c55e !important;
+            background-color: rgba(34, 197, 94, 0.05) !important;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1) !important;
+        }
+
+        .input-incorrect {
+            border-color: #ef4444 !important;
+            background-color: rgba(239, 68, 68, 0.05) !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        .input-suggestion {
+            border-color: #f59e0b !important;
+            background-color: rgba(245, 158, 11, 0.05) !important;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1) !important;
+        }
+
+        .validation-feedback {
+            position: absolute;
+            top: -25px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+
+        .validation-feedback.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .validation-feedback.correct {
+            background: #22c55e;
+            color: white;
+        }
+
+        .validation-feedback.incorrect {
+            background: #ef4444;
+            color: white;
+        }
+
+        .validation-feedback.suggestion {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .concept-input-container {
+            position: relative;
+            text-align: center;
+        }
+
+        .concept-input-container:hover .validation-feedback {
+            opacity: 0.8;
+        }
+
+        /* Progress Indicators */
+        .category-progress {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #7A5B47;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid #E2D5C2;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .concept-node:hover .category-progress {
+            opacity: 1;
+        }
+
+        /* Hint Button */
+        .hint-button {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f59e0b;
+            color: white;
+            border: 2px solid white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+
+        .hint-button:hover {
+            background: #d97706;
+            transform: scale(1.1);
+        }
+
+        .branch-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .branch-remove:hover {
+            opacity: 1;
+        }
+
+        .branches-toggle {
+            text-align: center;
+            padding: 8px;
+            border-top: 1px solid #E2D5C2;
+            margin-top: 5px;
+            position: sticky;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+        }
+
+        .toggle-btn {
+            background: #2E8B57;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: #1a4d3a;
+        }
+
+        .branch-hidden {
+            display: none !important;
+        }
+
+        /* Instructions */
+        .instructions-panel {
+            margin-top: 30px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(68, 41, 19, 0.08);
+        }
+
+        .instructions-panel h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5C3422;
+            margin-bottom: 16px;
+        }
+
+        .instructions-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .instruction-icon {
+            width: 24px;
+            height: 24px;
+            background: #2E8B57;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .instruction-text {
+            font-size: 14px;
+            color: #5C3422;
+            line-height: 1.5;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .action-btn.primary {
+            background: #2E8B57;
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: #245C45;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: #F8F9FA;
+            color: #2E8B57;
+            border: 2px solid #2E8B57;
+        }
+
+        .action-btn.secondary:hover {
+            background: #2E8B57;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .concept-map-container {
+                height: 600px;
+            }
+
+            .surrounding-node-1 { top: 10%; left: 50%; }
+            .surrounding-node-2 { top: 30%; left: 90%; }
+            .surrounding-node-3 { top: 70%; left: 90%; }
+            .surrounding-node-4 { top: 90%; left: 50%; }
+            .surrounding-node-5 { top: 70%; left: 10%; }
+            .surrounding-node-6 { top: 30%; left: 10%; }
+
+            .concept-input {
+                width: 120px;
+                font-size: 13px;
+            }
+
+            .central-node .concept-input {
+                width: 140px;
+            }
+
+            .instructions-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="header-container">
+            <button class="back-button" onclick="window.location.href='home.html'">
+                <i data-lucide="arrow-left" class="back-icon"></i>
+                Back to Home
+            </button>
+            <div class="header-title">
+                <a href="home.html" class="header-title-link">Readings in Philippine History</a>
+            </div>
+            <div class="user-profile-mini">
+                <img id="profileAvatar" src="" alt="Avatar" class="profile-avatar-mini">
+                <div class="profile-info-mini">
+                    <div id="profileName" class="profile-name-mini">Loading...</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Logout">↪</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-title">
+            <h1>José Rizal Concept Map</h1>
+            <p>Build connections around José Rizal by filling in related terms and concepts.</p>
+        </div>
+
+        <!-- Contributions Panel -->
+        <div class="contributions-panel collapsed">
+            <div class="panel-header" onclick="toggleContributionsPanel()">
+                <h3>📊 Your Contributions & Progress</h3>
+                <span class="panel-toggle">▼</span>
+            </div>
+            <div class="panel-content" id="contributionsContent">
+                <div class="contribution-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Your Contributions:</span>
+                        <span class="stat-value" id="userContributionsCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Collaborative Terms:</span>
+                        <span class="stat-value" id="totalContributionsCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Available Slots:</span>
+                        <span class="stat-value" id="availableSlotsCount">0</span>
+                    </div>
+                </div>
+                <div class="contribution-history" id="contributionHistory">
+                    <h4>Recent Activity</h4>
+                    <div id="recentContributionsList">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concept Map -->
+        <div class="concept-map-container">
+            <!-- SVG Canvas for Connections -->
+            <div class="connections-canvas">
+                <svg id="connectionsSvg">
+                    <!-- Lines will be drawn here by JavaScript -->
+                </svg>
+            </div>
+
+            <!-- Central Node -->
+            <div class="concept-node central-node">
+                <input type="text" class="concept-input" id="centralInput" value="Rizal" readonly>
+                <div class="concept-label">Main Topic</div>
+            </div>
+
+            <!-- Surrounding Nodes -->
+            <div class="concept-node surrounding-node-1">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="characteristic_trait" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-characteristic_trait">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('characteristic_trait')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="characteristic_trait">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('characteristic_trait')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-characteristic_trait">0/0 correct</div>
+                <div class="concept-label">Characteristic/Trait</div>
+            </div>
+
+            <div class="concept-node surrounding-node-2">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="achievement_work" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-achievement_work">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('achievement_work')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="achievement_work">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('achievement_work')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-achievement_work">0/0 correct</div>
+                <div class="concept-label">Achievement/Work</div>
+            </div>
+
+            <div class="concept-node surrounding-node-3">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="historical_event" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-historical_event">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('historical_event')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="historical_event">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('historical_event')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-historical_event">0/0 correct</div>
+                <div class="concept-label">Historical Event</div>
+            </div>
+
+            <div class="concept-node surrounding-node-4">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="impact_influence" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-impact_influence">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('impact_influence')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="impact_influence">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('impact_influence')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-impact_influence">0/0 correct</div>
+                <div class="concept-label">Impact/Influence</div>
+            </div>
+
+            <div class="concept-node surrounding-node-5">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="related_person" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-related_person">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('related_person')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="related_person">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('related_person')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-related_person">0/0 correct</div>
+                <div class="concept-label">Related Person</div>
+            </div>
+
+            <div class="concept-node surrounding-node-6">
+                <div class="main-input-container">
+                    <div class="concept-input-container">
+                        <input type="text" class="concept-input main-input" data-category="key_idea" placeholder="Related term...">
+                        <div class="validation-feedback" id="feedback-key_idea">
+                            <span class="feedback-icon">✓</span>
+                        </div>
+                        <button class="hint-button" onclick="showHints('key_idea')" title="Show hints">💡</button>
+                    </div>
+                </div>
+                <div class="branches-container" data-category="key_idea">
+                    <div class="branches-toggle" style="display: none;">
+                        <button class="toggle-btn" onclick="toggleBranches('key_idea')">Show More Branches</button>
+                    </div>
+                </div>
+                <div class="category-progress" id="progress-key_idea">0/0 correct</div>
+                <div class="concept-label">Key Idea</div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions-panel">
+            <h3>How to Use This Concept Map</h3>
+            <div class="instructions-list">
+                <div class="instruction-item">
+                    <div class="instruction-icon">1</div>
+                    <div class="instruction-text">The central topic "Rizal" is fixed - focus on building connections around José Rizal</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">2</div>
+                    <div class="instruction-text">Fill in each surrounding box with terms related to José Rizal</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">3</div>
+                    <div class="instruction-text">Use the labels as guides: characteristics, achievements, historical events, etc.</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">4</div>
+                    <div class="instruction-text">The shared concept map saves automatically as you type, or click "Save Map" for database storage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn secondary" onclick="clearMap()">Clear All</button>
+            <button class="action-btn primary" onclick="saveMap()">Save Map</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+
+        // Validation data for José Rizal concept map
+        const VALIDATION_DATA = {
+            characteristic_trait: [
+                { term: "national hero", difficulty: "easy", importance: "high", alternatives: ["hero", "philippine hero"] },
+                { term: "polymath", difficulty: "medium", importance: "high", alternatives: ["renaissance man", "versatile"] },
+                { term: "ophthalmologist", difficulty: "medium", importance: "medium", alternatives: ["eye doctor", "eye specialist"] },
+                { term: "writer", difficulty: "easy", importance: "high", alternatives: ["author", "literary figure"] },
+                { term: "revolutionary", difficulty: "easy", importance: "high", alternatives: ["revolutionist", "rebel"] },
+                { term: "patriot", difficulty: "easy", importance: "high", alternatives: ["patriotic", "lover of country"] },
+                { term: "intellectual", difficulty: "medium", importance: "high", alternatives: ["thinker", "scholar"] },
+                { term: "reformer", difficulty: "medium", importance: "high", alternatives: ["social reformer", "change agent"] },
+                { term: "martyr", difficulty: "easy", importance: "high", alternatives: ["sacrifice", "victim"] },
+                { term: "genius", difficulty: "easy", importance: "medium", alternatives: ["brilliant", "talented"] },
+                { term: "nationalist", difficulty: "medium", importance: "high", alternatives: ["nationalistic", "patriotic"] },
+                { term: "propagandist", difficulty: "hard", importance: "medium", alternatives: ["propaganda writer", "activist writer"] },
+                { term: "novelist", difficulty: "easy", importance: "high", alternatives: ["fiction writer", "storyteller"] },
+                { term: "poet", difficulty: "easy", importance: "high", alternatives: ["verse writer", "lyricist"] },
+                { term: "physician", difficulty: "easy", importance: "medium", alternatives: ["doctor", "medical practitioner"] },
+                { term: "educator", difficulty: "medium", importance: "medium", alternatives: ["teacher", "mentor"] },
+                { term: "activist", difficulty: "medium", importance: "high", alternatives: ["campaigner", "advocate"] },
+                { term: "humanist", difficulty: "hard", importance: "medium", alternatives: ["philanthropist", "humanitarian"] },
+                { term: "scholar", difficulty: "medium", importance: "high", alternatives: ["academic", "learned person"] },
+                { term: "visionary", difficulty: "hard", importance: "medium", alternatives: ["forward thinker", "innovator"] },
+                { term: "leader", difficulty: "easy", importance: "high", alternatives: ["guide", "director"] },
+                { term: "inspirational", difficulty: "easy", importance: "medium", alternatives: ["motivating", "encouraging"] }
+            ],
+            achievement_work: [
+                { term: "noli me tangere", difficulty: "easy", importance: "high", alternatives: ["touch me not", "first novel"] },
+                { term: "el filibusterismo", difficulty: "easy", importance: "high", alternatives: ["the reign of greed", "second novel"] },
+                { term: "mi ultimo adios", difficulty: "easy", importance: "high", alternatives: ["my last farewell", "farewell poem"] },
+                { term: "la solidaridad", difficulty: "medium", importance: "high", alternatives: ["solidarity", "propaganda newspaper"] },
+                { term: "diary", difficulty: "easy", importance: "medium", alternatives: ["journal", "personal writings"] },
+                { term: "essays", difficulty: "easy", importance: "medium", alternatives: ["articles", "writings"] },
+                { term: "novels", difficulty: "easy", importance: "high", alternatives: ["books", "fiction"] },
+                { term: "poems", difficulty: "easy", importance: "high", alternatives: ["poetry", "verses"] },
+                { term: "medical practice", difficulty: "medium", importance: "medium", alternatives: ["doctor work", "medical career"] },
+                { term: "reforms", difficulty: "medium", importance: "high", alternatives: ["changes", "improvements"] },
+                { term: "journalism", difficulty: "medium", importance: "medium", alternatives: ["writing", "publishing"] },
+                { term: "scholarship", difficulty: "hard", importance: "medium", alternatives: ["academic work", "study"] },
+                { term: "ophthalmology", difficulty: "hard", importance: "medium", alternatives: ["eye medicine", "eye surgery"] },
+                { term: "surgery", difficulty: "medium", importance: "medium", alternatives: ["operations", "medical procedures"] },
+                { term: "writing", difficulty: "easy", importance: "high", alternatives: ["literature", "composition"] },
+                { term: "publishing", difficulty: "medium", importance: "medium", alternatives: ["printing", "distribution"] },
+                { term: "education", difficulty: "easy", importance: "high", alternatives: ["teaching", "learning"] },
+                { term: "propaganda", difficulty: "hard", importance: "high", alternatives: ["campaign", "movement"] },
+                { term: "literature", difficulty: "easy", importance: "high", alternatives: ["writing", "books"] },
+                { term: "art", difficulty: "easy", importance: "low", alternatives: ["creativity", "expression"] }
+            ],
+            historical_event: [
+                { term: "cavite mutiny", difficulty: "medium", importance: "high", alternatives: ["mutiny of 1872", "1872 mutiny"] },
+                { term: "propaganda movement", difficulty: "medium", importance: "high", alternatives: ["reform movement", "ilustrado movement"] },
+                { term: "exile in dapitan", difficulty: "medium", importance: "high", alternatives: ["dapitan exile", "banishment"] },
+                { term: "execution", difficulty: "easy", importance: "high", alternatives: ["death", "firing squad"] },
+                { term: "trial", difficulty: "easy", importance: "high", alternatives: ["court case", "judicial process"] },
+                { term: "banishment", difficulty: "medium", importance: "medium", alternatives: ["exile", "deportation"] },
+                { term: "imprisonment", difficulty: "easy", importance: "medium", alternatives: ["jail", "confinement"] },
+                { term: "spanish colonial period", difficulty: "medium", importance: "high", alternatives: ["colonial era", "spanish rule"] },
+                { term: "philippine revolution", difficulty: "easy", importance: "high", alternatives: ["revolution of 1896", "katipunan revolution"] },
+                { term: "late 19th century", difficulty: "easy", importance: "medium", alternatives: ["1800s", "victorian era"] },
+                { term: "1896 execution", difficulty: "easy", importance: "high", alternatives: ["december 30 1896", "bagumbayan execution"] },
+                { term: "fort santiago", difficulty: "medium", importance: "medium", alternatives: ["prison", "military fort"] },
+                { term: "bagumbayan", difficulty: "hard", importance: "medium", alternatives: ["luneta", "execution site"] },
+                { term: "martyrdom", difficulty: "easy", importance: "high", alternatives: ["sacrifice", "heroic death"] },
+                { term: "resistance", difficulty: "medium", importance: "medium", alternatives: ["opposition", "defiance"] }
+            ],
+            impact_influence: [
+                { term: "philippine revolution", difficulty: "easy", importance: "high", alternatives: ["1896 revolution", "independence movement"] },
+                { term: "nationalism", difficulty: "medium", importance: "high", alternatives: ["national pride", "patriotism"] },
+                { term: "education reform", difficulty: "medium", importance: "high", alternatives: ["educational changes", "school improvements"] },
+                { term: "anti-colonialism", difficulty: "hard", importance: "high", alternatives: ["anti-imperialism", "independence"] },
+                { term: "literature", difficulty: "easy", importance: "high", alternatives: ["writing", "philippine literature"] },
+                { term: "journalism", difficulty: "medium", importance: "medium", alternatives: ["press freedom", "media"] },
+                { term: "human rights", difficulty: "medium", importance: "high", alternatives: ["civil rights", "freedom"] },
+                { term: "freedom", difficulty: "easy", importance: "high", alternatives: ["liberty", "independence"] },
+                { term: "awakening", difficulty: "hard", importance: "medium", alternatives: ["consciousness", "enlightenment"] },
+                { term: "inspiration", difficulty: "easy", importance: "high", alternatives: ["motivation", "influence"] },
+                { term: "reform movement", difficulty: "medium", importance: "high", alternatives: ["change movement", "progressive movement"] },
+                { term: "cultural renaissance", difficulty: "hard", importance: "medium", alternatives: ["cultural revival", "renaissance"] },
+                { term: "independence", difficulty: "easy", importance: "high", alternatives: ["freedom", "sovereignty"] },
+                { term: "democracy", difficulty: "medium", importance: "medium", alternatives: ["self-government", "republic"] },
+                { term: "equality", difficulty: "easy", importance: "medium", alternatives: ["fairness", "justice"] },
+                { term: "justice", difficulty: "easy", importance: "high", alternatives: ["fairness", "righteousness"] },
+                { term: "modern philippines", difficulty: "easy", importance: "high", alternatives: ["contemporary philippines", "today's philippines"] }
+            ],
+            related_person: [
+                { term: "maria clara", difficulty: "easy", importance: "high", alternatives: ["maria clara de los santos", "heroine"] },
+                { term: "ibarra", difficulty: "easy", importance: "high", alternatives: ["juan crisostomo ibarra", "protagonist"] },
+                { term: "elias", difficulty: "medium", importance: "high", alternatives: ["boatman", "mysterious figure"] },
+                { term: "simoun", difficulty: "easy", importance: "high", alternatives: ["kabesa", "jeweler"] },
+                { term: "basilio", difficulty: "medium", importance: "medium", alternatives: ["medical student", "scholar"] },
+                { term: "crispin", difficulty: "hard", importance: "medium", alternatives: ["church bell ringer", "victim"] },
+                { term: "filibusteros", difficulty: "hard", importance: "medium", alternatives: ["subversives", "revolutionaries"] },
+                { term: "propagandists", difficulty: "hard", importance: "high", alternatives: ["reformers", "ilustrados"] },
+                { term: "ilustrados", difficulty: "hard", importance: "high", alternatives: ["enlightened ones", "educated elite"] },
+                { term: "jose p rizal", difficulty: "easy", importance: "high", alternatives: ["jose protacio rizal", "pepe"] },
+                { term: "paciano", difficulty: "medium", importance: "medium", alternatives: ["brother", "older brother"] },
+                { term: "teodora", difficulty: "medium", importance: "medium", alternatives: ["mother", "doña teodora"] },
+                { term: "leonardo lucban", difficulty: "hard", importance: "low", alternatives: ["friend", "companion"] },
+                { term: "antonio luna", difficulty: "hard", importance: "medium", alternatives: ["general", "military leader"] },
+                { term: "apolinario mabini", difficulty: "hard", importance: "medium", alternatives: ["brains of revolution", "prime minister"] },
+                { term: "emilio jacinto", difficulty: "hard", importance: "medium", alternatives: ["utak ng rebolusyon", "brain of revolution"] },
+                { term: "andres bonifacio", difficulty: "medium", importance: "high", alternatives: ["supremo", "katipunan founder"] },
+                { term: "gregorio del pilar", difficulty: "hard", importance: "medium", alternatives: ["goyo", "young general"] }
+            ],
+            key_idea: [
+                { term: "assimilation", difficulty: "hard", importance: "high", alternatives: ["integration", "equality with spaniards"] },
+                { term: "reform", difficulty: "easy", importance: "high", alternatives: ["change", "improvement"] },
+                { term: "revolution", difficulty: "easy", importance: "high", alternatives: ["uprising", "overthrow"] },
+                { term: "education", difficulty: "easy", importance: "high", alternatives: ["learning", "knowledge"] },
+                { term: "freedom", difficulty: "easy", importance: "high", alternatives: ["liberty", "independence"] },
+                { term: "justice", difficulty: "easy", importance: "high", alternatives: ["fairness", "equity"] },
+                { term: "equality", difficulty: "easy", importance: "high", alternatives: ["equal rights", "parity"] },
+                { term: "nationalism", difficulty: "medium", importance: "high", alternatives: ["national pride", "patriotism"] },
+                { term: "independence", difficulty: "easy", importance: "high", alternatives: ["self-rule", "sovereignty"] },
+                { term: "human rights", difficulty: "medium", importance: "high", alternatives: ["civil rights", "fundamental rights"] },
+                { term: "dignity", difficulty: "medium", importance: "medium", alternatives: ["honor", "respect"] },
+                { term: "progress", difficulty: "easy", importance: "medium", alternatives: ["advancement", "development"] },
+                { term: "enlightenment", difficulty: "hard", importance: "medium", alternatives: ["illumination", "awakening"] },
+                { term: "awakening", difficulty: "medium", importance: "high", alternatives: ["consciousness", "realization"] },
+                { term: "change", difficulty: "easy", importance: "high", alternatives: ["transformation", "reform"] },
+                { term: "liberty", difficulty: "medium", importance: "high", alternatives: ["freedom", "autonomy"] },
+                { term: "democracy", difficulty: "medium", importance: "medium", alternatives: ["self-government", "people power"] },
+                { term: "self-determination", difficulty: "hard", importance: "medium", alternatives: ["self-rule", "autonomy"] },
+                { term: "cultural identity", difficulty: "hard", importance: "medium", alternatives: ["cultural heritage", "national identity"] }
+            ]
+        };
+
+        // Check authentication and redirect if not authenticated
+        async function checkAuthAndRedirect() {
+            try {
+                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'register.html';
+                    return false;
+                }
+                currentUser = user;
+                return true;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'register.html';
+                return false;
+            }
+        }
+
+        // Load user profile information
+        async function loadUserProfile(nameElement, emailElement, avatarElement) {
+            if (!currentUser) return;
+
+            // Set initial values immediately from currentUser
+            const initialName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User';
+            const initialAvatarUrl = currentUser.user_metadata?.avatar_url ||
+                `data:image/svg+xml;base64,${btoa(`
+                    <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" fill="#2E8B57"/>
+                        <text x="16" y="20" font-family="Arial" font-size="14" fill="white" text-anchor="middle">${(currentUser.user_metadata?.full_name || currentUser.email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</text>
+                    </svg>
+                `)}`;
+
+            // Update elements immediately
+            if (nameElement) nameElement.textContent = initialName;
+            if (avatarElement) avatarElement.src = initialAvatarUrl;
+
+            // Try to fetch updated profile from database
+            try {
+                const { data: profileData, error } = await window.supabaseClient
+                    .from('user_profiles')
+                    .select('full_name, avatar_url')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (!error && profileData) {
+                    // Update with database data
+                    const dbName = profileData.full_name || initialName;
+                    const dbAvatarUrl = profileData.avatar_url || initialAvatarUrl;
+
+                    if (nameElement) nameElement.textContent = dbName;
+                    if (avatarElement) avatarElement.src = dbAvatarUrl;
+
+                    // Store in localStorage
+                    localStorage.setItem('profileName', dbName);
+                    if (profileData.avatar_url) localStorage.setItem('profileAvatar', profileData.avatar_url);
+                }
+            } catch (err) {
+                console.log('Database profile fetch failed, using current user data');
+            }
+
+            // Handle email element if it exists (for full profile, not mini profile)
+            if (emailElement) {
+                emailElement.textContent = currentUser.email;
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await saveMap();
+                const { error } = await window.supabaseClient.auth.signOut();
+                if (error) throw error;
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize the structured concept map
+        async function initStructuredMap() {
+            const authenticated = await checkAuthAndRedirect();
+            if (!authenticated) return;
+
+            await loadUserProfile(
+                document.getElementById('profileName'),
+                null,
+                document.getElementById('profileAvatar')
+            );
+
+            // Initialize central concept as fixed "Rizal"
+            const centralInput = document.getElementById('centralInput');
+            centralInput.value = "Rizal";
+            centralInput.readOnly = true;
+
+            drawConnections();
+            await loadSavedMap();
+
+            // Initialize collaboration progress tracking
+            updateCollaborationProgress();
+
+            // Update contributions panel
+            await updateContributionsPanel();
+
+            // Show welcome message for new users
+            showWelcomeMessage();
+
+            // Add auto-save functionality
+            setupInputHandling();
+        }
+
+        // Validation and feedback system
+        let validationState = {}; // Track validation state for each input
+
+        // Initialize validation system
+        function initializeValidation() {
+            // Initialize validation state for each category
+            const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+            categories.forEach(category => {
+                validationState[category] = {
+                    mainInput: null,
+                    branches: [],
+                    correctCount: 0,
+                    totalCount: 0
+                };
+            });
+        }
+
+        // Calculate string similarity for fuzzy matching
+        function calculateSimilarity(str1, str2) {
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const distance = levenshteinDistance(longer, shorter);
+            return (longer.length - distance) / longer.length;
+        }
+
+        // Levenshtein distance calculation
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+
+        // Validate a term against the validation data
+        function validateTerm(term, category) {
+            const normalizedTerm = term.toLowerCase().trim();
+            const validTerms = VALIDATION_DATA[category] || [];
+            
+            // Exact match
+            const exactMatch = validTerms.find(item => item.term.toLowerCase() === normalizedTerm);
+            if (exactMatch) {
+                return { isValid: true, type: 'exact', data: exactMatch };
+            }
+            
+            // Fuzzy match for common variations
+            const fuzzyMatches = validTerms.filter(item => 
+                calculateSimilarity(normalizedTerm, item.term.toLowerCase()) > 0.8
+            );
+            
+            if (fuzzyMatches.length > 0) {
+                return { isValid: true, type: 'fuzzy', data: fuzzyMatches[0], suggestion: fuzzyMatches[0].term };
+            }
+            
+            // Find closest matches for suggestions
+            const suggestions = validTerms
+                .map(item => ({
+                    term: item.term,
+                    similarity: calculateSimilarity(normalizedTerm, item.term.toLowerCase())
+                }))
+                .filter(item => item.similarity > 0.3)
+                .sort((a, b) => b.similarity - a.similarity)
+                .slice(0, 3)
+                .map(item => item.term);
+            
+            return { isValid: false, type: 'invalid', suggestions };
+        }
+
+        // Validate input and update UI
+        function validateInput(input) {
+            const value = input.value.trim();
+            const category = input.getAttribute('data-category');
+            
+            if (!value) {
+                // Clear validation state for empty input
+                clearValidationState(input);
+                return;
+            }
+            
+            const validation = validateTerm(value, category);
+            updateValidationUI(input, validation);
+            updateProgress(category);
+        }
+
+        // Update validation UI for an input
+        function updateValidationUI(input, validation) {
+            const container = input.closest('.concept-input-container');
+            const feedback = container.querySelector('.validation-feedback');
+            
+            // Remove existing validation classes
+            input.classList.remove('input-correct', 'input-incorrect', 'input-suggestion');
+            feedback.classList.remove('show', 'correct', 'incorrect', 'suggestion');
+            
+            if (validation.isValid) {
+                if (validation.type === 'exact') {
+                    input.classList.add('input-correct');
+                    feedback.classList.add('show', 'correct');
+                    feedback.querySelector('.feedback-icon').textContent = '✓';
+                } else if (validation.type === 'fuzzy') {
+                    input.classList.add('input-suggestion');
+                    feedback.classList.add('show', 'suggestion');
+                    feedback.querySelector('.feedback-icon').textContent = '💡';
+                }
+            } else {
+                input.classList.add('input-incorrect');
+                feedback.classList.add('show', 'incorrect');
+                feedback.querySelector('.feedback-icon').textContent = '✗';
+            }
+        }
+
+        // Clear validation state for empty input
+        function clearValidationState(input) {
+            const container = input.closest('.concept-input-container');
+            const feedback = container.querySelector('.validation-feedback');
+            
+            input.classList.remove('input-correct', 'input-incorrect', 'input-suggestion');
+            feedback.classList.remove('show', 'correct', 'incorrect', 'suggestion');
+        }
+
+        // Update progress for a category
+        function updateProgress(category) {
+            const mainInput = document.querySelector(`.main-input[data-category="${category}"]`);
+            const branchInputs = document.querySelectorAll(`.branch-input[data-category="${category}"]`);
+            
+            let correctCount = 0;
+            let totalCount = 0;
+            
+            // Count main input
+            if (mainInput && mainInput.value.trim()) {
+                totalCount++;
+                const validation = validateTerm(mainInput.value.trim(), category);
+                if (validation.isValid) correctCount++;
+            }
+            
+            // Count branch inputs
+            branchInputs.forEach(input => {
+                if (input.value.trim()) {
+                    totalCount++;
+                    const validation = validateTerm(input.value.trim(), category);
+                    if (validation.isValid) correctCount++;
+                }
+            });
+            
+            // Update progress display
+            const progressElement = document.getElementById(`progress-${category}`);
+            if (progressElement) {
+                progressElement.textContent = `${correctCount}/${totalCount} correct`;
+            }
+        }
+
+        // Show hints for a category
+        function showHints(category) {
+            const validTerms = VALIDATION_DATA[category] || [];
+            const easyTerms = validTerms.filter(item => item.difficulty === 'easy').slice(0, 3);
+            const hints = easyTerms.map(item => item.term).join(', ');
+            
+            alert(`Hints for ${category.replace('_', ' ')}:\n${hints}\n\nTry these terms or related concepts!`);
+        }
+
+        // Setup input handling with branching system
+        function setupInputHandling() {
+            // Initialize validation system
+            initializeValidation();
+
+            // Only handle the main inputs, not the central one
+            const mainInputs = document.querySelectorAll('.main-input');
+            console.log('Setting up branching for', mainInputs.length, 'main inputs');
+
+            if (mainInputs.length === 0) {
+                console.error('No main inputs found! Check HTML structure.');
+                return;
+            }
+
+            mainInputs.forEach((input, index) => {
+                console.log(`Setting up branching for main input ${index}:`, input);
+
+                input.addEventListener('input', (event) => {
+                    const value = event.target.value.trim();
+                    console.log(`Main input ${index} changed to: "${value}"`);
+
+                    // Validate input in real-time
+                    validateInput(event.target);
+                    
+                    // Update progress for this category
+                    const category = event.target.getAttribute('data-category');
+                    updateProgress(category);
+
+                    // If input has content and no branches exist yet, create first branch
+                    if (value && !hasBranches(input)) {
+                        console.log(`Creating first branch for main input ${index}`);
+                        addBranch(input);
+                    }
+                });
+
+                input.addEventListener('blur', (event) => {
+                    const value = event.target.value.trim();
+                    // Make main input readonly if it has content
+                    if (value) {
+                        event.target.readOnly = true;
+                        event.target.style.background = '#F5F5F5';
+                        event.target.style.borderColor = '#CCCCCC';
+                        event.target.style.color = '#666666';
+                        event.target.style.cursor = 'not-allowed';
+                        
+                        // Update progress when input is finalized
+                        const category = event.target.getAttribute('data-category');
+                        updateProgress(category);
+
+                        // Update collaboration progress
+                        updateCollaborationProgress();
+                    }
+                });
+            });
+        }
+
+        // Check if a main input already has branches
+        function hasBranches(mainInput) {
+            const category = mainInput.dataset.category;
+            const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+            return branchesContainer && branchesContainer.children.length > 0;
+        }
+
+        // Add a new branch input (limited to 3 branches per category)
+        function addBranch(mainInput) {
+            const category = mainInput.dataset.category;
+            const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+
+            if (!branchesContainer) return;
+
+            // Count existing branches (excluding the toggle div)
+            const existingBranches = branchesContainer.querySelectorAll('.branch-input-container').length;
+
+            // Limit to 3 branches maximum
+            if (existingBranches >= 3) {
+                console.log(`Maximum branches reached for category: ${category}`);
+                return;
+            }
+
+            const branchContainer = document.createElement('div');
+            branchContainer.className = 'branch-input-container status-available';
+
+            // Branch status indicator
+            const branchStatus = document.createElement('div');
+            branchStatus.className = 'branch-status';
+            branchStatus.textContent = 'Available';
+
+            const branchInput = document.createElement('input');
+            branchInput.type = 'text';
+            branchInput.className = 'concept-input branch-input';
+            branchInput.placeholder = 'Click to contribute your term...';
+            branchInput.dataset.category = category;
+            branchInput.readOnly = true; // Start as readonly until claimed
+
+            // Claim button
+            const claimButton = document.createElement('button');
+            claimButton.className = 'claim-branch-btn';
+            claimButton.textContent = 'Claim';
+            claimButton.title = 'Claim this branch for your contribution';
+
+            // Event listeners
+            claimButton.addEventListener('click', () => {
+                claimBranch(branchContainer);
+            });
+
+            branchInput.addEventListener('input', (event) => {
+                const value = event.target.value.trim();
+
+                // Validate branch input
+                validateInput(event.target);
+
+                if (value && !hasNextBranch(branchInput)) {
+                    // Check if we haven't reached the limit before auto-creating
+                    const category = branchInput.dataset.category;
+                    const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+                    const existingBranches = branchesContainer.querySelectorAll('.branch-input-container').length;
+
+                    if (existingBranches < 3) {
+                        addBranch(mainInput);
+                    }
+                }
+            });
+
+            branchInput.addEventListener('blur', (event) => {
+                const value = event.target.value.trim();
+                if (value) {
+                    branchInput.readOnly = true;
+                    branchInput.style.background = '#F5F5F5';
+                    branchInput.style.borderColor = '#CCCCCC';
+                    branchInput.style.color = '#666666';
+                    branchInput.style.cursor = 'not-allowed';
+
+                    // Mark as completed
+                    branchContainer.className = 'branch-input-container status-completed';
+                    branchStatus.textContent = 'Your Contribution';
+                    branchStatus.className = 'branch-owner';
+
+                    // Add completion badge
+                    const completionBadge = document.createElement('div');
+                    completionBadge.className = 'completion-badge';
+                    completionBadge.textContent = '✓';
+                    branchContainer.appendChild(completionBadge);
+
+                    // Remove claim button and add unclaim option
+                    claimButton.remove();
+                    const unclaimButton = document.createElement('button');
+                    unclaimButton.className = 'unclaim-branch-btn';
+                    unclaimButton.textContent = 'Release';
+                    unclaimButton.title = 'Release this branch back to available';
+                    unclaimButton.addEventListener('click', () => {
+                        unclaimBranch(branchContainer);
+                    });
+                    branchContainer.appendChild(unclaimButton);
+
+                    // Update progress when branch input is finalized
+                    updateProgress(category);
+
+                    // Update collaboration progress
+                    updateCollaborationProgress();
+                }
+            });
+
+            // Assemble the branch container
+            branchContainer.appendChild(branchStatus);
+            branchContainer.appendChild(branchInput);
+            branchContainer.appendChild(claimButton);
+
+            // Insert before the toggle div
+            const toggleDiv = branchesContainer.querySelector('.branches-toggle');
+            if (toggleDiv) {
+                branchesContainer.insertBefore(branchContainer, toggleDiv);
+            } else {
+                branchesContainer.appendChild(branchContainer);
+            }
+
+            // Update UI
+            updateBranchToggle(category);
+
+            // Update collaboration progress
+            updateCollaborationProgress();
+        }
+
+        // Claim a branch for the current user
+        function claimBranch(branchContainer) {
+            const branchInput = branchContainer.querySelector('.branch-input');
+            const branchStatus = branchContainer.querySelector('.branch-status');
+            const claimButton = branchContainer.querySelector('.claim-branch-btn');
+
+            // Update status
+            branchContainer.className = 'branch-input-container status-claimed';
+            branchStatus.textContent = 'Your Contribution';
+            branchStatus.className = 'branch-owner';
+
+            // Enable input for editing
+            branchInput.readOnly = false;
+            branchInput.placeholder = 'Enter your term...';
+            branchInput.focus();
+
+            // Remove claim button
+            claimButton.remove();
+
+            // Update collaboration progress
+            updateCollaborationProgress();
+        }
+
+        // Unclaim a branch (release it back to available)
+        function unclaimBranch(branchContainer) {
+            const branchInput = branchContainer.querySelector('.branch-input');
+            const branchStatus = branchContainer.querySelector('.branch-owner');
+            const unclaimButton = branchContainer.querySelector('.unclaim-branch-btn');
+            const completionBadge = branchContainer.querySelector('.completion-badge');
+
+            // Reset to available state
+            branchContainer.className = 'branch-input-container status-available';
+            branchStatus.textContent = 'Available';
+            branchStatus.className = 'branch-status';
+
+            // Reset input
+            branchInput.value = '';
+            branchInput.readOnly = true;
+            branchInput.placeholder = 'Click to contribute your term...';
+            branchInput.style.background = '';
+            branchInput.style.borderColor = '';
+            branchInput.style.color = '';
+            branchInput.style.cursor = '';
+
+            // Remove completion elements
+            if (completionBadge) completionBadge.remove();
+            if (unclaimButton) unclaimButton.remove();
+
+            // Add back claim button
+            const claimButton = document.createElement('button');
+            claimButton.className = 'claim-branch-btn';
+            claimButton.textContent = 'Claim';
+            claimButton.title = 'Claim this branch for your contribution';
+            claimButton.addEventListener('click', () => {
+                claimBranch(branchContainer);
+            });
+            branchContainer.appendChild(claimButton);
+
+            // Update progress
+            const category = branchInput.dataset.category;
+            updateProgress(category);
+
+            // Update collaboration progress
+            updateCollaborationProgress();
+        }
+
+        // Show welcome message for collaborative features
+        function showWelcomeMessage() {
+            // Only show once per session
+            if (sessionStorage.getItem('welcomeShown')) return;
+            sessionStorage.setItem('welcomeShown', 'true');
+
+            const welcome = document.createElement('div');
+            welcome.className = 'welcome-message';
+            welcome.innerHTML = `
+                <div class="welcome-content">
+                    <div class="welcome-header">🤝 Welcome to Collaborative Concept Mapping!</div>
+                    <div class="welcome-text">
+                        • <strong>Main inputs</strong> are for primary contributions<br>
+                        • <strong>Branch slots</strong> are for additional perspectives<br>
+                        • <strong>Claim branches</strong> to add your unique viewpoint<br>
+                        • <strong>Work together</strong> to create comprehensive maps!
+                    </div>
+                    <button class="welcome-close" onclick="this.parentElement.parentElement.remove()">Got it!</button>
+                </div>
+            `;
+
+            document.body.appendChild(welcome);
+
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                if (welcome.parentElement) {
+                    welcome.remove();
+                }
+            }, 8000);
+        }
+
+        // Toggle contributions panel
+        function toggleContributionsPanel() {
+            const panel = document.querySelector('.contributions-panel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // Update contributions panel with user stats
+        async function updateContributionsPanel() {
+            if (!currentUser) return;
+
+            try {
+                // Get user's contributions
+                const { data: userMap, error: userError } = await window.supabaseClient
+                    .from('concept_maps')
+                    .select('data')
+                    .eq('user_id', currentUser.id)
+                    .eq('map_type', 'rizal_structured')
+                    .single();
+
+                let userContributions = 0;
+                let userContributionList = [];
+
+                if (!userError && userMap?.data?.contributions) {
+                    const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+                    categories.forEach(category => {
+                        const contributions = userMap.data.contributions[category] || [];
+                        contributions.forEach(contrib => {
+                            userContributions++;
+                            userContributionList.push({
+                                term: contrib.term,
+                                category: category.replace('_', ' '),
+                                timestamp: new Date(contrib.contributed_at).toLocaleDateString()
+                            });
+                        });
+                    });
+                }
+
+                // Get total collaborative contributions
+                const { data: allMaps, error: allError } = await window.supabaseClient
+                    .from('concept_maps')
+                    .select('data')
+                    .eq('map_type', 'rizal_structured')
+                    .eq('is_shared', true);
+
+                let totalContributions = 0;
+                if (!allError && allMaps) {
+                    allMaps.forEach(map => {
+                        if (map.data?.contributions) {
+                            Object.values(map.data.contributions).forEach(catContributions => {
+                                if (Array.isArray(catContributions)) {
+                                    totalContributions += catContributions.length;
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Calculate available slots (simplified - main inputs + branches)
+                const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+                let availableSlots = 0;
+                categories.forEach(category => {
+                    const mainInput = document.querySelector(`.main-input[data-category="${category}"]`);
+                    if (mainInput && !mainInput.readOnly) availableSlots++;
+
+                    const branchInputs = document.querySelectorAll(`.branch-input[data-category="${category}"]`);
+                    branchInputs.forEach(input => {
+                        if (!input.readOnly) availableSlots++;
+                    });
+                });
+
+                // Update stats
+                document.getElementById('userContributionsCount').textContent = userContributions;
+                document.getElementById('totalContributionsCount').textContent = totalContributions;
+                document.getElementById('availableSlotsCount').textContent = availableSlots;
+
+                // Update recent contributions list
+                const historyList = document.getElementById('recentContributionsList');
+                if (userContributionList.length > 0) {
+                    userContributionList.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    historyList.innerHTML = userContributionList.slice(0, 5).map(item => `
+                        <div class="contribution-item">
+                            <div class="term">${item.term}</div>
+                            <div class="category">${item.category}</div>
+                            <div class="timestamp">${item.timestamp}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    historyList.innerHTML = '<div class="contribution-item">No contributions yet. Start filling in the concept map!</div>';
+                }
+
+            } catch (error) {
+                console.error('Error updating contributions panel:', error);
+            }
+        }
+
+        // Update collaboration progress and show stats
+        function updateCollaborationProgress() {
+            const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+            let totalSlots = 0;
+            let filledSlots = 0;
+            let availableSlots = 0;
+            let userContributions = 0;
+
+            categories.forEach(category => {
+                const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+                const mainInput = document.querySelector(`.main-input[data-category="${category}"]`);
+
+                // Count main input (1 slot)
+                totalSlots++;
+                if (mainInput && mainInput.value.trim()) {
+                    filledSlots++;
+                    if (mainInput.readOnly) userContributions++; // Completed contribution
+                }
+
+                // Count branch slots (up to 3)
+                const branchContainers = branchesContainer.querySelectorAll('.branch-input-container');
+                branchContainers.forEach(container => {
+                    totalSlots++;
+                    const input = container.querySelector('.branch-input');
+                    if (input && input.value.trim()) {
+                        filledSlots++;
+                        if (container.classList.contains('status-completed')) {
+                            userContributions++;
+                        }
+                    } else if (container.classList.contains('status-available')) {
+                        availableSlots++;
+                    }
+                });
+            });
+
+            // Update collaboration stats display
+            updateCollaborationStatsDisplay(totalSlots, filledSlots, availableSlots, userContributions);
+
+            // Show smart suggestions
+            suggestNextContribution();
+        }
+
+        // Display collaboration statistics
+        function updateCollaborationStatsDisplay(total, filled, available, contributions) {
+            // Create or update collaboration stats element
+            let statsElement = document.getElementById('collaboration-stats');
+            if (!statsElement) {
+                statsElement = document.createElement('div');
+                statsElement.id = 'collaboration-stats';
+                statsElement.className = 'collaboration-stats';
+
+                // Insert after the title
+                const titleElement = document.querySelector('h1');
+                if (titleElement && titleElement.nextElementSibling) {
+                    titleElement.parentNode.insertBefore(statsElement, titleElement.nextElementSibling);
+                }
+            }
+
+            const completionRate = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+            statsElement.innerHTML = `
+                <div class="stats-header">📊 Collaboration Progress</div>
+                <div class="stats-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Completion:</span>
+                        <span class="stat-value">${filled}/${total} slots</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${completionRate}%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Available:</span>
+                        <span class="stat-value">${available} slots</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Your Contributions:</span>
+                        <span class="stat-value">${contributions}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Suggest the next best branch for contribution
+        function suggestNextContribution() {
+            const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+
+            // Clear existing suggestions
+            document.querySelectorAll('.branch-suggestion').forEach(el => el.remove());
+
+            // Find categories with available branches
+            const availableCategories = categories.filter(category => {
+                const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+                const availableBranches = branchesContainer.querySelectorAll('.status-available');
+                return availableBranches.length > 0;
+            });
+
+            if (availableCategories.length === 0) {
+                // No available branches - suggest completing existing ones
+                showCompletionSuggestion();
+                return;
+            }
+
+            // Prioritize categories: prefer those with main input completed but branches available
+            const prioritizedCategories = availableCategories.sort((a, b) => {
+                const mainA = document.querySelector(`.main-input[data-category="${a}"]`);
+                const mainB = document.querySelector(`.main-input[data-category="${b}"]`);
+                const hasMainA = mainA && mainA.value.trim();
+                const hasMainB = mainB && mainB.value.trim();
+
+                if (hasMainA && !hasMainB) return -1;
+                if (!hasMainA && hasMainB) return 1;
+                return 0;
+            });
+
+            // Suggest the first prioritized category
+            const suggestedCategory = prioritizedCategories[0];
+            if (suggestedCategory) {
+                highlightSuggestedCategory(suggestedCategory);
+            }
+        }
+
+        // Highlight a suggested category for contribution
+        function highlightSuggestedCategory(category) {
+            // Also highlight available branches in this category
+            const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+            const availableBranches = branchesContainer.querySelectorAll('.status-available');
+
+            availableBranches.forEach((branch, index) => {
+                if (index === 0) { // Only highlight the first available branch
+                    const suggestion = document.createElement('div');
+                    suggestion.className = 'branch-suggestion';
+                    suggestion.innerHTML = '🎯';
+                    suggestion.title = 'Suggested contribution slot';
+
+                    branch.style.position = 'relative';
+                    branch.appendChild(suggestion);
+                }
+            });
+        }
+
+        // Show completion suggestions when no slots are available
+        function showCompletionSuggestion() {
+            const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+            let hasIncompleteBranches = false;
+
+            categories.forEach(category => {
+                const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+                const claimedBranches = branchesContainer.querySelectorAll('.status-claimed');
+
+                if (claimedBranches.length > 0) {
+                    hasIncompleteBranches = true;
+
+                    // Highlight claimed but incomplete branches
+                    claimedBranches.forEach(branch => {
+                        const input = branch.querySelector('.branch-input');
+                        if (!input || !input.value.trim()) {
+                            const suggestion = document.createElement('div');
+                            suggestion.className = 'branch-suggestion completion-hint';
+                            suggestion.innerHTML = '✏️';
+                            suggestion.title = 'Complete your contribution here';
+
+                            branch.style.position = 'relative';
+                            branch.appendChild(suggestion);
+                        }
+                    });
+                }
+            });
+
+            if (!hasIncompleteBranches) {
+                // All contributions complete - show celebration
+                showCollaborationComplete();
+            }
+        }
+
+        // Show completion celebration
+        function showCollaborationComplete() {
+            const celebration = document.createElement('div');
+            celebration.className = 'collaboration-complete';
+            celebration.innerHTML = `
+                <div class="celebration-content">
+                    🎉 <strong>Collaboration Complete!</strong> 🎉<br>
+                    <small>All categories have received contributions</small>
+                </div>
+            `;
+
+            // Add to stats area
+            const statsElement = document.getElementById('collaboration-stats');
+            if (statsElement) {
+                statsElement.appendChild(celebration);
+            }
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                celebration.remove();
+            }, 5000);
+        }
+
+        // Toggle branches visibility
+        function toggleBranches(category) {
+            const branchesContainer = document.querySelector(`.branches-container[data-category="${category}"]`);
+            const toggleBtn = branchesContainer.querySelector('.toggle-btn');
+            const hiddenBranches = branchesContainer.querySelectorAll('.branch-hidden');
+
+            if (hiddenBranches.length > 0) {
+                // Show all branches
+                branchesContainer.querySelectorAll('.branch-input-container').forEach(container => {
+                    container.classList.remove('branch-hidden');
+                });
+                toggleBtn.textContent = 'Show Less Branches';
+            } else {
+                // Hide branches beyond the first 2
+                const branchContainers = branchesContainer.querySelectorAll('.branch-input-container');
+                branchContainers.forEach((container, index) => {
+                    if (index >= 2) {
+                        container.classList.add('branch-hidden');
+                    }
+                });
+                toggleBtn.textContent = 'Show More Branches';
+            }
+        }
+
+        // Draw SVG connections between central node and surrounding nodes
+        function drawConnections() {
+            const svg = document.getElementById('connectionsSvg');
+            const container = document.querySelector('.concept-map-container');
+            const centralNode = document.querySelector('.central-node');
+            const surroundingNodes = document.querySelectorAll('.surrounding-node-1, .surrounding-node-2, .surrounding-node-3, .surrounding-node-4, .surrounding-node-5, .surrounding-node-6');
+
+            // Clear existing lines
+            svg.innerHTML = '';
+
+            // Get container dimensions
+            const containerRect = container.getBoundingClientRect();
+
+            // Get central node position
+            const centralRect = centralNode.getBoundingClientRect();
+            const centralX = centralRect.left + centralRect.width / 2 - containerRect.left;
+            const centralY = centralRect.top + centralRect.height / 2 - containerRect.top;
+
+            // Draw lines to each surrounding node
+            surroundingNodes.forEach(node => {
+                const nodeRect = node.getBoundingClientRect();
+                const nodeX = nodeRect.left + nodeRect.width / 2 - containerRect.left;
+                const nodeY = nodeRect.top + nodeRect.height / 2 - containerRect.top;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centralX);
+                line.setAttribute('y1', centralY);
+                line.setAttribute('x2', nodeX);
+                line.setAttribute('y2', nodeY);
+                line.setAttribute('stroke', '#2E8B57');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-dasharray', '5,5');
+
+                svg.appendChild(line);
+            });
+        }
+
+        // Save map to database with user attribution
+        async function saveMap() {
+            if (!currentUser) {
+                showFeedback('Please log in to save your contributions', 'error');
+                return;
+            }
+
+            const centralConcept = "Rizal"; // Fixed value
+
+            try {
+                // Collect data from main inputs and branches with attribution
+                const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+                const conceptMapData = {
+                    central_concept: centralConcept,
+                    updated_at: new Date().toISOString(),
+                    contributions: {}
+                };
+
+                categories.forEach(category => {
+                    console.log(`Processing category: ${category}`);
+                    const mainInput = document.querySelector(`.main-input[data-category="${category}"]`);
+                    const branchInputs = document.querySelectorAll(`.branch-input[data-category="${category}"]`);
+
+                    console.log(`Found main input:`, mainInput, 'value:', mainInput?.value, 'readonly:', mainInput?.readOnly);
+                    console.log(`Found ${branchInputs.length} branch inputs`);
+
+                    const allInputs = [mainInput, ...branchInputs];
+                    const terms = allInputs
+                        .map(input => {
+                            console.log(`Checking input for ${category}:`, input, 'exists:', !!input, 'value:', input?.value, 'readonly:', input?.readOnly);
+                            // Only save if input has value and is not readonly (i.e., user can edit it)
+                            if (!input || !input.value.trim() || input.readOnly) {
+                                console.log(`Skipping input: no input, empty value, or readonly`);
+                                return null;
+                            }
+
+                            const term = input.value.trim();
+                            const validation = validateTerm(term, category);
+
+                            const contribution = {
+                                term: term,
+                                is_valid: validation.isValid,
+                                validation_type: validation.type,
+                                difficulty: validation.isValid ? validation.data?.difficulty : null,
+                                importance: validation.isValid ? validation.data?.importance : null,
+                                suggestions: validation.suggestions || null,
+                                contributed_by: currentUser.id,
+                                contributed_by_name: currentUser.user_metadata?.full_name || currentUser.email,
+                                contributed_at: new Date().toISOString()
+                            };
+
+                            console.log(`Saving term for ${category}:`, term, 'readonly:', input.readOnly, 'valid:', validation.isValid);
+                            return contribution;
+                        })
+                        .filter(item => item !== null);
+
+                    console.log(`Category ${category}: found ${terms.length} terms to save`, terms);
+
+                    if (terms.length > 0) {
+                        conceptMapData.contributions[category] = terms;
+                    }
+                });
+
+                // Save to user's concept map
+                const mapData = {
+                    user_id: currentUser.id,
+                    map_type: 'rizal_structured',
+                    title: 'José Rizal Concept Map',
+                    data: conceptMapData,
+                    is_shared: true, // Allow collaborative viewing
+                    updated_at: new Date().toISOString()
+                };
+
+                // Check if user's concept map already exists
+                const { data: existingMap, error: selectError } = await window.supabaseClient
+                    .from('concept_maps')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .eq('map_type', 'rizal_structured')
+                    .single();
+
+                let result;
+                console.log('=== SAVE DEBUGGING ===');
+                console.log('Current user:', currentUser.id);
+
+                // Debug: Check all concept inputs on the page
+                const allConceptInputs = document.querySelectorAll('.concept-input');
+                console.log('Found', allConceptInputs.length, 'total concept inputs:');
+                allConceptInputs.forEach((input, index) => {
+                    console.log(`Input ${index}: value="${input.value}" readonly=${input.readOnly} class="${input.className}" data-category="${input.dataset.category}"`);
+                });
+
+                if (existingMap && !selectError) {
+                    console.log('Updating existing record:', existingMap.id);
+                    result = await window.supabaseClient
+                        .from('concept_maps')
+                        .update(mapData)
+                        .eq('id', existingMap.id)
+                        .select();
+                } else if (selectError && selectError.code === 'PGRST116') {
+                    console.log('Inserting new record (no existing found)');
+                    result = await window.supabaseClient
+                        .from('concept_maps')
+                        .insert(mapData)
+                        .select();
+                } else if (selectError) {
+                    console.error('Error checking existing map:', selectError);
+                    showFeedback('Failed to save your contributions. Please try again.', 'error');
+                    return;
+                } else {
+                    console.log('Fallback: trying insert');
+                    result = await window.supabaseClient
+                        .from('concept_maps')
+                        .insert(mapData)
+                        .select();
+                }
+
+                const { data, error } = result;
+                console.log('Save operation result:', { data, error });
+
+                if (error) {
+                    console.error('Error saving map:', error);
+                    showFeedback('Failed to save your contributions. Please try again.', 'error');
+                    return;
+                }
+
+                showFeedback('Your contributions saved successfully!', 'success');
+
+                // Update contributions panel
+                await updateContributionsPanel();
+
+                // Save analytics data
+                await saveAnalyticsData(conceptMapData);
+            } catch (error) {
+                console.error('Error saving map:', error);
+                showFeedback('Failed to save your contributions. Please try again.', 'error');
+            }
+        }
+
+        // Save analytics data for learning insights
+        async function saveAnalyticsData(conceptMapData) {
+            if (!currentUser) return;
+
+            try {
+                // Collect analytics from the concept map data
+                const analyticsData = {
+                    user_id: currentUser.id,
+                    map_type: 'rizal_structured',
+                    session_date: new Date().toISOString(),
+                    total_terms: 0,
+                    correct_terms: 0,
+                    incorrect_terms: 0,
+                    term_analytics: [],
+                    category_performance: {},
+                    completion_rate: 0
+                };
+
+                const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+                
+                categories.forEach(category => {
+                    const categoryData = conceptMapData[category];
+                    if (categoryData && Array.isArray(categoryData)) {
+                        let categoryCorrect = 0;
+                        let categoryTotal = categoryData.length;
+                        
+                        categoryData.forEach(termData => {
+                            analyticsData.total_terms++;
+                            
+                            if (termData.is_valid) {
+                                analyticsData.correct_terms++;
+                                categoryCorrect++;
+                            } else {
+                                analyticsData.incorrect_terms++;
+                            }
+                            
+                            // Track individual term performance
+                            analyticsData.term_analytics.push({
+                                term: termData.term,
+                                category: category,
+                                is_correct: termData.is_valid,
+                                validation_type: termData.validation_type,
+                                difficulty: termData.difficulty,
+                                importance: termData.importance,
+                                suggestions_offered: termData.suggestions ? termData.suggestions.length : 0
+                            });
+                        });
+                        
+                        analyticsData.category_performance[category] = {
+                            correct: categoryCorrect,
+                            total: categoryTotal,
+                            accuracy: categoryTotal > 0 ? (categoryCorrect / categoryTotal) * 100 : 0
+                        };
+                    } else {
+                        analyticsData.category_performance[category] = {
+                            correct: 0,
+                            total: 0,
+                            accuracy: 0
+                        };
+                    }
+                });
+                
+                // Calculate overall completion rate
+                const totalPossibleTerms = categories.length * 3; // Assuming 3 terms per category as a baseline
+                analyticsData.completion_rate = Math.min((analyticsData.total_terms / totalPossibleTerms) * 100, 100);
+                
+                // Save to analytics table
+                const { error } = await window.supabaseClient
+                    .from('concept_map_analytics')
+                    .insert(analyticsData);
+
+                if (error) {
+                    console.error('Error saving analytics:', error);
+                } else {
+                    console.log('Analytics saved successfully');
+                }
+            } catch (error) {
+                console.error('Error in saveAnalyticsData:', error);
+            }
+        }
+
+        // Load collaborative map from all users' contributions
+        async function loadSavedMap() {
+            console.log('Loading collaborative concept map from all users');
+
+            // Ensure all inputs are enabled before loading
+            const allInputs = document.querySelectorAll('.concept-input');
+            allInputs.forEach((input, index) => {
+                input.disabled = false;
+                input.readOnly = false;
+                console.log(`Input ${index} initially enabled - disabled:`, input.disabled, 'readonly:', input.readOnly);
+            });
+
+            try {
+                // Load all shared concept maps from all users
+                console.log('Loading collaborative concept maps from database...');
+                const { data: mapsData, error } = await window.supabaseClient
+                    .from('concept_maps')
+                    .select('*')
+                    .eq('map_type', 'rizal_structured')
+                    .eq('is_shared', true)
+                    .order('updated_at', { ascending: false });
+
+                console.log('Database query result:', { data: mapsData, error });
+
+                if (!error && mapsData && mapsData.length > 0) {
+                    console.log('Found collaborative data, processing', mapsData.length, 'maps');
+                    mapsData.forEach((map, index) => {
+                        console.log(`Map ${index}: user_id=${map.user_id}, has_contributions=${!!map.data?.contributions}`);
+                        if (map.data?.contributions) {
+                            console.log(`Contributions:`, map.data.contributions);
+                        }
+                    });
+
+                    // Merge contributions from all users
+                    const mergedContributions = {};
+                    const categories = ['characteristic_trait', 'achievement_work', 'historical_event', 'impact_influence', 'related_person', 'key_idea'];
+
+                    // Initialize empty arrays for each category
+                    categories.forEach(category => {
+                        mergedContributions[category] = [];
+                    });
+
+                    // Collect all contributions with attribution
+                    mapsData.forEach(userMap => {
+                        const userData = userMap.data;
+                        const userName = `User ${userMap.user_id.substring(0, 8)}`; // Use partial user_id for now
+
+                        if (userData.contributions) {
+                            categories.forEach(category => {
+                                const userContributions = userData.contributions[category];
+                                if (userContributions && Array.isArray(userContributions)) {
+                                    console.log(`Loading ${userContributions.length} contributions for ${category} from ${userName}`);
+                                    userContributions.forEach(contrib => {
+                                        console.log(`  - ${contrib.term} (${contrib.is_valid ? 'valid' : 'invalid'})`);
+                                    });
+                                    userContributions.forEach(contribution => {
+                                        mergedContributions[category].push({
+                                            ...contribution,
+                                            contributed_by_name: userName,
+                                            user_id: userMap.user_id
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    // Load merged data into the UI
+                    document.getElementById('centralInput').value = "Rizal"; // Always fixed
+                    document.getElementById('centralInput').readOnly = true;
+
+                    categories.forEach(category => {
+                        const contributions = mergedContributions[category];
+                        console.log(`Category ${category}: ${contributions.length} total contributions`);
+                        if (contributions && contributions.length > 0) {
+                            // Sort by contribution time, most recent first
+                            contributions.sort((a, b) => new Date(b.contributed_at) - new Date(a.contributed_at));
+
+                            // Load the most recent valid contribution into the main input
+                            const mainInput = document.querySelector(`.main-input[data-category="${category}"]`);
+                            if (mainInput) {
+                                const validContributions = contributions.filter(c => c.is_valid);
+                                console.log(`Category ${category}: ${validContributions.length} valid contributions`);
+                                if (validContributions.length > 0) {
+                                    console.log(`Loading ${validContributions[0].term} into main input for ${category}`);
+                                    mainInput.value = validContributions[0].term;
+                                    mainInput.readOnly = true; // Lock main inputs that have valid contributions
+                                    mainInput.setAttribute('data-contributed-by', validContributions[0].contributed_by_name);
+
+                                    // Add attribution display
+                                    let attributionEl = mainInput.nextElementSibling;
+                                    if (!attributionEl || !attributionEl.classList.contains('contribution-attribution')) {
+                                        attributionEl = document.createElement('div');
+                                        attributionEl.className = 'contribution-attribution';
+                                        mainInput.parentNode.insertBefore(attributionEl, mainInput.nextSibling);
+                                    }
+                                    attributionEl.textContent = `by ${validContributions[0].contributed_by_name}`;
+                                }
+                            }
+
+                            // Load additional contributions into branches
+                            const branchInputs = document.querySelectorAll(`.branch-input[data-category="${category}"]`);
+                            let branchIndex = 0;
+
+                            contributions.forEach((contribution, index) => {
+                                if (index === 0 && contribution.is_valid) return; // Skip the one in main input
+
+                                if (branchIndex < branchInputs.length) {
+                                    const branchInput = branchInputs[branchIndex];
+                                    branchInput.value = contribution.term;
+                                    branchInput.readOnly = true; // Lock contributed branches
+                                    branchInput.setAttribute('data-contributed-by', contribution.contributed_by_name);
+
+                                    // Add attribution display for branch inputs
+                                    let attributionEl = branchInput.nextElementSibling;
+                                    if (!attributionEl || !attributionEl.classList.contains('contribution-attribution')) {
+                                        attributionEl = document.createElement('div');
+                                        attributionEl.className = 'contribution-attribution';
+                                        branchInput.parentNode.insertBefore(attributionEl, branchInput.nextSibling);
+                                    }
+                                    attributionEl.textContent = `by ${contribution.contributed_by_name}`;
+
+                                    branchIndex++;
+                                }
+                            });
+                        }
+                    });
+
+                    console.log('Collaborative map loaded successfully');
+                } else {
+                    console.log('No collaborative data found, starting fresh');
+                }
+            } catch (error) {
+                console.error('Error loading collaborative map:', error);
+                showFeedback('Failed to load collaborative contributions. Starting fresh.', 'warning');
+            }
+        }
+
+        // Clear shared concept map (admin only or confirmation)
+        async function clearMap() {
+            if (!confirm('Are you sure you want to clear the SHARED concept map? This will affect all users and cannot be undone.')) return;
+
+            try {
+                // Clear inputs and branches
+                document.getElementById('centralInput').value = "Rizal"; // Reset to fixed value
+                document.getElementById('centralInput').readOnly = true; // Keep readonly
+
+                // Clear main inputs
+                document.querySelectorAll('.main-input').forEach(input => {
+                    input.value = '';
+                    input.readOnly = false;
+                    input.style.background = '';
+                    input.style.borderColor = '';
+                    input.style.color = '';
+                    input.style.cursor = '';
+                });
+
+                // Clear all branches
+                document.querySelectorAll('.branches-container').forEach(container => {
+                    container.innerHTML = '';
+                });
+
+                // Clear shared database record
+                const { error } = await window.supabaseClient
+                    .from('shared_concept_maps')
+                    .delete()
+                    .eq('map_type', 'rizal_structured');
+
+                if (error) {
+                    console.error('Error clearing shared database:', error);
+                    showFeedback('Failed to clear shared map completely', 'error');
+                } else {
+                    showFeedback('Shared concept map cleared successfully', 'success');
+                }
+
+            } catch (error) {
+                console.error('Error clearing shared map:', error);
+                showFeedback('Failed to clear shared map completely', 'error');
+            }
+        }
+
+        // Show feedback message
+        function showFeedback(message, type) {
+            // Remove existing feedback
+            const existingFeedback = document.querySelector('.feedback-message');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+
+            // Create new feedback
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-message ${type}`;
+            feedback.textContent = message;
+            feedback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+
+            if (type === 'success') {
+                feedback.style.background = '#2E8B57';
+                feedback.style.color = 'white';
+            } else {
+                feedback.style.background = '#DC3545';
+                feedback.style.color = 'white';
+            }
+
+            document.body.appendChild(feedback);
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                feedback.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => feedback.remove(), 300);
+            }, 3000);
+        }
+
+        // Redraw connections on window resize
+        window.addEventListener('resize', drawConnections);
+
+        // Initialize Lucide icons
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initStructuredMap);
+    </script>
+
+    <style>
+        /* Feedback animations */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .feedback-message {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</body>
+</html>

@@ -5,314 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
-    <link rel="stylesheet" href="course.css">
+    <link rel="stylesheet" href="Styles/course.css">
     <!-- Lucide Icons - Modern Icon Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Lottie Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="db-helpers.js"></script>
-    <style>
-        /* Mobile Search Bar Optimization */
-        @media (max-width: 1024px) {
-            .header-search {
-                max-width: 350px;
-            }
-
-            .search-input {
-                font-size: 16px;
-                padding: 10px 12px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-container {
-                gap: 8px;
-            }
-
-            .header-search {
-                max-width: 220px;
-                flex-grow: 1;
-            }
-
-            .search-input {
-                font-size: 14px;
-                padding: 8px 10px;
-            }
-
-            .search-btn {
-                padding: 8px 10px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .header-search {
-                max-width: none;
-                flex-grow: 0;
-                background: none;
-                border: none;
-                padding: 0;
-                margin: 0;
-                display: flex;
-            }
-
-            .search-input {
-                display: none;
-            }
-
-            .search-btn {
-                padding: 8px;
-                background: none;
-                border: none;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease;
-            }
-
-            .search-btn:hover {
-                background: #f0f0f0;
-                border-radius: 8px;
-            }
-        }
-
-        /* Mobile Search Modal */
-        .mobile-search-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .mobile-search-modal.active {
-            display: flex;
-        }
-
-        .mobile-search-modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        .mobile-search-modal-content h3 {
-            margin: 0 0 16px 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .mobile-search-modal-content .mobile-search-input {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 16px;
-            font-family: inherit;
-        }
-
-        .mobile-search-modal-content .mobile-search-input:focus {
-            outline: none;
-            border-color: #5C3422;
-            box-shadow: 0 0 0 3px rgba(92, 52, 34, 0.1);
-        }
-
-        .mobile-search-modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .mobile-search-modal-buttons button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .mobile-search-modal-buttons .cancel-btn {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .mobile-search-modal-buttons .cancel-btn:hover {
-            background: #e0e0e0;
-        }
-
-        .mobile-search-modal-buttons .search-submit-btn {
-            background: #5C3422;
-            color: white;
-        }
-
-        .mobile-search-modal-buttons .search-submit-btn:hover {
-            background: #3e2416;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-    <style>
-        /* Welcome Section Styles */
-        .welcome-section {
-            background: linear-gradient(135deg, #8B7355 0%, #5C3422 100%);
-            color: white;
-            padding: 40px 32px;
-            margin-bottom: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(92, 52, 34, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.08)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.08)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.08)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.4;
-        }
-
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .welcome-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin: 0 0 16px 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            line-height: 1.3;
-        }
-
-        .welcome-subtitle {
-            font-size: 1rem;
-            margin: 0 0 32px 0;
-            opacity: 0.95;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            font-weight: 400;
-        }
-
-        .welcome-stats {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            min-width: 120px;
-            cursor: pointer;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-icon {
-            width: 24px;
-            height: 24px;
-            opacity: 0.9;
-        }
-
-        .stat-text {
-            font-size: 0.85rem;
-            font-weight: 500;
-            opacity: 0.9;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        @media (max-width: 768px) {
-            .welcome-section {
-                padding: 32px 20px;
-                margin-bottom: 32px;
-            }
-
-            .welcome-title {
-                font-size: 1.8rem;
-            }
-
-            .welcome-subtitle {
-                font-size: 0.95rem;
-            }
-
-            .welcome-stats {
-                gap: 16px;
-            }
-
-            .stat-item {
-                padding: 12px;
-                min-width: 100px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .welcome-title {
-                font-size: 1.6rem;
-            }
-
-            .welcome-stats {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .stat-item {
-                width: 100%;
-                max-width: 180px;
-            }
-        }
-    </style>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
 </head>
 <body>
     <!-- Header Navigation -->
@@ -366,6 +67,10 @@
                     <i data-lucide="radio" class="nav-icon-svg"></i>
                     <span>Feed</span>
                 </a>
+                <a href="quizzes.html" class="nav-item" data-section="quizzes">
+                    <i data-lucide="clipboard-list" class="nav-icon-svg"></i>
+                    <span>Quizzes</span>
+                </a>
                 <div class="nav-item-dropdown">
                     <div class="nav-item" data-section="topic">
                         <i data-lucide="book-open" class="nav-icon-svg"></i>
@@ -401,6 +106,11 @@
                             <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
                             Worksheets
                         </a>
+
+                        <a href="handouts.html" class="dropdown-item" data-section="handouts">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                            Handouts
+                        </a>
                     </div>
                 </div>
 
@@ -411,7 +121,7 @@
                 </a>
 
                 <a href="reference.html" class="nav-item" data-section="reference">
-                    <i data-lucide="book" class="nav-icon-svg"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="book-open" aria-hidden="true" class="lucide lucide-book-open nav-icon-svg"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>
                     <span>Reference</span>
                 </a>
             </nav>
@@ -463,8 +173,25 @@
                         </label>
 
                         <button class="video-upload-btn" id="videoUrlBtn" title="Add YouTube video">
-                            <i data-lucide="youtube" style="width: 20px; height: 20px; color: #FF0000;"></i>
+                            <div id="youtubeLottie" style="width: 32px; height: 32px;"></div>
                         </button>
+                        <script>
+                            const youtubeAnimation = lottie.loadAnimation({
+                                container: document.getElementById('youtubeLottie'),
+                                renderer: 'svg',
+                                loop: true,
+                                autoplay: false,
+                                path: 'JSON/Youtube.json'
+                            });
+                            
+                            document.getElementById('videoUrlBtn').addEventListener('mouseenter', () => {
+                                youtubeAnimation.play();
+                            });
+                            
+                            document.getElementById('videoUrlBtn').addEventListener('mouseleave', () => {
+                                youtubeAnimation.stop();
+                            });
+                        </script>
 
                         
 
@@ -552,31 +279,44 @@
 
     <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Profile</h2>
-                <button class="modal-close" id="closeEditModal">&times;</button>
+        <div class="modal-content" style="max-width: 500px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #5C3422 0%, #8B7355 100%); color: white; border-radius: 16px 16px 0 0; padding: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h2 style="margin: 0; font-size: 1.5rem; font-weight: 600;">Edit Your Profile</h2>
+                </div>
+                <button class="modal-close" id="closeEditModal" style="color: white; font-size: 24px; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;">&times;</button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="editAvatar">Profile Picture</label>
-                    <div style="display: flex; gap: 16px; align-items: center;">
-                        <img id="avatarPreview" src="https://i.pravatar.cc/80?img=20" alt="Profile preview" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
-                        <input type="file" id="editAvatar" accept="image/*" />
+            <div class="modal-body" style="padding: 32px; background: #fafafa;">
+                <!-- Profile Picture Section -->
+                <div class="form-group" style="text-align: center; margin-bottom: 32px; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                    <label style="display: block; font-weight: 600; color: #333; margin-bottom: 16px; font-size: 1.1rem;">Profile Picture</label>
+                    <div style="position: relative; display: inline-block;">
+                        <img id="avatarPreview" src="https://i.pravatar.cc/80?img=20" alt="Profile preview" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #5C3422; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" />
+                    </div>
+                    <input type="file" id="editAvatar" accept="image/*" style="display: none;" />
+                    <p style="margin: 16px 0 0 0; color: #666; font-size: 14px;">Click the picture to change your profile picture</p>
+                </div>
+
+                <!-- Name Field -->
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label for="editName" style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 1rem;">Full Name</label>
+                    <div style="position: relative;">
+                        <input type="text" id="editName" placeholder="Enter your full name" style="width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s ease; box-sizing: border-box;" />
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="editName">Full Name</label>
-                    <input type="text" id="editName" placeholder="Your name" />
-                </div>
-                <div class="form-group">
-                    <label for="editBio">Bio</label>
-                    <textarea id="editBio" placeholder="Tell us about yourself" rows="4"></textarea>
+
+                <!-- Bio Field -->
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label for="editBio" style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 1rem;">Bio</label>
+                    <div style="position: relative;">
+                        <textarea id="editBio" placeholder="Tell us about yourself..." rows="4" style="width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; resize: vertical; min-height: 100px; transition: border-color 0.3s ease; box-sizing: border-box; font-family: inherit;"></textarea>
+                    </div>
+                    <p style="margin: 8px 0 0 0; color: #999; font-size: 12px;">Share a bit about yourself (optional)</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
-                <button class="btn-save" id="saveProfileBtn">Save Changes</button>
+            <div class="modal-footer" style="padding: 24px 32px; background: white; border-top: 1px solid #e0e0e0; border-radius: 0 0 16px 16px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn-cancel" id="cancelEditBtn" style="padding: 12px 24px; border: 2px solid #e0e0e0; background: white; color: #666; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">Cancel</button>
+                <button class="btn-save" id="saveProfileBtn" style="padding: 12px 24px; border: none; background: linear-gradient(135deg, #5C3422 0%, #8B7355 100%); color: white; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(92, 52, 34, 0.3);">Save Changes</button>
             </div>
         </div>
     </div>
@@ -636,683 +376,7 @@
         </div>
     </div>
 
-    <script src="course.js"></script>
-    <script>
-        // Initialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-
-        // ==================== AUTHENTICATION CHECK ====================
-        // Check if user is logged in via Supabase session
-        async function checkAuth() {
-            try {
-                // If userEmail not in localStorage, user is logged out
-                if (!localStorage.getItem('userEmail')) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                // Wait a bit to ensure Supabase is fully initialized
-                await new Promise(resolve => setTimeout(resolve, 100));
-
-                if (!window.supabaseClient) {
-                    console.error('Supabase client not initialized');
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-
-                if (!session) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-            } catch (error) {
-                console.error('Auth check error:', error);
-                // If error checking auth, redirect to login to be safe
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Profile editing functionality
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const editProfileModal = document.getElementById('editProfileModal');
-        const closeEditModal = document.getElementById('closeEditModal');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const editAvatarInput = document.getElementById('editAvatar');
-        const avatarPreview = document.getElementById('avatarPreview');
-        const editNameInput = document.getElementById('editName');
-        const editBioInput = document.getElementById('editBio');
-        const profileNameDisplay = document.getElementById('profileName');
-        const profileEmailDisplay = document.getElementById('profileEmail');
-        const profileAvatar = document.getElementById('profileAvatar');
-        const createPostAvatar = document.getElementById('createPostAvatar');
-        const createPostName = document.getElementById('createPostName');
-
-        // Helper function to get user-specific localStorage values
-        const getUserLocalStorage = async (key) => {
-            const session = await getCurrentSession();
-            if (session?.session?.user) {
-                const userId = session.session.user.id;
-                return localStorage.getItem(`${key}_${userId}`);
-            }
-            return null;
-        };
-
-        let selectedAvatarImage = null;
-
-        // Handle avatar image selection
-        editAvatarInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    selectedAvatarImage = event.target.result;
-                    avatarPreview.src = selectedAvatarImage;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Open edit profile modal
-        editProfileBtn.addEventListener('click', async () => {
-            try {
-                // Get current session
-                const session = await getCurrentSession();
-                if (!session) {
-                    editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
-                    editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
-                } else {
-                    // Fetch from database
-                    const supabaseClient = await getSupabaseClient();
-                    const { data: profileData, error } = await supabaseClient
-                        .from('user_profiles')
-                        .select('full_name, bio, avatar_url')
-                        .eq('id', session.user.id)
-                        .single();
-                    
-                    if (!error && profileData) {
-                        editNameInput.value = profileData.full_name || '';
-                        editBioInput.value = profileData.bio || '';
-                        // Update avatar preview with database avatar
-                        if (profileData.avatar_url) {
-                            avatarPreview.src = profileData.avatar_url;
-                        }
-                    } else {
-                        editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
-                        editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
-                        // Try to get avatar from localStorage
-                        const savedAvatar = await getUserLocalStorage('profileAvatar');
-                        if (savedAvatar) {
-                            avatarPreview.src = savedAvatar;
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('Error loading profile:', err);
-                editNameInput.value = (await getUserLocalStorage('profileName')) || profileNameDisplay.textContent || '';
-                editBioInput.value = (await getUserLocalStorage('profileBio')) || profileEmailDisplay.textContent || '';
-            }
-
-            avatarPreview.src = profileAvatar.src;
-            selectedAvatarImage = null;
-            editAvatarInput.value = '';
-            editProfileModal.classList.add('active');
-        });
-
-        // Close modal
-        const closeModal = () => {
-            editProfileModal.classList.remove('active');
-        };
-
-        closeEditModal.addEventListener('click', closeModal);
-        cancelEditBtn.addEventListener('click', closeModal);
-
-        // Save profile changes
-        saveProfileBtn.addEventListener('click', async () => {
-            const newName = editNameInput.value.trim();
-            const newBio = editBioInput.value.trim();
-
-            if (newName && newBio) {
-                try {
-                    saveProfileBtn.disabled = true;
-                    
-                    // Check authentication before proceeding
-                    const session = await getCurrentSession();
-                    if (!session) {
-                        console.error('❌ No active session found. User not authenticated.');
-                        alert('You must be logged in to save your profile. Please refresh the page and log in again.');
-                        saveProfileBtn.disabled = false;
-                        return;
-                    }
-                    
-                    profileNameDisplay.textContent = newName;
-                    profileEmailDisplay.textContent = newBio;
-                    createPostName.textContent = newName;
-                    
-                    // Save profile data to user-specific localStorage
-                    if (session?.session?.user) {
-                        const userId = session.session.user.id;
-                        localStorage.setItem(`profileName_${userId}`, newName);
-                        localStorage.setItem(`profileBio_${userId}`, newBio);
-                    }
-
-                    let avatarUrl = await getUserLocalStorage('profileAvatar');
-
-                    // Save avatar if changed
-                    if (selectedAvatarImage) {
-                        try {
-                            // Convert base64 to blob
-                            const response = await fetch(selectedAvatarImage);
-                            const blob = await response.blob();
-                            
-                            // Get Supabase client
-                            const supabaseClient = await getSupabaseClient();
-                            
-                            // Get current user email
-                            const currentEmail = session.user.email;
-                            const fileName = `avatars/${currentEmail}-${Date.now()}.jpg`;
-                            
-                            // Upload to Supabase storage
-                            const { data, error } = await supabaseClient.storage
-                                .from('user-avatars')
-                                .upload(fileName, blob, { upsert: true });
-                            
-                            if (error) {
-                                console.error('❌ Upload error:', error);
-                                console.error('Error message:', error.message);
-                                console.error('Error status:', error.status);
-                                alert('Error uploading avatar: ' + error.message + '. Make sure the "user-avatars" bucket exists in Supabase Storage.');
-                                profileAvatar.src = selectedAvatarImage;
-                                createPostAvatar.src = selectedAvatarImage;
-                                const session = await getCurrentSession();
-                                if (session?.session?.user) {
-                                    const userId = session.session.user.id;
-                                    localStorage.setItem(`profileAvatar_${userId}`, selectedAvatarImage);
-                                }
-                            } else {
-                                // Get public URL
-                                const { data: publicData } = supabaseClient.storage
-                                    .from('user-avatars')
-                                    .getPublicUrl(fileName);
-                                
-                                avatarUrl = publicData.publicUrl;
-                                
-                                // Save to user-specific localStorage for quick access
-                                const session = await getCurrentSession();
-                                if (session?.session?.user) {
-                                    const userId = session.session.user.id;
-                                    localStorage.setItem(`profileAvatar_${userId}`, avatarUrl);
-                                }
-                                
-                                profileAvatar.src = avatarUrl;
-                                createPostAvatar.src = avatarUrl;
-                            }
-                        } catch (err) {
-                            console.error('❌ Error uploading avatar:', err);
-                            console.error('Error details:', err.message || err);
-                            alert('Error uploading avatar: ' + (err.message || err) + '. Check the browser console for details.');
-                            // Fallback to localStorage
-                            profileAvatar.src = selectedAvatarImage;
-                            createPostAvatar.src = selectedAvatarImage;
-                            const session = await getCurrentSession();
-                            if (session?.session?.user) {
-                                const userId = session.session.user.id;
-                                localStorage.setItem(`profileAvatar_${userId}`, selectedAvatarImage);
-                            }
-                        }
-                    }
-
-                    // Save profile to Supabase users table
-                    try {
-                        const supabaseClient = await getSupabaseClient();
-                        const currentEmail = session.user.email;
-                        const userId = session.user.id;
-                        
-                        const { data, error } = await supabaseClient
-                            .from('user_profiles')
-                            .upsert({
-                                id: userId,
-                                user_email: currentEmail,
-                                full_name: newName,
-                                bio: newBio,
-                                avatar_url: avatarUrl || (await getUserLocalStorage('profileAvatar'))
-                            });
-                        
-                        if (error) {
-                            console.warn('⚠️ Warning: Could not save to user_profiles:', error.message);
-                            // Still close modal since localStorage and storage were updated
-                            alert('Profile updated but failed to sync to database. Changes saved locally.');
-                        } else {
-                        }
-                    } catch (err) {
-                        console.warn('⚠️ Could not sync profile to database:', err.message);
-                        // Still close modal since localStorage and storage were updated
-                        alert('Profile updated but failed to sync to database. Changes saved locally.');
-                    }
-
-                    saveProfileBtn.disabled = false;
-                    closeModal();
-                } catch (err) {
-                    console.error('❌ Error during profile save:', err);
-                    alert('Error saving profile: ' + (err.message || err));
-                    saveProfileBtn.disabled = false;
-                }
-            } else {
-                alert('Please fill in all fields');
-            }
-        });
-
-        // Load profile from Supabase database
-        // Load profile using the centralized function
-        loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
-            // Update create post avatar and name after profile loads
-            createPostAvatar.src = profileAvatar.src;
-            createPostName.textContent = profileNameDisplay.textContent;
-        });
-
-        // Also load on window load event
-        window.addEventListener('load', () => {
-            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar).then(() => {
-                createPostAvatar.src = profileAvatar.src;
-                createPostName.textContent = profileNameDisplay.textContent;
-            });
-        });
-
-        // Watch for any changes to profile elements and restore localStorage data
-        const observer = new MutationObserver(async (mutations) => {
-            mutations.forEach(async (mutation) => {
-                const savedName = await getUserLocalStorage('profileName');
-                const savedBio = await getUserLocalStorage('profileBio');
-                const savedAvatar = await getUserLocalStorage('profileAvatar');
-                
-                if (mutation.type === 'characterData' || mutation.type === 'childList') {
-                    if (savedName && profileNameDisplay.textContent !== savedName) {
-                        profileNameDisplay.textContent = savedName;
-                        createPostName.textContent = savedName;
-                    }
-                    if (savedBio && profileEmailDisplay.textContent !== savedBio) {
-                        profileEmailDisplay.textContent = savedBio;
-                    }
-                }
-                
-                if (mutation.type === 'attributes') {
-                    const target = mutation.target;
-                    const targetId = target.id;
-                    const attrName = mutation.attributeName;
-                    
-                    if (savedAvatar && profileAvatar.src !== savedAvatar) {
-                        profileAvatar.src = savedAvatar;
-                        createPostAvatar.src = savedAvatar;
-                    }
-                    if (savedAvatar && createPostAvatar.src !== savedAvatar) {
-                        createPostAvatar.src = savedAvatar;
-                    }
-                }
-            });
-        });
-
-        observer.observe(profileNameDisplay, { characterData: true, childList: true, subtree: true });
-        observer.observe(profileEmailDisplay, { characterData: true, childList: true, subtree: true });
-        observer.observe(profileAvatar, { attributes: true, attributeFilter: ['src'] });
-        observer.observe(createPostAvatar, { attributes: true, attributeFilter: ['src'] });
-        
-        // Also periodically check and restore avatar
-        setInterval(() => {
-            const savedAvatar = localStorage.getItem('profileAvatar');
-            if (savedAvatar) {
-                if (profileAvatar.src !== savedAvatar) {
-                    profileAvatar.src = savedAvatar;
-                }
-                if (createPostAvatar.src !== savedAvatar) {
-                    createPostAvatar.src = savedAvatar;
-                }
-                
-                // Also update all post avatars in the feed
-                const allPostAvatars = document.querySelectorAll('.post-avatar');
-                allPostAvatars.forEach((avatar, index) => {
-                    if (avatar.src && avatar.src !== savedAvatar && !avatar.src.includes('i.pravatar.cc')) {
-                        avatar.src = savedAvatar;
-                    }
-                });
-            }
-        }, 1000);
-
-        // Override the app's profile population to preserve localStorage data
-        const originalPopulateUserProfile = window.app?.populateUserProfile;
-        
-        if (originalPopulateUserProfile) {
-            window.app.populateUserProfile = function() {
-                // Call original method first
-                originalPopulateUserProfile.call(this);
-                // Then restore localStorage data
-                setTimeout(() => {
-                    loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
-                }, 500);
-            };
-        } else {
-            // If app isn't loaded yet, keep checking
-            const checkForApp = setInterval(() => {
-                if (window.app && window.app.populateUserProfile) {
-                    clearInterval(checkForApp);
-                    const origMethod = window.app.populateUserProfile;
-                    window.app.populateUserProfile = function() {
-                        origMethod.call(this);
-                        setTimeout(() => {
-                            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
-                        }, 500);
-                    };
-                }
-            }, 100);
-        }
-
-        // Also load when localStorage changes (in case another tab updates it)
-        window.addEventListener('storage', () => {
-            loadUserProfile(profileNameDisplay, profileEmailDisplay, profileAvatar);
-        });
-
-        // Watch for new posts being added and update their avatars  
-        const forumContainer = document.querySelector('.forum-container') || document.getElementById('postsContainer');
-        if (forumContainer) {
-            const postObserver = new MutationObserver((mutations) => {
-                const savedAvatar = localStorage.getItem('profileAvatar');
-                const currentUserId = localStorage.getItem('currentUserId') || profileEmail.textContent;
-                
-                if (savedAvatar && currentUserId) {
-                    mutations.forEach((mutation) => {
-                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                            mutation.addedNodes.forEach((node) => {
-                                if (node.nodeType === 1) { // Element node
-                                    // Look for avatars in newly added posts
-                                    const avatars = node.querySelectorAll('.avatar, img[alt]');
-                                    avatars.forEach((avatar) => {
-                                        if (avatar.src && avatar.src.includes('i.pravatar.cc') && avatar.alt === profileEmail.textContent) {
-                                            avatar.src = savedAvatar;
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-            
-            postObserver.observe(forumContainer, { childList: true, subtree: false });
-        }
-
-        // ==================== SEARCH FUNCTIONALITY ====================
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const searchResultsModal = document.getElementById('searchResultsModal');
-        const closeSearchModal = document.getElementById('closeSearchModal');
-        const searchResultsBody = document.getElementById('searchResultsBody');
-
-        // Helper function to get Supabase client
-        async function getSupabaseClient() {
-            let attempts = 0;
-            while (attempts < 50) {
-                if (window.supabaseClient) {
-                    return window.supabaseClient;
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            throw new Error('Supabase client not initialized. Please refresh the page.');
-        }
-
-        searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
-
-        closeSearchModal.addEventListener('click', () => {
-            searchResultsModal.style.display = 'none';
-        });
-
-        searchResultsModal.addEventListener('click', (e) => {
-            if (e.target === searchResultsModal) {
-                searchResultsModal.style.display = 'none';
-            }
-        });
-
-        async function performSearch() {
-            const searchTerm = searchInput.value.trim().toLowerCase();
-            if (!searchTerm) {
-                return;
-            }
-
-            try {
-                // Get the Supabase client
-                const supabaseClient = await getSupabaseClient();
-
-                // Get all posts from database
-                const { data: posts, error } = await supabaseClient
-                    .from('posts')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    console.error('Search error:', error);
-                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #d9534f;">Error loading posts. Please try again.</p>';
-                    searchResultsModal.style.display = 'flex';
-                    return;
-                }
-
-                if (!posts || posts.length === 0) {
-                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">No posts found.</p>';
-                    searchResultsModal.style.display = 'flex';
-                    return;
-                }
-
-                // Filter posts by author name or email containing search term
-                const matchingPosts = posts.filter(post => {
-                    const authorName = (post.author_name || '').toLowerCase();
-                    const authorEmail = (post.author_email || '').toLowerCase();
-                    return authorName.includes(searchTerm) || authorEmail.includes(searchTerm);
-                });
-
-                // Group posts by user and fetch current profile data
-                const userMap = {};
-                const userIds = [...new Set(matchingPosts.map(post => post.author_id))];
-                
-                // Fetch current profile data for all users
-                const { data: profiles, error: profileError } = await supabaseClient
-                    .from('user_profiles')
-                    .select('id, full_name, user_email, avatar_url')
-                    .in('id', userIds);
-                
-                const profileMap = {};
-                if (!profileError && profiles) {
-                    profiles.forEach(profile => {
-                        profileMap[profile.id] = profile;
-                    });
-                }
-                
-                matchingPosts.forEach(post => {
-                    const userId = post.author_id;
-                    const profile = profileMap[userId];
-                    
-                    if (!userMap[userId]) {
-                        userMap[userId] = {
-                            id: userId,
-                            name: profile?.full_name || post.author_name || 'Unknown User',
-                            email: profile?.user_email || post.author_email,
-                            avatar: profile?.avatar_url || `https://i.pravatar.cc/40?u=${userId}`,
-                            posts: []
-                        };
-                    }
-                    userMap[userId].posts.push(post);
-                });
-
-                const users = Object.values(userMap);
-
-                if (users.length === 0) {
-                    searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #999;">No users found matching "' + searchTerm + '".</p>';
-                } else {
-                    let resultsHTML = '';
-                    users.forEach(user => {
-                        resultsHTML += `
-                            <div style="padding: 16px; border-bottom: 1px solid #ecf0f1;">
-                                <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
-                                    <img src="${user.avatar}" alt="${user.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
-                                    <div style="flex: 1;">
-                                        <h4 style="margin: 0 0 4px 0; color: #333; font-size: 14px;">${user.name}</h4>
-                                        <p style="margin: 0; font-size: 12px; color: #999;">${user.email || 'No email'}</p>
-                                    </div>
-                                </div>
-                                <div style="margin-left: 52px;">
-                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;"><strong>${user.posts.length}</strong> post${user.posts.length !== 1 ? 's' : ''}</p>
-                                    <div style="background: #f8f9fa; border-radius: 6px; padding: 12px; max-height: 200px; overflow-y: auto;">
-                        `;
-                        
-                        user.posts.slice(0, 3).forEach(post => {
-                            const postDate = new Date(post.created_at);
-                            const formattedDate = postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-                            resultsHTML += `
-                                <div style="padding: 8px 0; border-bottom: 1px solid #e0e0e0; font-size: 13px;">
-                                    <p style="margin: 0; color: #333; word-break: break-word;">${(post.content || '').substring(0, 100)}${(post.content || '').length > 100 ? '...' : ''}</p>
-                                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">${formattedDate}</p>
-                                </div>
-                            `;
-                        });
-
-                        if (user.posts.length > 3) {
-                            resultsHTML += `<p style="margin: 8px 0 0 0; font-size: 12px; color: #5C3422; font-weight: 500;">+${user.posts.length - 3} more posts</p>`;
-                        }
-
-                        resultsHTML += `
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    searchResultsBody.innerHTML = resultsHTML;
-                }
-
-                searchResultsModal.style.display = 'flex';
-                searchInput.value = '';
-            } catch (error) {
-                console.error('Search error:', error);
-                searchResultsBody.innerHTML = '<p style="padding: 20px; text-align: center; color: #d9534f;">Error: ' + error.message + '</p>';
-                searchResultsModal.style.display = 'flex';
-            }
-        }
-
-        // Mobile Search Bar Toggle
-        const headerSearch = document.querySelector('.header-search');
-        const searchInputElement = document.getElementById('searchInput');
-        const searchBtnElement = document.getElementById('searchBtn');
-        const mobileSearchModal = document.getElementById('mobileSearchModal');
-        const mobileSearchInput = document.getElementById('mobileSearchInput');
-        const mobileSearchSubmit = document.getElementById('mobileSearchSubmit');
-        const mobileSearchCancel = document.getElementById('mobileSearchCancel');
-
-        if (searchBtnElement) {
-            // Open mobile search modal on click when on mobile
-            searchBtnElement.addEventListener('click', (e) => {
-                if (window.innerWidth <= 640) {
-                    e.preventDefault();
-                    mobileSearchModal.classList.add('active');
-                    mobileSearchInput.focus();
-                } else {
-                    performSearch();
-                }
-            });
-        }
-
-        // Close mobile search modal
-        const closeMobileSearchModal = () => {
-            mobileSearchModal.classList.remove('active');
-            mobileSearchInput.value = '';
-        };
-
-        mobileSearchCancel.addEventListener('click', closeMobileSearchModal);
-
-        // Close modal when clicking outside
-        mobileSearchModal.addEventListener('click', (e) => {
-            if (e.target === mobileSearchModal) {
-                closeMobileSearchModal();
-            }
-        });
-
-        // Search from mobile modal
-        mobileSearchSubmit.addEventListener('click', () => {
-            searchInput.value = mobileSearchInput.value;
-            performSearch();
-            closeMobileSearchModal();
-        });
-
-        // Enter key to search from mobile modal
-        mobileSearchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchInput.value = mobileSearchInput.value;
-                performSearch();
-                closeMobileSearchModal();
-            }
-        });
-
-        // ==================== LOGOUT BUTTON ====================
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                try {
-                    // Clear all local storage
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    
-                    // Sign out from Supabase globally
-                    const supabaseClient = await getSupabaseClient();
-                    const { error } = await supabaseClient.auth.signOut({ scope: 'global' });
-                    if (error) {
-                        console.error('Supabase signOut error:', error);
-                    }
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    // Force redirect to index after clearing everything
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-
-        // ==================== LEFT SIDEBAR TOGGLE ====================
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('leftSidebar');
-        
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('mobile-open');
-            });
-        }
-
-        // ==================== WELCOME STATS NAVIGATION ====================
-        document.querySelectorAll('.stat-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const text = item.querySelector('.stat-text').textContent;
-                
-                switch(text) {
-                    case 'Lessons':
-                        window.location.href = 'first-mass.html';
-                        break;
-                    case 'Activities':
-                        window.location.href = 'worksheets.html';
-                        break;
-                    case 'Discussions':
-                        document.querySelector('.discussion-section').scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                        break;
-                }
-            });
-        });
-
-        // Check authentication on page load
-        checkAuth();
-    </script>
+    <script src="JS/course.js"></script>
 </body>
 </html>
 

@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar - Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
-    <link rel="stylesheet" href="course.css">
+    <link rel="stylesheet" href="Styles/course.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="db-helpers.js"></script>
-    <script src="course.js"></script>
+    <script src="JS/supabase-config.js"></script>
+    <script src="JS/db-helpers.js"></script>
+    <script src="JS/course.js"></script>
     <style>
         main.main-content {
             padding: 40px 32px;
@@ -654,7 +654,7 @@
                     </div>
                     <div class="upcoming-content" id="upcomingEvents">
                         <div class="empty-state">
-                            <div class="empty-state-icon">ðŸ“…</div>
+                            <div class="empty-state-icon">📅</div>
                             <h3>No Upcoming Events</h3>
                             <p>Your assignments are all caught up!</p>
                         </div>
@@ -826,7 +826,7 @@
 
             // Next month dates
             const totalCells = datesGrid.children.length;
-            const remainingCells = 42 - totalCells; // 6 rows Ã— 7 days
+            const remainingCells = 42 - totalCells; // 6 rows × 7 days
             for (let day = 1; day <= remainingCells; day++) {
                 const dateDiv = document.createElement('div');
                 dateDiv.className = 'calendar-date other-month';
@@ -844,7 +844,7 @@
             if (events.length === 0) {
                 upcomingContainer.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">âœ“</div>
+                        <div class="empty-state-icon">✓</div>
                         <h3>No Due Dates</h3>
                         <p>Nothing due on this day!</p>
                     </div>
@@ -883,7 +883,7 @@
             if (sortedDates.length === 0) {
                 upcomingContainer.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">ðŸŽ‰</div>
+                        <div class="empty-state-icon">🎉</div>
                         <h3>All Caught Up!</h3>
                         <p>No upcoming assignments</p>
                     </div>

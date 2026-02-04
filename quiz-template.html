@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="Styles/course.css">
+    <style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+    height: 100%;
+}
+
+
+body{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+}
+
+main{
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #E2D5C2;
+    position: relative;
+}
+
+.game-quiz-container{
+    width: 42rem;
+    height: auto;
+    min-height: 25rem;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(92, 52, 34, 0.1);
+}
+
+.back-button-container{
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.back-button-container button{
+    background: #5C3422;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.redesigned-back-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.redesigned-back-container button {
+    background: none;
+    border: none;
+    color: #5C3422;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+.redesigned-back-container button:hover {
+    color: #3A1F0F;
+    text-decoration: none;
+}
+
+.quiz-title-container{
+    width: 80%;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.quiz-title-container h1{
+    font-size: 1.5rem;
+    color: #5C3422;
+}
+
+/* New Quiz Layout Styles */
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.quiz-header h1 {
+    font-size: 1.5rem;
+    color: #5C3422;
+    margin: 0;
+}
+
+.score-display {
+    font-size: 1rem;
+    color: #8B7355;
+    font-weight: 600;
+}
+
+.question-section {
+    background: #f8f5f0;
+    border: 1px solid #D4C4A8;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.question-number {
+    font-size: 0.9rem;
+    color: #8B7355;
+    margin-bottom: 0.5rem;
+}
+
+.question-section h2 {
+    font-size: 1.2rem;
+    color: #5C3422;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.options-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #ffffff;
+    border: 2px solid #D4C4A8;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    color: #5C3422;
+}
+
+.option:hover {
+    background: #f8f5f0;
+    border-color: #8B7355;
+}
+
+.option.selected {
+    background: #5C3422;
+    color: white;
+    border-color: #5C3422;
+}
+
+.action-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.next-btn {
+    padding: 12px 24px;
+    background: #5C3422;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+/* Modal Styles */
+.modal-content-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(92, 52, 34, 0.15);
+}
+
+.modal-content-container h1 {
+    font-size: 1.5rem;
+    color: #5C3422;
+    margin-bottom: 1.5rem;
+}
+
+.score-modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    width: fit-content;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(92, 52, 34, 0.15);
+    margin: 0 auto;
+}
+
+.redesigned-score-modal {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 550px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(92, 52, 34, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.redesigned-score-modal h1 {
+    font-size: 1.5rem;
+    color: #5C3422;
+    margin-bottom: 1.5rem;
+}
+
+.redesigned-score-modal .grade-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f5f0;
+    border-radius: 10px;
+    border: 1px solid #D4C4A8;
+    width: 100%;
+}
+
+.redesigned-score-modal .grade-details p {
+    margin: 0;
+    font-size: 1rem;
+    color: #5C3422;
+    display: flex;
+    justify-content: space-between;
+}
+
+.redesigned-score-modal .grade-details p span {
+    font-weight: 600;
+    color: #8B7355;
+}
+
+.grade-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f5f0;
+    border-radius: 10px;
+    border: 1px solid #D4C4A8;
+}
+
+.grade-details p {
+    margin: 0;
+    font-size: 1rem;
+    color: #5C3422;
+    display: flex;
+    justify-content: space-between;
+}
+
+.grade-details p span {
+    font-weight: 600;
+    color: #8B7355;
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-button-container button {
+    padding: 12px 24px;
+    background: #5C3422;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.modal-button-container button:hover {
+    background: #8B7355;
+}
+
+/* Option Modal Specific Styles */
+.option-modal {
+    padding: 1.5rem;
+}
+
+.option-modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.option-modal h1 {
+    margin-bottom: 0;
+}
+
+.option-modal .modal-button-container button {
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Specific button class for better centering */
+.modal-continue-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: #5C3422;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    line-height: 1;
+}
+
+.modal-continue-btn:hover {
+    background: #8B7355;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .game-quiz-container {
+        width: 100%;
+        height: auto;
+        min-height: 25rem;
+        border-radius: 0;
+        padding: 1.5rem;
+        box-shadow: none;
+        background: #f8f5f0;
+        border: 2px solid #D4C4A8;
+    }
+
+    .quiz-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .quiz-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .score-display {
+        font-size: 0.9rem;
+    }
+
+    .question-section {
+        padding: 1rem;
+    }
+
+    .question-section h2 {
+        font-size: 1rem;
+    }
+
+    .options-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .option {
+        padding: 10px;
+        font-size: 0.9rem;
+        overflow-wrap: break-word;
+    }
+
+    .next-btn {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .back-button-container {
+        top: 10px;
+        left: 10px;
+    }
+
+    .back-button-container button {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+}
+
+.game-details-container{
+    width: 80%;
+    height: 4rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.game-details-container h1{
+    font-size: 1.2rem;
+    color: #5C3422;
+}
+
+.game-question-container{
+    width: 80%;
+    height: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #D4C4A8;
+    border-radius: 25px;
+}
+
+.game-question-container h1{
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 3px;
+}
+
+.game-options-container{
+    width: 80%;
+    height: 12rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.game-options-container span{
+    width: 45%;
+    height: 3rem;
+    border: 2px solid #D4C4A8;
+    border-radius: 20px;
+    overflow: hidden;
+}
+span label{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #5C3422;
+}
+
+span label:hover{
+    -ms-transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+    color: white;
+    background-color: #5C3422;
+}
+
+input[type="radio"] {
+    position: relative;
+    display: none;
+}
+
+.option.selected {
+    background: #5C3422 !important;
+    color: white !important;
+}
+
+.next-button-container{
+    width: 50%;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+}
+.next-button-container button{
+    width: 8rem;
+    height: 2rem;
+    border-radius: 10px;
+    background: none;
+    color: #5C3422;
+    font-weight: 600;
+    border: 2px solid #5C3422;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.next-button-container button:hover{
+    background-color: #5C3422;
+    color: white;
+}
+
+.modal-container{
+    display: none;
+    position: fixed;
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    -webkit-animation: fadeIn 1.2s ease-in-out;
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+.modal-content-container{
+    height: 20rem;
+    width: 25rem;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content-container h1{
+    font-size: 1.3rem;
+    height: 3rem;
+    color: #5C3422;
+    text-align: center;
+}
+
+.grade-details{
+    width: 15rem;
+    height: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.grade-details p{
+    color: #5C3422;
+    text-align: center;
+}
+
+.modal-button-container{
+    height: 2rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-button-container button{
+    width: 10rem;
+    height: 2rem;
+    background: none;
+    outline: none;
+    border: 2px solid #5C3422;
+    color: #5C3422;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+.modal-button-container button:hover{
+    background-color: #5C3422;
+    color: white;
+}
+
+@media(min-width : 300px) and (max-width : 350px){
+    .game-quiz-container{
+        width: 90%;
+        height: 80vh;
+     }
+     .game-details-container h1{
+        font-size: 0.8rem;
+     }
+
+     .game-question-container{
+        height: 6rem;
+     }
+     .game-question-container h1{
+       font-size: 0.9rem;
+    }
+
+    .game-options-container span{
+        width: 90%;
+        height: 2.5rem;
+    }
+    .game-options-container span label{
+        font-size: 0.8rem;
+    }
+    .modal-content-container{
+        width: 90%;
+        height: 25rem;
+    }
+
+    .modal-content-container h1{
+        font-size: 1.2rem;
+    }
+}
+
+@media(min-width : 350px) and (max-width : 700px){
+   .game-quiz-container{
+       width: 90%;
+       height: 80vh;
+    }
+    .game-details-container h1{
+        font-size: 1rem;
+    }
+
+    .game-question-container{
+        height: 8rem;
+    }
+
+    .game-question-container h1{
+        font-size: 0.9rem;
+     }
+
+    .game-options-container span{
+        width: 90%;
+    }
+    .modal-content-container{
+        width: 90%;
+        height: 25rem;
+    }
+    .modal-content-container h1{
+        font-size: 1.2rem;
+    }
+}
+
+
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+  }
+
+  @-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+    </style>
+</head>
+<body onload="NextQuestion(0)">
+    <main>
+        <!-- creating a modal for when quiz ends -->
+        <div class="modal-container" id="score-modal">
+
+            <div class="redesigned-score-modal">
+
+                <h1>Congratulations, Quiz Completed.</h1>
+
+                <div class="grade-details">
+                    <p>Attempts : <span id="total-questions"></span></p>
+                    <p>Wrong Answers : <span id="wrong-answers"></span></p>
+                    <p>Right Answers : <span id="right-answers"></span></p>
+                    <p>Grade : <span id="grade-percentage"></span>%</p>
+                    <p ><span id="remarks"></span></p>
+                </div>
+
+                <div class="modal-button-container">
+                    <button onclick="closeScoreModal()" class="modal-continue-btn">Continue</button>
+                </div>
+
+            </div>
+        </div>
+<!-- end of modal of quiz details-->
+
+        <div class="redesigned-back-container">
+            <button onclick="window.location.href='quizzes.html'">← Back to Quizzes</button>
+        </div>
+
+        <div class="game-quiz-container">
+
+            <div class="quiz-header">
+                <h1 id="quiz-title"></h1>
+                <div class="score-display">Score: <span id="player-score"></span> / <span id="total-score"></span></div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-number">Question <span id="question-number"></span> of <span id="total-questions-display"></span></div>
+                <h2 id="display-question"></h2>
+            </div>
+
+            <div class="options-section">
+               <div class="modal-container" id="option-modal">
+
+                    <div class="modal-content-container option-modal">
+                        <div class="option-modal-inner">
+                            <h1>⚠️ Please Pick An Option</h1>
+
+                            <div class="modal-button-container">
+                                <button onclick="closeOptionModal()" class="modal-continue-btn">Continue</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+               </div>
+
+                <input type="radio" id="option-one" name="option" class="radio" value="optionA" />
+                <label for="option-one" class="option" id="option-one-label"></label>
+                <input type="radio" id="option-two" name="option" class="radio" value="optionB" />
+                <label for="option-two" class="option" id="option-two-label"></label>
+                <input type="radio" id="option-three" name="option" class="radio" value="optionC" />
+                <label for="option-three" class="option" id="option-three-label"></label>
+                <input type="radio" id="option-four" name="option" class="radio" value="optionD" />
+                <label for="option-four" class="option" id="option-four-label"></label>
+            </div>
+
+            <div class="action-section">
+                <button onclick="handleNextQuestion()" class="next-btn">Next Question</button>
+            </div>
+
+        </div>
+    </main>
+    <script src="JS/quiz-data.js"></script>
+    <script>
+        // Get quiz ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('quizId');
+
+        let questions = [];
+        let totalQuestions = 0;
+
+        if (quizId && quizData[quizId]) {
+            const quiz = quizData[quizId];
+            questions = quiz.questions.map((q, index) => ({
+                question: q.question,
+                optionA: q.options[0],
+                optionB: q.options[1],
+                optionC: q.options[2],
+                optionD: q.options[3],
+                correctOption: `option${String.fromCharCode(65 + q.options.indexOf(q.correct))}` // A, B, C, D
+            }));
+            totalQuestions = questions.length;
+            document.getElementById('total-score').textContent = totalQuestions;
+            document.getElementById('total-questions-display').textContent = totalQuestions;
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('quiz-title').textContent = quiz.title;
+        } else {
+            // Fallback or error
+            questions = [];
+            document.getElementById('quiz-title').textContent = 'Quiz Not Found';
+        }
+
+let shuffledQuestions = [] //empty array to hold shuffled selected questions out of all available questions
+
+function handleQuestions() { 
+    //function to shuffle and push all questions to shuffledQuestions array
+    shuffledQuestions = [...questions];
+}
+
+
+let questionNumber = 1 //holds the current question number
+let playerScore = 0  //holds the player score
+let wrongAttempt = 0 //amount of wrong answers picked by player
+let indexNumber = 0 //will be used in displaying next question
+
+// function for displaying next question in the array to dom
+//also handles displaying players and quiz information to dom
+function NextQuestion(index) {
+    handleQuestions()
+    const currentQuestion = shuffledQuestions[index]
+    document.getElementById("question-number").innerHTML = questionNumber
+    document.getElementById("player-score").innerHTML = playerScore
+    document.getElementById("display-question").innerHTML = currentQuestion.question;
+    document.getElementById("option-one-label").innerHTML = currentQuestion.optionA;
+    document.getElementById("option-two-label").innerHTML = currentQuestion.optionB;
+    document.getElementById("option-three-label").innerHTML = currentQuestion.optionC;
+    document.getElementById("option-four-label").innerHTML = currentQuestion.optionD;
+
+    // Add click handlers to option labels
+    document.querySelectorAll('.option').forEach(label => {
+        label.addEventListener('click', () => {
+            // Remove selected class from all options
+            document.querySelectorAll('.option').forEach(l => l.classList.remove('selected'));
+            // Add selected class to clicked option
+            label.classList.add('selected');
+            // Ensure the corresponding radio button is checked
+            const inputId = label.getAttribute('for');
+            if (inputId) {
+                document.getElementById(inputId).checked = true;
+            }
+        });
+    });
+}
+
+
+function checkForAnswer() {
+    const currentQuestion = shuffledQuestions[indexNumber] //gets current Question 
+    const currentQuestionAnswer = currentQuestion.correctOption //gets current Question's answer
+    const options = document.getElementsByName("option"); //gets all elements in dom with name of 'option' (in this the radio inputs)
+    let correctOption = null
+
+    options.forEach((option) => {
+        if (option.value === currentQuestionAnswer) {
+            //get's correct's radio input with correct answer
+            correctOption = option.labels[0].id
+        }
+    })
+
+    //checking to make sure a radio input has been checked or an option being chosen
+    if (options[0].checked === false && options[1].checked === false && options[2].checked === false && options[3].checked == false) {
+        document.getElementById('option-modal').style.display = "flex"
+    }
+
+    //checking if checked radio button is same as answer
+    options.forEach((option) => {
+        if (option.checked === true && option.value === currentQuestionAnswer) {
+            playerScore++ //adding to player's score
+            indexNumber++ //adding 1 to index so has to display next question..
+            //set to delay question number till when next question loads
+            setTimeout(() => {
+                questionNumber++
+            }, 1000)
+        }
+
+        else if (option.checked && option.value !== currentQuestionAnswer) {
+            wrongAttempt++ //adds 1 to wrong attempts 
+            indexNumber++
+            //set to delay question number till when next question loads
+            setTimeout(() => {
+                questionNumber++
+            }, 1000)
+        }
+    })
+}
+
+
+
+//called when the next button is called
+function handleNextQuestion() {
+    checkForAnswer() //check if player picked right or wrong option
+    unCheckRadioButtons()
+    
+    // Show loading state
+    const btn = document.querySelector('.next-btn');
+    btn.disabled = true;
+    btn.textContent = 'Loading...';
+    
+    //delays next question displaying for a second just for some effects so questions don't rush in on player
+    setTimeout(() => {
+        if (indexNumber < totalQuestions) {
+//displays next question as long as index number isn't greater than total
+            NextQuestion(indexNumber)
+        }
+        else {
+            handleEndGame()//ends game if index number greater than total
+        }
+        resetOptionBackground()
+        
+        // Reset button
+        btn.disabled = false;
+        btn.textContent = 'Next Question';
+    }, 1000);
+}
+
+//sets options background back to null after display the right/wrong colors
+function resetOptionBackground() {
+    const options = document.getElementsByName("option");
+    options.forEach((option) => {
+        const label = option.labels[0];
+        label.classList.remove('selected');
+    })
+}
+
+// unchecking all radio buttons for next question(can be done with map or foreach loop also)
+function unCheckRadioButtons() {
+    const options = document.getElementsByName("option");
+    for (let i = 0; i < options.length; i++) {
+        options[i].checked = false;
+    }
+}
+
+// function for when all questions being answered
+function handleEndGame() {
+    let remark = null
+    let remarkColor = null
+
+    // condition check for player remark and remark color
+    if (playerScore <= Math.floor(totalQuestions * 0.3)) {
+        remark = "Bad Grades, Keep Practicing."
+        remarkColor = "red"
+    }
+    else if (playerScore > Math.floor(totalQuestions * 0.3) && playerScore < Math.floor(totalQuestions * 0.7)) {
+        remark = "Average Grades, You can do better."
+        remarkColor = "orange"
+    }
+    else if (playerScore >= Math.floor(totalQuestions * 0.7)) {
+        remark = "Excellent, Keep the good work going."
+        remarkColor = "green"
+    }
+    const playerGrade = (playerScore / totalQuestions) * 100
+
+    //data to display to score board
+    document.getElementById('remarks').innerHTML = remark
+    document.getElementById('remarks').style.color = remarkColor
+    document.getElementById('grade-percentage').innerHTML = playerGrade
+    document.getElementById('wrong-answers').innerHTML = wrongAttempt
+    document.getElementById('right-answers').innerHTML = playerScore
+    document.getElementById('score-modal').style.display = "flex"
+
+}
+
+//closes score modal, resets game and reshuffles questions
+function closeScoreModal() {
+    questionNumber = 1
+    playerScore = 0
+    wrongAttempt = 0
+    indexNumber = 0
+    shuffledQuestions = []
+    NextQuestion(indexNumber)
+    document.getElementById('score-modal').style.display = "none"
+}
+
+//function to close warning modal
+function closeOptionModal() {
+    document.getElementById('option-modal').style.display = "none"
+}
+    </script>
+</body>
+</html>
