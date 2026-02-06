@@ -153,6 +153,124 @@
     font-weight: 500;
 }
 
+/* Activities Grid */
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.activity-card {
+    background: #FFFFFF;
+    border: 1px solid #E2D5C2;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(81, 81, 62, 0.08);
+}
+
+.activity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(81, 81, 62, 0.15);
+    border-color: #5C3422;
+}
+
+.activity-icon {
+    width: 64px;
+    height: 64px;
+    background: #F5F1E8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5C3422;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #51513E;
+    margin: 0 0 8px 0;
+}
+
+.activity-description {
+    font-size: 14px;
+    color: #7A6B5F;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+}
+
+.activity-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.activity-type,
+.activity-duration {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5C3422;
+    background: #F5F1E8;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-download-activity,
+.btn-preview {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-download-activity {
+    background: #5C3422;
+    color: #FFFFFF;
+    border: none;
+}
+
+.btn-download-activity:hover {
+    background: #8B5A3C;
+    transform: scale(1.02);
+}
+
+.btn-preview {
+    background: #FFFFFF;
+    color: #5C3422;
+    border: 1px solid #5C3422;
+}
+
+.btn-preview:hover {
+    background: #5C3422;
+    color: #FFFFFF;
+    transform: scale(1.02);
+}
+
+.btn-download-activity:active,
+.btn-preview:active {
+    transform: scale(0.98);
+}
+
 /* Learning Cards Grid */
 .learning-cards-grid {
     display: grid;

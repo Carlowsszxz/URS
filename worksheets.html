@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cavite Mutiny - Readings in Philippine History</title>
+    <title>Worksheets - Readings in Philippine History</title>
     <link rel="icon" href="Images/favicon.png" type="image/png">
     <link rel="stylesheet" href="Styles/course.css">
     <link rel="stylesheet" href="Styles/worksheets.css">
@@ -127,55 +127,6 @@
                 <h1>Worksheets</h1>
                 <p>Download and practice with our comprehensive learning materials</p>
             </div>
-            <!-- Handouts Gallery Section -->
-            <section class="handouts-gallery">
-                <div class="gallery-header">
-                    <h2>📚 Learning Handouts</h2>
-                    <p class="gallery-subtitle">Reference materials and study guides</p>
-                </div>
-
-                <div class="handouts-grid">
-                    <div class="handout-card">
-                        <div class="handout-image-container">
-                            <img src="Images/Handout Images/1.png" alt="Handout 1" class="handout-image">
-                        </div>
-                        <div class="handout-info">
-                            <h4>Handout 1</h4>
-                            <button class="btn-view" onclick="viewHandout('1')">View Full Size</button>
-                        </div>
-                    </div>
-
-                    <div class="handout-card">
-                        <div class="handout-image-container">
-                            <img src="Images/Handout Images/2.png" alt="Handout 2" class="handout-image">
-                        </div>
-                        <div class="handout-info">
-                            <h4>Handout 2</h4>
-                            <button class="btn-view" onclick="viewHandout('2')">View Full Size</button>
-                        </div>
-                    </div>
-
-                    <div class="handout-card">
-                        <div class="handout-image-container">
-                            <img src="Images/Handout Images/3.png" alt="Handout 3" class="handout-image">
-                        </div>
-                        <div class="handout-info">
-                            <h4>Handout 3</h4>
-                            <button class="btn-view" onclick="viewHandout('3')">View Full Size</button>
-                        </div>
-                    </div>
-
-                    <div class="handout-card">
-                        <div class="handout-image-container">
-                            <img src="Images/Handout Images/4.png" alt="Handout 4" class="handout-image">
-                        </div>
-                        <div class="handout-info">
-                            <h4>Handout 4</h4>
-                            <button class="btn-view" onclick="viewHandout('4')">View Full Size</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- Separator -->
             <hr class="section-divider">
@@ -187,54 +138,82 @@
                     <p class="hub-subtitle">Download, reflect, and master the content at your own pace</p>
                 </div>
 
-                <!-- Card Grid -->
-                <div class="learning-cards-grid">
-                    <!-- Download Worksheets Card -->
-                    <div class="learning-card">
-                        <div class="card-icon">
-                            <i data-lucide="download" style="width: 48px; height: 48px;"></i>
+                <!-- Activities Grid -->
+                <div class="activities-grid">
+                    <!-- First Mass Worksheet -->
+                    <div class="activity-card">
+                        <div class="activity-icon">
+                            <i data-lucide="book-open" style="width: 48px; height: 48px;"></i>
                         </div>
-                        <h3 class="card-title">Download Worksheets</h3>
-                        <p class="card-description">Download comprehensive worksheets for each historical topic. Complete them at your own pace.</p>
-                        <ul class="card-features">
-                            <li>📄 First Mass (1521)</li>
-                            <li>📄 Cavite Mutiny (1872)</li>
-                            <li>📄 Cry of Rebellion (1896)</li>
-                            <li>📄 Retraction of Rizal (1896)</li>
-                        </ul>
-                        <button class="card-button" onclick="navigateToSection('worksheets')">Browse & Download →</button>
+                        <div class="activity-content">
+                            <h3 class="activity-title">First Mass (1521)</h3>
+                            <p class="activity-description">Explore the historical significance of the first Catholic Mass in the Philippines. Learn about Magellan's arrival and its impact on Philippine history.</p>
+                            <div class="activity-meta">
+                                <span class="activity-type">Worksheet</span>
+                                <span class="activity-duration">15-20 mins</span>
+                            </div>
+                        </div>
+                        <div class="activity-actions">
+                            <button class="btn-download-activity" onclick="downloadWorksheet('first-mass')">Download PDF</button>
+                            <button class="btn-preview" onclick="previewWorksheet('first-mass')">Preview</button>
+                        </div>
                     </div>
 
-                    <!-- Write Reflections Card -->
-                    <div class="learning-card">
-                        <div class="card-icon">
+                    <!-- Cavite Mutiny Worksheet -->
+                    <div class="activity-card">
+                        <div class="activity-icon">
+                            <i data-lucide="shield" style="width: 48px; height: 48px;"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h3 class="activity-title">Cavite Mutiny (1872)</h3>
+                            <p class="activity-description">Understand the events of the Cavite Mutiny and its role in sparking Filipino nationalism. Analyze the impact on the Propaganda Movement.</p>
+                            <div class="activity-meta">
+                                <span class="activity-type">Worksheet</span>
+                                <span class="activity-duration">20-25 mins</span>
+                            </div>
+                        </div>
+                        <div class="activity-actions">
+                            <button class="btn-download-activity" onclick="downloadWorksheet('cavite-mutiny')">Download PDF</button>
+                            <button class="btn-preview" onclick="previewWorksheet('cavite-mutiny')">Preview</button>
+                        </div>
+                    </div>
+
+                    <!-- Cry of Rebellion Worksheet -->
+                    <div class="activity-card">
+                        <div class="activity-icon">
+                            <i data-lucide="flag" style="width: 48px; height: 48px;"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h3 class="activity-title">Cry of Rebellion (1896)</h3>
+                            <p class="activity-description">Examine the Cry of Pugad Lawin and the beginning of the Philippine Revolution. Connect events to the broader struggle for independence.</p>
+                            <div class="activity-meta">
+                                <span class="activity-type">Worksheet</span>
+                                <span class="activity-duration">18-22 mins</span>
+                            </div>
+                        </div>
+                        <div class="activity-actions">
+                            <button class="btn-download-activity" onclick="downloadWorksheet('cry-of-rebellion')">Download PDF</button>
+                            <button class="btn-preview" onclick="previewWorksheet('cry-of-rebellion')">Preview</button>
+                        </div>
+                    </div>
+
+                    <!-- Retraction of Rizal Worksheet -->
+                    <div class="activity-card">
+                        <div class="activity-icon">
                             <i data-lucide="pen-tool" style="width: 48px; height: 48px;"></i>
                         </div>
-                        <h3 class="card-title">Write Reflections</h3>
-                        <p class="card-description">Share your thoughts and insights about the readings. Reflect on what you've learned.</p>
-                        <ul class="card-features">
-                            <li>✏️ Personal reflections</li>
-                            <li>💭 Critical thinking</li>
-                            <li>📚 Learning insights</li>
-                            <li>💾 Auto-save drafts</li>
-                        </ul>
-                        <button class="card-button" onclick="navigateToSection('reflections')">Go to Reflections →</button>
-                    </div>
-
-                    <!-- Practice Quiz Card -->
-                    <div class="learning-card">
-                        <div class="card-icon">
-                            <i data-lucide="clipboard-check" style="width: 48px; height: 48px;"></i>
+                        <div class="activity-content">
+                            <h3 class="activity-title">Retraction of Rizal (1896)</h3>
+                            <p class="activity-description">Investigate Jose Rizal's controversial retraction document. Analyze its authenticity and historical implications for Filipino identity.</p>
+                            <div class="activity-meta">
+                                <span class="activity-type">Worksheet</span>
+                                <span class="activity-duration">22-28 mins</span>
+                            </div>
                         </div>
-                        <h3 class="card-title">Practice Quiz</h3>
-                        <p class="card-description">Test your knowledge with our interactive quiz. Get instant feedback and track your progress.</p>
-                        <ul class="card-features">
-                            <li>📊 10 questions</li>
-                            <li>⚡ Instant scoring</li>
-                            <li>📈 Progress tracking</li>
-                            <li>🎓 Downloadable results</li>
-                        </ul>
-                        <button class="card-button" onclick="navigateToSection('quiz')">Start Quiz →</button>
+                        <div class="activity-actions">
+                            <button class="btn-download-activity" onclick="downloadWorksheet('retraction-of-rizal')">Download PDF</button>
+                            <button class="btn-preview" onclick="previewWorksheet('retraction-of-rizal')">Preview</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -425,30 +404,30 @@
                 <div class="widget-content ideas-list">
                     <div class="idea-card">
                         <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
-                            <i data-lucide="calendar" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <i data-lucide="file-text" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
                             <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
-                                <strong>Date</strong>
-                                <p>January 20, 1872</p>
+                                <strong>Format</strong>
+                                <p>PDF Worksheets</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="idea-card">
                         <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
-                            <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <i data-lucide="clock" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
                             <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
-                                <strong>Location</strong>
-                                <p>Cavite Province</p>
+                                <strong>Duration</strong>
+                                <p>15-30 minutes each</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="idea-card">
                         <div style="display: flex; align-items: flex-start; gap: 10px; min-width: 0;">
-                            <i data-lucide="shield" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
+                            <i data-lucide="book-open" style="width: 18px; height: 18px; color: #5C3422; flex-shrink: 0; margin-top: 2px;"></i>
                             <div class="idea-info" style="min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
-                                <strong>Leaders</strong>
-                                <p>GomBurZa (Gomez, Burgos, Zamora)</p>
+                                <strong>Topics</strong>
+                                <p>4 Historical Events</p>
                             </div>
                         </div>
                     </div>

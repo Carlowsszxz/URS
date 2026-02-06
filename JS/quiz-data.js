@@ -4,19 +4,54 @@ const quizData = {
         title: "Quiz for History Activity 1",
         questions: [
             {
-                question: "Who is known as the 'Father of the Philippine Revolution'?",
-                options: ["Andres Bonifacio", "Jose Rizal", "Emilio Aguinaldo", "Apolinario Mabini"],
-                correct: "Andres Bonifacio"
+                question: "Which immediate policy change triggered the dissatisfaction of workers in the Cavite arsenal?",
+                options: ["Forced military conscription", "Abolition of their exemption from tribute and forced labor", "Closure of Manila ports", "Increase in church taxes"],
+                correct: "Abolition of their exemption from tribute and forced labor"
             },
             {
-                question: "What event is considered the start of the Philippine Revolution?",
-                options: ["Cry of Balintawak", "Execution of Gomburza", "Declaration of Independence", "Pact of Biak-na-Bato"],
-                correct: "Cry of Balintawak"
+                question: "According to Spanish accounts, the Cavite Mutiny was primarily described as:",
+                options: ["A labor strike over wages", "A local misunderstanding during a festival", "A large-scale conspiracy to overthrow Spanish rule", "A religious conflict among priests"],
+                correct: "A large-scale conspiracy to overthrow Spanish rule"
             },
             {
-                question: "In what year did the Philippine Revolution begin?",
-                options: ["1896", "1898", "1901", "1910"],
-                correct: "1896"
+                question: "Governor-General Rafael Izquierdo claimed that the mutiny was instigated mainly by:",
+                options: ["Chinese merchants", "American traders", "Native clergy and Filipino lawyers", "Spanish soldiers"],
+                correct: "Native clergy and Filipino lawyers"
+            },
+            {
+                question: "What signal did Spanish authorities believe was intended to start the uprising in Manila and Cavite?",
+                options: ["Church bells from Intramuros", "A coded letter from Madrid", "Rockets/fireworks from Intramuros", "A naval cannon shot"],
+                correct: "Rockets/fireworks from Intramuros"
+            },
+            {
+                question: "How did Trinidad Pardo de Tavera interpret the Cavite Mutiny?",
+                options: ["A fully organized national revolution", "A foreign-inspired rebellion", "A small military and labor mutiny exaggerated for political reasons", "A purely religious uprising"],
+                correct: "A small military and labor mutiny exaggerated for political reasons"
+            },
+            {
+                question: "In Spanish narratives, what role were Gomburza accused of playing?",
+                options: ["Neutral observers", "Financial sponsors only", "Spiritual leaders of a religious revival", "Masterminds or leaders of the planned rebellion"],
+                correct: "Masterminds or leaders of the planned rebellion"
+            },
+            {
+                question: "Which factor did Filipino accounts emphasize as part of the broader context of discontent?",
+                options: ["Spain's defeat in war", "Reforms being discussed that threatened friar power", "The spread of Protestantism", "Discovery of gold in Luzon"],
+                correct: "Reforms being discussed that threatened friar power"
+            },
+            {
+                question: "What happened to many Filipino professionals and ilustrados linked to the event?",
+                options: ["They were promoted in government", "They were exiled or imprisoned", "They were sent to Spain for education", "They joined the Spanish army"],
+                correct: "They were exiled or imprisoned"
+            },
+            {
+                question: "Why is the execution of Gomburza considered historically significant?",
+                options: ["It ended Spanish rule immediately", "It caused the closure of all schools", "It awakened Filipino nationalism and influenced later revolutionaries", "It led to peace negotiations"],
+                correct: "It awakened Filipino nationalism and influenced later revolutionaries"
+            },
+            {
+                question: "The main difference between Spanish and Filipino accounts of the mutiny lies in how they interpret its:",
+                options: ["Location", "Weather conditions", "Scale, intent, and political meaning", "Number of soldiers involved"],
+                correct: "Scale, intent, and political meaning"
             }
         ]
     },

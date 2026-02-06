@@ -306,6 +306,87 @@ Please submit your completed worksheet to your teacher or upload it to your lear
     document.body.removeChild(element);
 }
 
+function previewWorksheet(topic) {
+    // Create a modal to preview the worksheet
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+        font-family: 'Georgia', serif;
+    `;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    `;
+
+    const worksheetContent = `
+        <h2 style="color: #5C3422; margin-bottom: 20px;">WORKSHEET: ${topic}</h2>
+        <div style="border-top: 2px solid #5C3422; margin-bottom: 20px;"></div>
+        
+        <h3 style="color: #51513E;">Instructions:</h3>
+        <p style="margin-bottom: 20px; line-height: 1.6;">Read the assigned materials carefully and answer the following questions in your own words.</p>
+        
+        <h3 style="color: #51513E;">Learning Outcomes:</h3>
+        <ul style="margin-bottom: 20px; line-height: 1.6;">
+            <li>Understand key concepts related to ${topic}</li>
+            <li>Analyze important historical events</li>
+            <li>Reflect on the significance of this topic</li>
+        </ul>
+        
+        <h3 style="color: #51513E;">Questions:</h3>
+        <ol style="line-height: 1.8;">
+            <li>What are the main events discussed in this topic?<br><span style="color: #999;">Answer: _______________________________</span></li><br>
+            <li>Who were the key figures involved?<br><span style="color: #999;">Answer: _______________________________</span></li><br>
+            <li>What were the causes and effects?<br><span style="color: #999;">Answer: _______________________________</span></li><br>
+            <li>How does this topic relate to Philippine history?<br><span style="color: #999;">Answer: _______________________________</span></li><br>
+            <li>What questions do you still have about this topic?<br><span style="color: #999;">Answer: _______________________________</span></li>
+        </ol>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p><strong>Date Completed:</strong> ________________</p>
+            <p><strong>Student Name:</strong> ____________________________________</p>
+        </div>
+    `;
+
+    modalContent.innerHTML = worksheetContent;
+    modalContent.appendChild(closeBtn);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    closeBtn.onclick = () => document.body.removeChild(modal);
+    modal.onclick = (e) => {
+        if (e.target === modal) document.body.removeChild(modal);
+    };
+}
+
 // ===== QUIZ FUNCTIONALITY =====
 
 function initializeQuiz() {
