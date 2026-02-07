@@ -1640,10 +1640,65 @@ main{
     border-color: #5C3422;
 }
 
+.option.correct {
+    background: #10b981 !important;
+    color: white !important;
+    border-color: #059669 !important;
+    animation: correctPulse 0.5s ease;
+}
+
+.option.incorrect {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #dc2626 !important;
+    animation: incorrectShake 0.5s ease;
+}
+
+@keyframes correctPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes incorrectShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
 .action-section {
     display: flex;
     justify-content: center;
     width: 100%;
+    gap: 20px;
+}
+
+.back-btn {
+    padding: 12px 24px;
+    background: #5C3422;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #4a2a1a;
 }
 
 .next-btn {

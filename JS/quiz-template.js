@@ -96,11 +96,15 @@ function checkForAnswer() {
     const currentQuestionAnswer = currentQuestion.correctOption //gets current Question's answer
     const options = document.getElementsByName("option"); //gets all elements in dom with name of 'option' (in this the radio inputs)
     let correctOption = null
+    let userSelectedOption = null
 
     options.forEach((option) => {
         if (option.value === currentQuestionAnswer) {
             //get's correct's radio input with correct answer
             correctOption = option.labels[0].id
+        }
+        if (option.checked) {
+            userSelectedOption = option.labels[0].id
         }
     })
 
@@ -109,9 +113,20 @@ function checkForAnswer() {
         document.getElementById('option-modal').style.display = "flex"
     }
 
+    // Remove selected class from all options before adding feedback
+    options.forEach((option) => {
+        if (option.labels[0]) {
+            option.labels[0].classList.remove('selected');
+        }
+    })
+
     //checking if checked radio button is same as answer
     options.forEach((option) => {
         if (option.checked === true && option.value === currentQuestionAnswer) {
+            // Correct answer - show green effect
+            if (userSelectedOption) {
+                document.getElementById(userSelectedOption).classList.add('correct');
+            }
             playerScore++ //adding to player's score
             indexNumber++ //adding 1 to index so has to display next question..
             //set to delay question number till when next question loads
@@ -121,6 +136,10 @@ function checkForAnswer() {
         }
 
         else if (option.checked && option.value !== currentQuestionAnswer) {
+            // Incorrect answer - show red effect on selected option only
+            if (userSelectedOption) {
+                document.getElementById(userSelectedOption).classList.add('incorrect');
+            }
             wrongAttempt++ //adds 1 to wrong attempts
             indexNumber++
             //set to delay question number till when next question loads
@@ -133,10 +152,32 @@ function checkForAnswer() {
 
 
 
+//save quiz progress to database
+async function saveQuizProgress() {
+    const userId = await getUserId();
+    if (userId && window.supabaseClient) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('user_quiz_scores')
+                .upsert({ 
+                    user_id: userId, 
+                    quiz_id: quizId, 
+                    score: playerScore
+                }, { onConflict: 'user_id,quiz_id' });
+            if (error) console.error('Error saving quiz progress:', error);
+        } catch (e) {
+            console.error('Error saving quiz progress:', e);
+        }
+    }
+}
+
 //called when the next button is called
 function handleNextQuestion() {
     checkForAnswer() //check if player picked right or wrong option
     unCheckRadioButtons()
+
+    // Save progress after answering
+    saveQuizProgress();
 
     // Show loading state
     const btn = document.querySelector('.next-btn');
@@ -165,7 +206,7 @@ function resetOptionBackground() {
     const options = document.getElementsByName("option");
     options.forEach((option) => {
         const label = option.labels[0];
-        label.classList.remove('selected');
+        label.classList.remove('selected', 'correct', 'incorrect');
     })
 }
 
@@ -204,9 +245,26 @@ async function handleEndGame() {
     document.getElementById('right-answers').innerHTML = playerScore
     document.getElementById('score-modal').style.display = "flex"
 
+    // Save quiz score to database (already saved by saveQuizProgress on each question)
+    // This is redundant but kept for final confirmation
+    const userId = await getUserId();
+    if (userId && window.supabaseClient) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('user_quiz_scores')
+                .upsert({ 
+                    user_id: userId, 
+                    quiz_id: quizId, 
+                    score: playerScore
+                }, { onConflict: 'user_id,quiz_id' });
+            if (error) console.error('Error saving final quiz score:', error);
+        } catch (e) {
+            console.error('Error saving final quiz score:', e);
+        }
+    }
+
     // Mark quiz as locked in database if perfect score (100%)
     if (playerGrade === 100) {
-        const userId = await getUserId();
         if (userId && window.supabaseClient) {
             try {
                 const { error } = await window.supabaseClient

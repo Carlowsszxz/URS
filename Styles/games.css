@@ -34,7 +34,7 @@
 
         .game-card {
             position: relative;
-            height: 240px;
+            height: 300px;
             border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
@@ -114,6 +114,41 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        .game-card-meta {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 4;
+        }
+
+        .difficulty-badge,
+        .time-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card-description {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 14px;
+            line-height: 1.5;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            z-index: 4;
+        }
+
+
         .game-controller-icon {
             width: 80px;
             height: 80px;
@@ -188,12 +223,32 @@
             }
 
             .game-card {
-                height: 160px;
+                height: 220px;
             }
 
             .game-card-title {
                 font-size: 14px;
                 padding: 12px 14px;
+            }
+
+            .game-card-meta {
+                top: 50px;
+                left: 14px;
+                gap: 6px;
+            }
+
+            .difficulty-badge,
+            .time-badge {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+
+            .game-card-description {
+                font-size: 12px;
+                line-height: 1.4;
+                bottom: 14px;
+                left: 14px;
+                right: 14px;
             }
 
             .game-controller-icon {
