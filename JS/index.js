@@ -111,3 +111,85 @@ if (forgotEmailInput && forgotEmailHelper) {
         }
     });
 }
+
+// ==================== TERMS AND RULES ====================
+const termsLink = document.getElementById('termsLink');
+const termsModal = document.getElementById('termsModal');
+const closeTermsModal = document.getElementById('closeTermsModal');
+
+// Open terms modal
+if (termsLink) {
+    termsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        termsModal.classList.remove('hidden');
+    });
+}
+
+// Close terms modal
+if (closeTermsModal) {
+    closeTermsModal.addEventListener('click', () => {
+        termsModal.classList.add('hidden');
+    });
+}
+
+// Close modal when clicking outside
+if (termsModal) {
+    termsModal.addEventListener('click', (e) => {
+        if (e.target === termsModal) {
+            termsModal.classList.add('hidden');
+        }
+    });
+}
+
+// Form validation for terms agreement
+const loginForm = document.getElementById('loginForm');
+const termsCheckbox = document.getElementById('termsAgreement');
+const termsError = document.getElementById('termsError');
+
+if (loginForm && termsCheckbox && termsError) {
+    // Function to validate terms agreement
+    function validateTermsAgreement() {
+        if (!termsCheckbox.checked) {
+            termsError.textContent = 'You must agree to the terms and rules to continue.';
+            termsError.style.display = 'block';
+            termsCheckbox.focus();
+            return false;
+        } else {
+            termsError.style.display = 'none';
+            return true;
+        }
+    }
+
+    // Prevent form submission if terms not checked
+    loginForm.addEventListener('submit', function(e) {
+        if (!validateTermsAgreement()) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
+    // Prevent Enter key submission in form fields when terms not checked
+    const formInputs = loginForm.querySelectorAll('input');
+    formInputs.forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !termsCheckbox.checked) {
+                e.preventDefault();
+                validateTermsAgreement();
+                // Add visual feedback
+                termsCheckbox.style.boxShadow = '0 0 0 2px #d32f2f';
+                setTimeout(() => {
+                    termsCheckbox.style.boxShadow = '';
+                }, 1000);
+                return false;
+            }
+        });
+    });
+
+    // Real-time validation feedback
+    termsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            termsError.style.display = 'none';
+        }
+    });
+}

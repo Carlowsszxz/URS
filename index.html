@@ -79,6 +79,14 @@
                     <a href="#" class="forgot-password">Forgot password?</a>
                 </div>
 
+                <div class="terms-agreement">
+                    <label class="terms-checkbox">
+                        <input type="checkbox" id="termsAgreement" name="termsAgreement" />
+                        <span>I agree to the <a href="#" id="termsLink">Terms and Rules</a><span class="required">*</span></span>
+                    </label>
+                    <span class="error-message" id="termsError"></span>
+                </div>
+
                 <button type="submit" class="login-button" id="loginButton">Sign In</button>
             </form>
 
@@ -117,6 +125,53 @@
             </div>
             <div id="resetSuccessMessage" class="success-message hidden">
                 <p>✓ Email sent! Check your email for password reset instructions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Rules Modal -->
+    <div id="termsModal" class="modal hidden">
+        <div class="modal-content terms-modal-content">
+            <div class="modal-header">
+                <h2>Terms and Rules</h2>
+                <button class="modal-close" id="closeTermsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="terms-content">
+                    <h3>1. Acceptance of Terms</h3>
+                    <p>By accessing and using the RPH Interactive Learning Hub, you agree to these terms and rules. This platform is designed for educational purposes related to Philippine history. If you do not agree, please do not use the service.</p>
+
+                    <h3>2. User Eligibility</h3>
+                    <p>This platform is intended for students enrolled in educational institutions. You must provide accurate student information during registration. Accounts are personal and cannot be shared with others.</p>
+
+                    <h3>3. Permitted Use</h3>
+                    <p>You may use the platform for personal educational purposes, including participating in quizzes, games, interactive tasks, and learning activities. All use must be lawful and appropriate for an educational environment.</p>
+
+                    <h3>4. Prohibited Content and Conduct</h3>
+                    <p>The following are strictly prohibited:</p>
+                    <ul>
+                        <li>Posting or sharing R18 (adult), violent, hateful, or inappropriate content</li>
+                        <li>Harassment, bullying, or disrespectful behavior towards other users</li>
+                        <li>Cheating in games, quizzes, or assessments (e.g., using unauthorized aids or manipulating scores)</li>
+                        <li>Sharing personal information or soliciting contact with other users</li>
+                        <li>Attempting to hack, disrupt, or misuse the platform</li>
+                    </ul>
+
+                    <h3>5. Academic Integrity</h3>
+                    <p>All activities on this platform are designed to support learning. You must participate honestly and maintain academic integrity. Violations may result in account suspension or other disciplinary actions.</p>
+
+                    <h3>6. Content Ownership</h3>
+                    <p>The platform's educational content is owned by the RPH Interactive Learning Hub. User-generated content must be appropriate and original. We reserve the right to remove any content that violates these rules.</p>
+
+                    <h3>7. Privacy and Data</h3>
+                    <p>Your personal information and learning data (such as quiz scores) are collected to support your education and improve the platform. We protect your privacy in accordance with applicable laws. See our Privacy Policy for details.</p>
+
+                    <h3>8. Account Termination</h3>
+                    <p>We may suspend or terminate your account for violations of these rules, including posting inappropriate content or engaging in prohibited conduct. You may also request account deletion at any time.</p>
+
+                    <h3>9. Contact Information</h3>
+                    <p>If you have questions about these terms or need to report violations, contact us through the platform's support channels or your educational institution.</p>
+                </div>
             </div>
         </div>
     </div>

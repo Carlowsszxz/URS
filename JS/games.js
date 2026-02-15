@@ -455,6 +455,33 @@
             });
         });
 
+        // Function to update topic badges based on selected topics
+        function updateTopicBadges() {
+            const topicBadges = document.querySelectorAll('.topic-badge');
+            topicBadges.forEach(badge => {
+                const topic = badge.dataset.topic;
+                if (selectedTopics.includes('all') || selectedTopics.includes(topic)) {
+                    badge.classList.add('active');
+                } else {
+                    badge.classList.remove('active');
+                }
+            });
+        }
+
+        // Initial update of topic badges
+        updateTopicBadges();
+
+        // Update topic badges whenever category chips change
+        // We need to call updateTopicBadges after each category chip click
+        const originalCategoryChips = document.querySelectorAll('.category-chip');
+        originalCategoryChips.forEach(chip => {
+            const originalHandler = chip.onclick || (() => {});
+            chip.addEventListener('click', () => {
+                // Call the original logic (already handled above)
+                setTimeout(updateTopicBadges, 10); // Small delay to ensure state is updated
+            });
+        });
+
         // ==================== POWER-UPS SYSTEM ====================
         let powerups = { fiftyFifty: false, skip: false, extraTime: false };
         const powerup5050Btn = document.getElementById('powerup5050');
@@ -921,9 +948,16 @@
                 filteredBank = questionBank.filter(q => selectedTopics.includes(q.topic));
             }
 
-            // If not enough questions after filtering, use all
-            if (filteredBank.length < totalQuestions) {
+            // If no questions after filtering, use all (fallback for edge cases)
+            if (filteredBank.length === 0) {
                 filteredBank = questionBank;
+            }
+
+            // If we have specific topics selected, prioritize them completely
+            if (!selectedTopics.includes('all') && filteredBank.length > 0) {
+                // Shuffle and take up to totalQuestions from filtered bank
+                const shuffled = [...filteredBank].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, Math.min(totalQuestions, filteredBank.length));
             }
 
             const easy = filteredBank.filter(q => q.difficulty === 'easy');
@@ -941,9 +975,16 @@
             selected.push(...getRandomQuestions(medium, mediumCount));
             selected.push(...getRandomQuestions(hard, hardCount));
 
-            // Fill remaining with random from any difficulty
+            // Fill remaining with random from any difficulty in the filtered bank
             while (selected.length < totalQuestions && selected.length < filteredBank.length) {
                 const remaining = filteredBank.filter(q => !selected.includes(q));
+                if (remaining.length === 0) break;
+                selected.push(remaining[Math.floor(Math.random() * remaining.length)]);
+            }
+
+            // If still not enough questions, fill with questions from other topics
+            while (selected.length < totalQuestions) {
+                const remaining = questionBank.filter(q => !selected.includes(q));
                 if (remaining.length === 0) break;
                 selected.push(remaining[Math.floor(Math.random() * remaining.length)]);
             }
