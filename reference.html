@@ -51,9 +51,7 @@
                     <h4 class="profile-name" id="profileName">Loading...</h4>
                     <p class="profile-email" id="profileEmail">Loading...</p>
                 </div>
-                <button class="edit-profile-btn" id="editProfileBtn" title="Edit profile">
-                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
-                </button>
+                
             </div>
 
             <nav class="sidebar-nav">
@@ -250,8 +248,19 @@
     <!-- Scripts -->
     <script src="JS/script.js"></script>
     <script>
+
         // Initialize Lucide icons
         lucide.createIcons();
+
+        // Add click event to edit profile button to redirect to Feed (course.html)
+        document.addEventListener('DOMContentLoaded', function() {
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    window.location.href = 'course.html';
+                });
+            }
+        });
 
         // Add active class to reference nav item
         document.addEventListener('DOMContentLoaded', function() {

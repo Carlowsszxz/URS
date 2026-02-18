@@ -1327,25 +1327,117 @@ class CourseInterface {
         postCard.className = 'post-card';
         postCard.setAttribute('data-post-id', postData.id);
 
-        // Check if this is a shared post
-        const isSharedPost = postData.shared_by_id && postData.shared_by_name;
+        // Check if this is a shared post (supports original_post_id or shared_by_name)
+        const isSharedPost = !!(postData.original_post_id || postData.shared_by_name);
 
         if (isSharedPost) {
-            // Facebook-style shared post: sharer info at top, original post inside
-            const originalPost = this.createOriginalPostContent(postData, isLiked, profileMap);
-            
+            // Build an object representing the original post (from original_* fields inserted with the share)
+            const originalData = {
+                id: postData.original_post_id || null,
+                author_id: postData.original_author_id,
+                author_name: postData.original_author_name,
+                author_email: postData.original_author_email,
+                author_avatar_url: postData.original_author_avatar_url,
+                content: postData.original_content || postData.content,
+                image_url: postData.image_url,
+                video_url: postData.video_url,
+                poll_data: postData.poll_data,
+                created_at: postData.created_at
+            };
+
+            const originalPostHtml = this.createOriginalPostContent(originalData, isLiked, profileMap);
+
+            // Use the sharing post's author as the sharer name (author_name is set to sharer when inserted)
+            const sharerName = postData.author_name || postData.shared_by_name || 'Someone';
+
             postCard.innerHTML = `
                 <div class="share-header" style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #ecf0f1;">
                     <div style="font-size: 12px; color: #65676b; display: flex; align-items: center; gap: 8px;">
                         <span>↗️</span>
-                        <strong>${this.escapeHtml(postData.shared_by_name)}</strong>
+                        <strong>${this.escapeHtml(sharerName)}</strong>
                         <span>shared</span>
                     </div>
                 </div>
                 <div class="shared-post-content" style="margin: 12px; padding: 12px; border: 1px solid #ecf0f1; border-radius: 8px;">
-                    ${originalPost}
+                    ${originalPostHtml}
                 </div>
             `;
+
+            // If the nested original post is missing author fields (Unknown User) or has null id,
+            // try hydrating it from the authoritative `posts` row by `original_post_id`.
+            (async () => {
+                try {
+                    if (originalData.id) {
+                        const { data: orig, error: origErr } = await window.supabaseClient
+                            .from('posts')
+                            .select('*')
+                            .eq('id', originalData.id)
+                            .single();
+
+                        if (!orig || origErr) return;
+
+                        const enriched = {
+                            id: orig.id,
+                            author_id: orig.author_id,
+                            author_name: orig.author_name || (orig.author_email ? orig.author_email.split('@')[0] : 'Unknown User'),
+                            author_email: orig.author_email,
+                            author_avatar_url: orig.author_avatar_url || (orig.author_id ? `https://i.pravatar.cc/40?u=${orig.author_id}` : ''),
+                            content: orig.content,
+                            image_url: orig.image_url,
+                            video_url: orig.video_url,
+                            poll_data: orig.poll_data,
+                            created_at: orig.created_at,
+                            comments_count: orig.comments_count,
+                            likes_count: orig.likes_count,
+                            shares_count: orig.shares_count
+                        };
+
+                        // Try to enrich author name/avatar from `user_profiles` if author_email is present
+                        if (enriched.author_email) {
+                            try {
+                                const { data: prof, error: profErr } = await window.supabaseClient
+                                    .from('user_profiles')
+                                    .select('full_name, avatar_url')
+                                    .eq('user_email', enriched.author_email)
+                                    .maybeSingle();
+
+                                if (!profErr && prof) {
+                                    enriched.author_name = prof.full_name || enriched.author_name;
+                                    enriched.author_avatar_url = prof.avatar_url || enriched.author_avatar_url;
+                                }
+                            } catch (e) {
+                                // ignore profile lookup failure
+                            }
+                        }
+
+                        const container = postCard.querySelector('.shared-post-content');
+                        if (container) {
+                            const newHtml = this.createOriginalPostContent(enriched, isLiked, profileMap);
+                            container.innerHTML = newHtml;
+
+                            // Update action buttons inside the nested original post
+                            const nestedComment = container.querySelector('.comment-btn');
+                            const nestedShare = container.querySelector('.share-btn');
+                            const nestedLike = container.querySelector('.like-btn');
+
+                            if (nestedComment) {
+                                nestedComment.setAttribute('data-post-id', String(enriched.id));
+                                nestedComment.addEventListener('click', (e) => this.handleCommentClick(e, enriched));
+                            }
+                            if (nestedShare) {
+                                nestedShare.setAttribute('data-post-id', String(enriched.id));
+                                nestedShare.addEventListener('click', (e) => this.handleShareClick(e, enriched));
+                            }
+                            if (nestedLike) {
+                                nestedLike.setAttribute('data-post-id', String(enriched.id));
+                                nestedLike.addEventListener('click', (e) => this.handleLikeClick(e, enriched));
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Failed to hydrate original post for shared row:', e);
+                }
+            })();
         } else {
             // Get profile data from the map
             const profileData = profileMap.get(postData.author_email);
@@ -1641,26 +1733,321 @@ class CourseInterface {
 
     async addShareToDatabase(postId, sharedByName) {
         try {
-            // Get current share count
-            const { data: post } = await window.supabaseClient
+            const userId = this.currentUser?.id;
+            const sharedById = (userId && userId !== 'guest') ? userId : null;
+
+            // Fetch the original post so we can create a shared copy
+            const { data: originalPost, error: selErr } = await window.supabaseClient
                 .from('posts')
-                .select('shares_count')
+                .select('*')
                 .eq('id', postId)
                 .single();
 
-            const newShareCount = (post?.shares_count || 0) + 1;
+            if (selErr) {
+                console.error('Failed to fetch original post for sharing:', selErr);
+                return;
+            }
 
-            // Update with incremented count and sharer info
-            await window.supabaseClient
-                .from('posts')
-                .update({ 
-                    shares_count: newShareCount,
-                    shared_by_id: this.currentUser.id,
-                    shared_by_name: sharedByName
-                })
-                .eq('id', postId);
-        } catch (error) {
-            console.error('Failed to add share:', error);
+            // Build a shared post payload:
+            // - make the sharer the `author_*` of the new row (so feed shows "Shared by [you]")
+            // - keep the original post details in `original_*` fields so we can render the nested original post
+            const isSharer = !!sharedById;
+            let sharerName = this.currentUser?.user_metadata?.full_name || sharedByName || (this.currentUser?.email ? this.currentUser.email.split('@')[0] : 'Someone');
+            let sharerEmail = this.currentUser?.email || null;
+            let sharerAvatar = this.currentUser?.user_metadata?.avatar_url || this.currentUser?.avatar_url || null;
+
+            // Try to load richer profile data from `user_profiles` if available
+            if (isSharer && this.currentUser?.email) {
+                try {
+                    const { data: sp, error: spErr } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('full_name, avatar_url, user_email')
+                        .eq('user_email', this.currentUser.email)
+                        .maybeSingle();
+
+                    if (!spErr && sp) {
+                        sharerName = sp.full_name || sharerName;
+                        sharerAvatar = sp.avatar_url || sharerAvatar;
+                        sharerEmail = sp.user_email || sharerEmail;
+                    }
+                } catch (e) {
+                    // ignore profile lookup failure — fall back to auth data
+                }
+            }
+
+            // Try to enrich original author's avatar/name from user_profiles
+            let originalAuthorAvatar = originalPost.author_avatar_url || null;
+            let originalAuthorName = originalPost.author_name || null;
+            if (originalPost.author_email) {
+                try {
+                    const { data: op, error: opErr } = await window.supabaseClient
+                        .from('user_profiles')
+                        .select('full_name, avatar_url')
+                        .eq('user_email', originalPost.author_email)
+                        .maybeSingle();
+
+                    if (!opErr && op) {
+                        originalAuthorAvatar = op.avatar_url || originalAuthorAvatar;
+                        originalAuthorName = op.full_name || originalAuthorName;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            const payload = {
+                topic_id: originalPost.topic_id || null,
+                // new post is authored by the sharer when available
+                author_id: isSharer ? sharedById : originalPost.author_id,
+                author_name: isSharer ? sharerName : originalPost.author_name,
+                author_email: isSharer ? sharerEmail : originalPost.author_email,
+                author_avatar_url: isSharer ? sharerAvatar : originalPost.author_avatar_url,
+
+                // keep original post data for nested rendering
+                original_post_id: postId,
+                original_author_id: originalPost.author_id,
+                original_author_name: originalAuthorName,
+                original_author_email: originalPost.author_email,
+                original_author_avatar_url: originalAuthorAvatar,
+                original_content: originalPost.content,
+                image_url: originalPost.image_url,
+                video_url: originalPost.video_url,
+                poll_data: originalPost.poll_data,
+
+                // metadata about the share
+                shared_by_name: sharerName,
+                share_note: null,
+
+                likes_count: 0,
+                comments_count: 0,
+                shares_count: 0
+            };
+
+            // If your DB enforces FK on `author_id` or other fields, ensure the sharer exists there.
+            if (isSharer && payload.author_id) {
+                try {
+                    const { data: userRow, error: userErr } = await window.supabaseClient
+                        .from('users')
+                        .select('id')
+                        .eq('id', payload.author_id)
+                        .maybeSingle();
+
+                    if (userErr || !userRow) {
+                        // If there is no FK target for the sharer, fall back to anonymous author (avoid FK violation)
+                        delete payload.author_id;
+                    }
+                } catch (e) {
+                    console.warn('Unexpected error checking users table for author_id:', e);
+                    delete payload.author_id;
+                }
+            }
+
+            // Prevent duplicate shares by the same logged-in user
+            let didInsert = false;
+            if (sharedById) {
+                try {
+                    // Prefer checking an explicit original_post_id if your schema has it
+                    const { data: already1, error: a1Err } = await window.supabaseClient
+                        .from('posts')
+                        .select('id')
+                        .eq('author_id', sharedById)
+                        .eq('original_post_id', postId)
+                        .maybeSingle();
+
+                    if (a1Err === null && already1) {
+                        this.showNotification('You already shared this post', 'info');
+                        return;
+                    }
+                } catch (e) {
+                    // ignore — maybe column doesn't exist
+                }
+
+                try {
+                    // Fallback: check by author_id + same content
+                    const { data: already2, error: a2Err } = await window.supabaseClient
+                        .from('posts')
+                        .select('id')
+                        .eq('author_id', sharedById)
+                        .eq('original_content', originalPost.content)
+                        .maybeSingle();
+
+                    if (a2Err === null && already2) {
+                        this.showNotification('You already shared this post', 'info');
+                        return;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            // Insert the shared post row with retry that strips unknown columns (PostgREST PGRST204)
+            let insertPayload = Object.assign({}, payload);
+            let newPost = null;
+            let insertErr = null;
+
+            while (true) {
+                try {
+                    const res = await window.supabaseClient
+                        .from('posts')
+                        .insert([insertPayload])
+                        .select()
+                        .single();
+
+                    newPost = res.data;
+                    insertErr = res.error;
+
+                    if (!insertErr) break; // success
+
+                    // If PostgREST reports missing column in schema cache, remove it from payload and retry
+                    if (insertErr.code === 'PGRST204' && insertErr.message) {
+                        const m = String(insertErr.message).match(/Could not find the '([^']+)' column/);
+                        if (m && m[1]) {
+                            const col = m[1];
+                            if (col in insertPayload) {
+                                console.warn(`Removing unknown column from payload and retrying: ${col}`);
+                                delete insertPayload[col];
+                                // loop will retry
+                                continue;
+                            }
+                        }
+                    }
+
+                    // If FK error (23503), try removing offending FK fields (fallback)
+                    if (insertErr.code === '23503' && insertErr.details) {
+                        const fkMatch = String(insertErr.details).match(/Key \(([^)]+)\)=\(([^)]+)\) is not present/);
+                        if (fkMatch && fkMatch[1]) {
+                            const fkCol = fkMatch[1];
+                            if (fkCol in insertPayload) {
+                                console.warn(`Removing FK column from payload due to missing target: ${fkCol}`);
+                                delete insertPayload[fkCol];
+                                continue;
+                            }
+                        }
+                    }
+
+                    break; // unhandled error, exit loop
+                } catch (e) {
+                    console.error('Unexpected error during insert attempt:', e);
+                    insertErr = e;
+                    break;
+                }
+            }
+
+            if (insertErr) {
+                console.error('Error inserting shared post:', insertErr);
+                try {
+                    console.error('insertErr details:', insertErr.details, 'hint:', insertErr.hint, 'code:', insertErr.code, 'status:', insertErr.status);
+                } catch (ee) {
+                    console.error('Error logging insertErr fields', ee);
+                }
+                this.showNotification('Failed to share post: ' + (insertErr.message || insertErr.details || 'Server error'), 'error');
+                return;
+            } else {
+                didInsert = true;
+                console.log('Inserted share row (raw):', newPost);
+
+                // If the inserted row is missing expected author/display fields (some DB triggers or policies may strip them), attempt a best-effort update
+                const updatePayload = {};
+                if (!newPost.author_name && sharerName) updatePayload.author_name = sharerName;
+                if (!newPost.author_avatar_url && sharerAvatar) updatePayload.author_avatar_url = sharerAvatar;
+                if (!newPost.original_post_id) updatePayload.original_post_id = postId;
+                if (!newPost.original_author_name && originalAuthorName) updatePayload.original_author_name = originalAuthorName;
+                if (!newPost.original_author_avatar_url && originalAuthorAvatar) updatePayload.original_author_avatar_url = originalAuthorAvatar;
+                if (!newPost.original_content && originalPost.content) updatePayload.original_content = originalPost.content;
+
+                if (Object.keys(updatePayload).length > 0 && newPost.id) {
+                    try {
+                        const { data: updated, error: updErr } = await window.supabaseClient
+                            .from('posts')
+                            .update(updatePayload)
+                            .eq('id', newPost.id)
+                            .select()
+                            .single();
+
+                        if (updErr) {
+                            console.warn('Failed to patch inserted share row:', updErr);
+                        } else {
+                            console.log('Patched share row:', updated);
+                            // prefer the updated row for popup/display
+                            newPost = updated;
+                        }
+                    } catch (e) {
+                        console.warn('Unexpected error patching share row:', e);
+                    }
+                }
+
+                // Show a transient popup announcing the share
+                try {
+                    const sharer = {
+                        id: sharedById,
+                        name: sharerName,
+                        avatar: sharerAvatar
+                    };
+                    this.showSharePopup(newPost, sharer);
+                } catch (showErr) {
+                    console.warn('Failed to show share popup:', showErr);
+                }
+            }
+
+            // Increment the original post's shares_count only if we inserted a new shared row
+            if (didInsert) {
+                try {
+                    const { data: postForCount, error: pErr } = await window.supabaseClient
+                        .from('posts')
+                        .select('shares_count')
+                        .eq('id', postId)
+                        .single();
+
+                    const newCount = (postForCount?.shares_count || originalPost?.shares_count || 0) + 1;
+                    const { error: updErr } = await window.supabaseClient
+                        .from('posts')
+                        .update({ shares_count: newCount })
+                        .eq('id', postId);
+
+                    if (updErr) console.error('Failed to increment shares_count:', updErr);
+                } catch (countErr) {
+                    console.warn('Error updating shares_count:', countErr);
+                }
+            }
+
+            // Reload the feed so the shared post appears
+            try {
+                await this.loadPostsFromDatabase();
+            } catch (reloadErr) {
+                console.warn('Failed to reload posts after share:', reloadErr);
+            }
+        } catch (err) {
+            console.error('Failed to add share:', err);
+        }
+    }
+
+    showSharePopup(post, sharer) {
+        try {
+            const popup = document.createElement('div');
+            popup.className = 'share-popup';
+            const avatar = sharer.avatar || '';
+            const name = sharer.name || 'Someone';
+            const note = post.share_note || '';
+
+            const escapeHtml = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const truncate = (s, n) => (s && s.length > n) ? s.slice(0, n - 1) + '…' : (s || '');
+
+            popup.innerHTML = `
+                <div class="share-popup-inner">
+                    <img src="${escapeHtml(avatar)}" class="share-avatar" />
+                    <div class="share-text">
+                        <strong>${escapeHtml(name)}</strong> shared a post
+                        <div class="share-note">${escapeHtml(truncate(note, 160))}</div>
+                    </div>
+                </div>
+                <div class="share-post-content">${escapeHtml(truncate(post.content || '', 200))}</div>
+            `;
+
+            document.body.appendChild(popup);
+            requestAnimationFrame(() => popup.classList.add('visible'));
+            setTimeout(() => { popup.classList.remove('visible'); setTimeout(() => popup.remove(), 400); }, 4500);
+        } catch (e) {
+            console.warn('showSharePopup error', e);
         }
     }
 
@@ -1748,27 +2135,49 @@ class CourseInterface {
 
     async addLikeToDatabase(postId) {
         try {
-            // Insert into post_likes table
+            const userId = this.currentUser?.id;
+            if (!userId || userId === 'guest') return;
+
+            // Check if the user already liked this post
+            const { data: existingLike, error: existErr } = await window.supabaseClient
+                .from('post_likes')
+                .select('id')
+                .eq('post_id', postId)
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (existErr) {
+                console.error('Error checking existing like:', existErr);
+                return;
+            }
+
+            if (existingLike) {
+                // Already liked — nothing to do
+                return;
+            }
+
+            // Insert like row
             const { error: insertError } = await window.supabaseClient
                 .from('post_likes')
-                .insert([{
-                    post_id: postId,
-                    user_id: this.currentUser.id
-                }]);
+                .insert([{ post_id: postId, user_id: userId }]);
 
             if (insertError) {
                 console.error('Error adding like:', insertError);
                 return;
             }
 
-            // Update likes_count in posts table
-            const { data: post } = await window.supabaseClient
-                .from('posts')
-                .select('likes_count')
-                .eq('id', postId)
-                .single();
+            // Recalculate likes_count from post_likes to avoid duplicate increments
+            const { data: likesData, count, error: countErr } = await window.supabaseClient
+                .from('post_likes')
+                .select('id', { count: 'exact' })
+                .eq('post_id', postId);
 
-            const newLikeCount = (post?.likes_count || 0) + 1;
+            if (countErr) {
+                console.error('Error counting likes:', countErr);
+                return;
+            }
+
+            const newLikeCount = (typeof count === 'number') ? count : (likesData?.length || 0);
 
             await window.supabaseClient
                 .from('posts')
@@ -1781,30 +2190,37 @@ class CourseInterface {
 
     async removeLikeFromDatabase(postId) {
         try {
-            // Delete from post_likes table
+            const userId = this.currentUser?.id;
+            if (!userId || userId === 'guest') return;
+
+            // Delete the like row (if exists)
             const { error: deleteError } = await window.supabaseClient
                 .from('post_likes')
                 .delete()
                 .eq('post_id', postId)
-                .eq('user_id', this.currentUser.id);
+                .eq('user_id', userId);
 
             if (deleteError) {
                 console.error('Error removing like:', deleteError);
                 return;
             }
 
-            // Update likes_count in posts table
-            const { data: post } = await window.supabaseClient
-                .from('posts')
-                .select('likes_count')
-                .eq('id', postId)
-                .single();
+            // Recalculate likes_count from post_likes to stay authoritative
+            const { data: likesData, count, error: countErr } = await window.supabaseClient
+                .from('post_likes')
+                .select('id', { count: 'exact' })
+                .eq('post_id', postId);
 
-            const newLikeCount = Math.max(0, (post?.likes_count || 0) - 1);
+            if (countErr) {
+                console.error('Error counting likes after delete:', countErr);
+                return;
+            }
+
+            const newLikeCount = (typeof count === 'number') ? count : (likesData?.length || 0);
 
             await window.supabaseClient
                 .from('posts')
-                .update({ likes_count: newLikeCount })
+                .update({ likes_count: Math.max(0, newLikeCount) })
                 .eq('id', postId);
         } catch (error) {
             console.error('Failed to remove like:', error);
