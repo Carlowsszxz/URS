@@ -1426,7 +1426,10 @@ if (typeof CourseInterface === 'undefined') {
         }
 
         if (shareBtn) {
-            shareBtn.addEventListener('click', (e) => this.handleShareClick(e, postData));
+            // Sharing disabled: make button inert (no click handler)
+            try { shareBtn.disabled = true; } catch (e) {}
+            shareBtn.classList.add('disabled');
+            shareBtn.setAttribute('aria-disabled', 'true');
         }
 
         if (likeBtn) {
@@ -1643,31 +1646,9 @@ if (typeof CourseInterface === 'undefined') {
     }
 
     handleShareClick(e, postData) {
-        e.preventDefault();
-        
-        // Spam check
-        if (this.isSpamAction('share', postData.id)) {
-            this.showNotification('Please wait before sharing again', 'error');
-            return;
-        }
-        
-        const btn = e.currentTarget;
-        btn.style.transform = 'scale(1.1)';
-        setTimeout(() => btn.style.transform = 'scale(1)', 200);
-        
-        const userName = this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0];
-        this.showNotification(`Shared by ${userName} ✓`, 'success');
-        
-        // Update share count visually
-        const span = btn.querySelector('span');
-        let shareCount = parseInt(span.textContent) || 0;
-        shareCount++;
-        span.textContent = shareCount;
-        
-        // Add to database with sharer info and reload feed
-        this.addShareToDatabase(postData.id, userName).then(() => {
-            this.loadPostsFromDatabase();
-        });
+        // Sharing has been disabled — this handler is intentionally a no-op.
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        return;
     }
 
     async addShareToDatabase(postId, sharedByName) {

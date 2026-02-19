@@ -87,6 +87,57 @@ class CourseInterface {
         }
     }
 
+    handleShareButtonClick(postData) {
+        // Sharing logic removed. Function intentionally left as a no-op.
+        return;
+    }
+
+    async optimisticLikeToggle(likeBtn, span, icon, likeCount, liked, postId) {
+        // Update UI optimistically
+        if (liked) {
+            likeBtn.classList.remove('liked');
+            likeBtn.setAttribute('aria-pressed', 'false');
+            likeBtn.setAttribute('aria-label', 'Like');
+            likeBtn.title = 'Like';
+            if (icon) { icon.style.fill = 'none'; icon.style.stroke = 'currentColor'; icon.style.color = 'currentColor'; }
+            span.textContent = Math.max(likeCount - 1, 0);
+        } else {
+            likeBtn.classList.add('liked');
+            likeBtn.setAttribute('aria-pressed', 'true');
+            likeBtn.setAttribute('aria-label', 'Unlike');
+            likeBtn.title = 'Unlike';
+            if (icon) { icon.style.fill = '#f39c12'; icon.style.stroke = '#f39c12'; icon.style.color = '#f39c12'; }
+            span.textContent = likeCount + 1;
+        }
+
+        // Call backend
+        try {
+            if (liked) {
+                await window.DB.unlikePost(postId, this.currentUser.id);
+            } else {
+                await window.DB.likePost(postId, this.currentUser.id);
+            }
+        } catch (err) {
+            // Revert UI if backend fails
+            if (liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.setAttribute('aria-pressed', 'true');
+                likeBtn.setAttribute('aria-label', 'Unlike');
+                likeBtn.title = 'Unlike';
+                if (icon) { icon.style.fill = '#f39c12'; icon.style.stroke = '#f39c12'; icon.style.color = '#f39c12'; }
+                span.textContent = likeCount;
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.setAttribute('aria-pressed', 'false');
+                likeBtn.setAttribute('aria-label', 'Like');
+                likeBtn.title = 'Like';
+                if (icon) { icon.style.fill = 'none'; icon.style.stroke = 'currentColor'; icon.style.color = 'currentColor'; }
+                span.textContent = Math.max(likeCount, 0);
+            }
+            this.showNotification('Failed to update like. Please try again.', 'error');
+        }
+    }
+
     populateUserProfile() {
         try {
             const nameEl = document.getElementById('profileName');
@@ -154,6 +205,41 @@ class CourseInterface {
         } catch (error) {
             console.error('Error populating profile:', error);
         }
+    }
+
+    // Fetch a user profile by id (preferred) or email (fallback).
+    async fetchUserProfileByIdOrEmail(identifier) {
+        if (!identifier) return null;
+        try {
+            const supabaseClient = await window.supabaseClient || getSupabaseClient();
+
+            // Try by id first
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, full_name, avatar_url, user_email')
+                    .eq('id', identifier)
+                    .maybeSingle();
+                if (!error && data) return data;
+            } catch (e) {
+                // ignore and try by email
+            }
+
+            // Fallback to email lookup
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, full_name, avatar_url, user_email')
+                    .eq('user_email', identifier)
+                    .maybeSingle();
+                if (!error && data) return data;
+            } catch (e) {
+                // ignore
+            }
+        } catch (err) {
+            // ignore
+        }
+        return null;
     }
 
     setupEventListeners() {
@@ -587,22 +673,17 @@ class CourseInterface {
             isCurrentUserPost = true;
         }
         
-        // Fetch the latest profile data from database for all users
+        // Fetch the latest profile data (prefer id, fallback to email)
         try {
-            const supabaseClient = await getSupabaseClient();
-            const { data: profileData, error } = await supabaseClient
-                .from('user_profiles')
-                .select('full_name, avatar_url')
-                .eq('user_email', post.author_id)
-                .single();
-            
-            if (!error && profileData) {
-                displayName = profileData.full_name;
-                if (profileData.avatar_url) {
-                    avatarSrc = profileData.avatar_url;
+            const profileData = await this.fetchUserProfileByIdOrEmail(post.author_id || post.author_email);
+            if (profileData) {
+                if (!post.author_name || !String(post.author_name).trim()) {
+                    displayName = profileData.full_name || displayName;
                 }
+                if (profileData.avatar_url) avatarSrc = profileData.avatar_url;
             }
         } catch (err) {
+            // ignore
         }
         
         postDiv.innerHTML = `
@@ -973,20 +1054,12 @@ class CourseInterface {
             let authorAvatarUrl = localStorage.getItem('profileAvatarUrl') || localStorage.getItem('profileAvatar');
             
             // Try to fetch from user_profiles table in Supabase (with error handling)
-            try {
-                const { data: profileDataArray, error } = await window.supabaseClient
-                    .from('user_profiles')
-                    .select('avatar_url')
-                    .eq('user_email', this.currentUser.email);
-                
-                if (!error && profileDataArray && profileDataArray.length > 0) {
-                    const profileData = profileDataArray[0];
-                    if (profileData?.avatar_url) {
-                        authorAvatarUrl = profileData.avatar_url;
-                    }
+                try {
+                    const prof = await this.fetchUserProfileByIdOrEmail(this.currentUser.id || this.currentUser.email);
+                    if (prof && prof.avatar_url) authorAvatarUrl = prof.avatar_url;
+                } catch (err) {
+                    // ignore
                 }
-            } catch (err) {
-            }
             
             if (!authorAvatarUrl) {
                 authorAvatarUrl = `https://i.pravatar.cc/40?u=${this.currentUser.id}`;
@@ -1122,20 +1195,21 @@ class CourseInterface {
                 this.hasMorePosts = false;
             }
 
-            // Get unique author emails to fetch profile data in bulk
-            const authorEmails = [...new Set(posts.map(post => post.author_email).filter(email => email))];
+            // Get unique author ids to fetch profile data in bulk (posts.author_id is authoritative)
+            const authorIds = [...new Set(posts.map(post => post.author_id).filter(id => id))];
 
-            // Fetch profile data for all authors in a single query
+            // Fetch profile data for all authors in a single query (by profile id)
             const { data: profiles, error: profileError } = await window.supabaseClient
                 .from('user_profiles')
-                .select('user_email, full_name, avatar_url')
-                .in('user_email', authorEmails);
+                .select('id, user_email, full_name, avatar_url')
+                .in('id', authorIds);
 
-            // Create a map for quick lookup
+            // Create a map for quick lookup by id and fallback by email
             const profileMap = new Map();
             if (!profileError && profiles) {
                 profiles.forEach(profile => {
-                    profileMap.set(profile.user_email, profile);
+                    if (profile.id) profileMap.set(profile.id, profile);
+                    if (profile.user_email) profileMap.set(profile.user_email, profile);
                 });
             }
 
@@ -1363,75 +1437,148 @@ class CourseInterface {
                 </div>
             `;
 
-            // If the nested original post is missing author fields (Unknown User) or has null id,
-            // try hydrating it from the authoritative `posts` row by `original_post_id`.
+            // If we have a profile for the original author in the pre-fetched map, apply it now.
+            // Otherwise, attempt a quick fetch for the original author's profile and update the nested display.
             (async () => {
                 try {
+                    const authorId = originalData.author_id;
+                    const email = originalData.author_email;
+                    if (!authorId && !email) return;
+
+                    // Prefer lookup by author_id (profile id) in profileMap, fallback to email
+                    const mapProfile = (authorId && profileMap.get(authorId)) || (email && profileMap.get(email));
+                    if (mapProfile) {
+                        originalData.author_name = (originalData.author_name && String(originalData.author_name).trim()) ? originalData.author_name : (mapProfile.full_name || originalData.author_name);
+                        originalData.author_avatar_url = originalData.author_avatar_url || mapProfile.avatar_url || originalData.author_avatar_url;
+                        const container = postCard.querySelector('.shared-post-content');
+                        if (container) container.innerHTML = this.createOriginalPostContent(originalData, isLiked, profileMap);
+                        return;
+                    }
+
+                    // Quick DB lookup for the original author's profile (prefer id then email)
+                    try {
+                        const prof = await this.fetchUserProfileByIdOrEmail(authorId || email);
+                        if (prof) {
+                            originalData.author_name = (originalData.author_name && String(originalData.author_name).trim()) ? originalData.author_name : (prof.full_name || originalData.author_name);
+                            originalData.author_avatar_url = originalData.author_avatar_url || prof.avatar_url || originalData.author_avatar_url;
+                            const container = postCard.querySelector('.shared-post-content');
+                            if (container) container.innerHTML = this.createOriginalPostContent(originalData, isLiked, profileMap);
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            })();
+
+            // If the nested original post is missing author fields (Unknown User) or has null id,
+            // try hydrating it from the authoritative `posts` row by `original_post_id`.
+            // If `original_post_id` is not present (schema stripped it), fall back to finding
+            // the original post by exact `original_content` so we can enrich the nested display.
+            (async () => {
+                try {
+                    let orig = null;
+
                     if (originalData.id) {
-                        const { data: orig, error: origErr } = await window.supabaseClient
+                        const { data: origData, error: origErr } = await window.supabaseClient
                             .from('posts')
                             .select('*')
                             .eq('id', originalData.id)
-                            .single();
+                            .maybeSingle();
+                        if (origData && !origErr) orig = origData;
+                    }
 
-                        if (!orig || origErr) return;
+                    // Fallback: search for a post with the same content if we don't have an id
+                    if (!orig && originalData.content) {
+                        try {
+                            const { data: found, error: fErr } = await window.supabaseClient
+                                .from('posts')
+                                .select('*')
+                                .eq('content', originalData.content)
+                                .order('created_at', { ascending: false })
+                                .limit(1);
 
-                        const enriched = {
-                            id: orig.id,
-                            author_id: orig.author_id,
-                            author_name: orig.author_name || (orig.author_email ? orig.author_email.split('@')[0] : 'Unknown User'),
-                            author_email: orig.author_email,
-                            author_avatar_url: orig.author_avatar_url || (orig.author_id ? `https://i.pravatar.cc/40?u=${orig.author_id}` : ''),
-                            content: orig.content,
-                            image_url: orig.image_url,
-                            video_url: orig.video_url,
-                            poll_data: orig.poll_data,
-                            created_at: orig.created_at,
-                            comments_count: orig.comments_count,
-                            likes_count: orig.likes_count,
-                            shares_count: orig.shares_count
-                        };
+                            if (!fErr && Array.isArray(found) && found.length > 0) {
+                                orig = found[0];
+                            }
+                        } catch (searchErr) {
+                            // ignore search failure
+                        }
+                    }
 
-                        // Try to enrich author name/avatar from `user_profiles` if author_email is present
-                        if (enriched.author_email) {
+                    if (!orig) return;
+
+                    const enriched = {
+                        id: orig.id,
+                        author_id: orig.author_id,
+                        author_name: orig.author_name || (orig.author_email ? orig.author_email.split('@')[0] : 'Unknown User'),
+                        author_email: orig.author_email,
+                        author_avatar_url: orig.author_avatar_url || (orig.author_id ? `https://i.pravatar.cc/40?u=${orig.author_id}` : ''),
+                        content: orig.content,
+                        image_url: orig.image_url,
+                        video_url: orig.video_url,
+                        poll_data: orig.poll_data,
+                        created_at: orig.created_at,
+                        comments_count: orig.comments_count,
+                        likes_count: orig.likes_count,
+                        shares_count: orig.shares_count
+                    };
+
+                    // Try to enrich author name/avatar from `user_profiles` if author_id is present (preferred),
+                    // otherwise fallback to author_email.
+                    try {
+                        let prof = null;
+                        if (enriched.author_id) {
+                            const { data, error } = await window.supabaseClient
+                                .from('user_profiles')
+                                .select('full_name, avatar_url')
+                                .eq('id', enriched.author_id)
+                                .maybeSingle();
+                            if (!error && data) prof = data;
+                        }
+
+                        if (!prof && enriched.author_email) {
                             try {
-                                const { data: prof, error: profErr } = await window.supabaseClient
-                                    .from('user_profiles')
-                                    .select('full_name, avatar_url')
-                                    .eq('user_email', enriched.author_email)
-                                    .maybeSingle();
-
-                                if (!profErr && prof) {
-                                    enriched.author_name = prof.full_name || enriched.author_name;
-                                    enriched.author_avatar_url = prof.avatar_url || enriched.author_avatar_url;
-                                }
+                                const p = await this.fetchUserProfileByIdOrEmail(enriched.author_id || enriched.author_email);
+                                if (p) prof = p;
                             } catch (e) {
-                                // ignore profile lookup failure
+                                // ignore
                             }
                         }
 
-                        const container = postCard.querySelector('.shared-post-content');
-                        if (container) {
-                            const newHtml = this.createOriginalPostContent(enriched, isLiked, profileMap);
-                            container.innerHTML = newHtml;
+                        if (prof) {
+                            enriched.author_name = (enriched.author_name && String(enriched.author_name).trim()) ? enriched.author_name : (prof.full_name || enriched.author_name);
+                            enriched.author_avatar_url = enriched.author_avatar_url || prof.avatar_url || enriched.author_avatar_url;
+                        }
+                    } catch (e) {
+                        // ignore profile lookup failure
+                    }
 
-                            // Update action buttons inside the nested original post
-                            const nestedComment = container.querySelector('.comment-btn');
-                            const nestedShare = container.querySelector('.share-btn');
-                            const nestedLike = container.querySelector('.like-btn');
+                    const container = postCard.querySelector('.shared-post-content');
+                    if (container) {
+                        const newHtml = this.createOriginalPostContent(enriched, isLiked, profileMap);
+                        container.innerHTML = newHtml;
 
-                            if (nestedComment) {
-                                nestedComment.setAttribute('data-post-id', String(enriched.id));
-                                nestedComment.addEventListener('click', (e) => this.handleCommentClick(e, enriched));
-                            }
-                            if (nestedShare) {
-                                nestedShare.setAttribute('data-post-id', String(enriched.id));
-                                nestedShare.addEventListener('click', (e) => this.handleShareClick(e, enriched));
-                            }
-                            if (nestedLike) {
-                                nestedLike.setAttribute('data-post-id', String(enriched.id));
-                                nestedLike.addEventListener('click', (e) => this.handleLikeClick(e, enriched));
-                            }
+                        // Update action buttons inside the nested original post
+                        const nestedComment = container.querySelector('.comment-btn');
+                        const nestedShare = container.querySelector('.share-btn');
+                        const nestedLike = container.querySelector('.like-btn');
+
+                        if (nestedComment) {
+                            nestedComment.setAttribute('data-post-id', String(enriched.id));
+                            nestedComment.addEventListener('click', (e) => this.handleCommentClick(e, enriched));
+                        }
+                        if (nestedShare) {
+                            nestedShare.setAttribute('data-post-id', String(enriched.id));
+                            // Sharing disabled for nested original post
+                            try { nestedShare.disabled = true; } catch (e) {}
+                            nestedShare.classList.add('disabled');
+                            nestedShare.setAttribute('aria-disabled', 'true');
+                        }
+                        if (nestedLike) {
+                            nestedLike.setAttribute('data-post-id', String(enriched.id));
+                            nestedLike.addEventListener('click', (e) => this.handleLikeClick(e, enriched));
                         }
                     }
                 } catch (e) {
@@ -1439,9 +1586,10 @@ class CourseInterface {
                 }
             })();
         } else {
-            // Get profile data from the map
-            const profileData = profileMap.get(postData.author_email);
-            const authorName = profileData?.full_name || postData.author_name || 'Unknown User';
+            // Get profile data from the map (prefer lookup by author_id)
+            const profileData = profileMap.get(postData.author_id) || profileMap.get(postData.author_email);
+            // Prefer the authoritative name stored on the post row, fallback to profile full_name
+            const authorName = (postData.author_name && String(postData.author_name).trim()) ? postData.author_name : (profileData?.full_name || 'Unknown User');
             const authorAvatar = profileData?.avatar_url || postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
             const authorEmail = postData.author_email || 'user@example.com';
             const authorHandle = authorEmail.split('@')[0];
@@ -1451,19 +1599,19 @@ class CourseInterface {
             // Try to fetch the current avatar from user_profiles for dynamic updates
             (async () => {
                 try {
-                    const { data: profileDataArray, error } = await window.supabaseClient
-                        .from('user_profiles')
-                        .select('avatar_url')
-                        .eq('user_email', authorEmail);
-                    
-                    if (!error && profileDataArray && profileDataArray.length > 0) {
-                        const profileData = profileDataArray[0];
-                        if (profileData?.avatar_url) {
+                    // Prefer lookup by author_id (profile id), fallback to author_email
+                    const lookupKey = postData.author_id || postData.author_email;
+                    let profileDataArray = null;
+                    let error = null;
+
+                    try {
+                        const prof = await this.fetchUserProfileByIdOrEmail(postData.author_id || postData.author_email);
+                        if (prof && prof.avatar_url) {
                             const avatarImg = postCard.querySelector('.avatar');
-                            if (avatarImg) {
-                                avatarImg.src = profileData.avatar_url;
-                            }
+                            if (avatarImg) avatarImg.src = prof.avatar_url;
                         }
+                    } catch (err) {
+                        // silently ignore
                     }
                 } catch (err) {
                     // Silently fail - use the stored avatar
@@ -1526,12 +1674,37 @@ class CourseInterface {
         }
 
         if (shareBtn) {
-            shareBtn.addEventListener('click', (e) => this.handleShareClick(e, postData));
+            // Sharing disabled: make button inert (no click handler)
+            try { shareBtn.disabled = true; } catch (e) {}
+            shareBtn.classList.add('disabled');
+            shareBtn.setAttribute('aria-disabled', 'true');
         }
 
         if (likeBtn) {
-            likeBtn.addEventListener('click', (e) => this.handleLikeClick(e, postData));
+            // Accessibility: add tooltip and aria attributes
+            likeBtn.setAttribute('tabindex', '0');
+            likeBtn.setAttribute('role', 'button');
+            likeBtn.setAttribute('aria-pressed', likeBtn.classList.contains('liked') ? 'true' : 'false');
+            likeBtn.setAttribute('aria-label', likeBtn.classList.contains('liked') ? 'Unlike' : 'Like');
+            likeBtn.title = likeBtn.classList.contains('liked') ? 'Unlike' : 'Like';
+
+            // Find icon and span
+            const icon = likeBtn.querySelector('i, svg');
+            const span = likeBtn.querySelector('span');
+            const likeCount = postData.likes_count || 0;
+            const liked = likeBtn.classList.contains('liked');
+            const postId = postData.id;
+
+            // Optimistic UI toggle
+            likeBtn.addEventListener('click', () => this.optimisticLikeToggle(likeBtn, span, icon, likeCount, liked, postId));
+            likeBtn.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    this.optimisticLikeToggle(likeBtn, span, icon, likeCount, liked, postId);
+                }
+            });
         }
+        // ...existing code...
 
         if (deleteBtn) {
             deleteBtn.addEventListener('click', (e) => this.handleDeletePost(e, postData));
@@ -1558,9 +1731,19 @@ class CourseInterface {
     }
 
     createOriginalPostContent(postData, isLiked = false, profileMap = new Map()) {
-        // Get profile data from the map
-        const profileData = profileMap.get(postData.author_email);
-        const authorName = profileData?.full_name || postData.author_name || 'Unknown User';
+        // Get profile data from the map (prefer lookup by author_id)
+        const profileData = profileMap.get(postData.author_id) || profileMap.get(postData.author_email);
+        // Use same logic as populateUserProfile for author name
+        let authorName = 'User';
+        if (profileData && profileData.full_name) {
+            authorName = profileData.full_name;
+        } else if (postData.user_metadata && postData.user_metadata.full_name) {
+            authorName = postData.user_metadata.full_name;
+        } else if (postData.author_name && String(postData.author_name).trim()) {
+            authorName = postData.author_name;
+        } else if (postData.author_email) {
+            authorName = postData.author_email.split('@')[0];
+        }
         const authorAvatar = profileData?.avatar_url || postData.author_avatar_url || `https://i.pravatar.cc/40?u=${postData.author_id}`;
         const authorEmail = postData.author_email || 'user@example.com';
         const authorHandle = authorEmail.split('@')[0];
@@ -1571,7 +1754,7 @@ class CourseInterface {
             <div class="post-header">
                 <img src="${authorAvatar}" alt="Author" class="avatar" loading="lazy" />
                 <div class="post-meta">
-                    <strong>${authorName}</strong>
+                    <strong>${this.escapeHtml(authorName)}</strong>
                     <span class="post-handle">@${authorHandle}</span>
                     <span class="post-time">• ${postTime}</span>
                 </div>
@@ -1704,321 +1887,14 @@ class CourseInterface {
     }
 
     handleShareClick(e, postData) {
-        e.preventDefault();
-        
-        // Spam check
-        if (this.isSpamAction('share', postData.id)) {
-            this.showNotification('Please wait before sharing again', 'error');
-            return;
-        }
-        
-        const btn = e.currentTarget;
-        btn.style.transform = 'scale(1.1)';
-        setTimeout(() => btn.style.transform = 'scale(1)', 200);
-        
-        const userName = this.currentUser.user_metadata?.full_name || this.currentUser.email.split('@')[0];
-        this.showNotification(`Shared by ${userName} ✓`, 'success');
-        
-        // Update share count visually
-        const span = btn.querySelector('span');
-        let shareCount = parseInt(span.textContent) || 0;
-        shareCount++;
-        span.textContent = shareCount;
-        
-        // Add to database with sharer info and reload feed
-        this.addShareToDatabase(postData.id, userName).then(() => {
-            this.loadPostsFromDatabase();
-        });
+        // Sharing has been disabled — this handler is intentionally a no-op.
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        return;
     }
 
-    async addShareToDatabase(postId, sharedByName) {
-        try {
-            const userId = this.currentUser?.id;
-            const sharedById = (userId && userId !== 'guest') ? userId : null;
-
-            // Fetch the original post so we can create a shared copy
-            const { data: originalPost, error: selErr } = await window.supabaseClient
-                .from('posts')
-                .select('*')
-                .eq('id', postId)
-                .single();
-
-            if (selErr) {
-                console.error('Failed to fetch original post for sharing:', selErr);
-                return;
-            }
-
-            // Build a shared post payload:
-            // - make the sharer the `author_*` of the new row (so feed shows "Shared by [you]")
-            // - keep the original post details in `original_*` fields so we can render the nested original post
-            const isSharer = !!sharedById;
-            let sharerName = this.currentUser?.user_metadata?.full_name || sharedByName || (this.currentUser?.email ? this.currentUser.email.split('@')[0] : 'Someone');
-            let sharerEmail = this.currentUser?.email || null;
-            let sharerAvatar = this.currentUser?.user_metadata?.avatar_url || this.currentUser?.avatar_url || null;
-
-            // Try to load richer profile data from `user_profiles` if available
-            if (isSharer && this.currentUser?.email) {
-                try {
-                    const { data: sp, error: spErr } = await window.supabaseClient
-                        .from('user_profiles')
-                        .select('full_name, avatar_url, user_email')
-                        .eq('user_email', this.currentUser.email)
-                        .maybeSingle();
-
-                    if (!spErr && sp) {
-                        sharerName = sp.full_name || sharerName;
-                        sharerAvatar = sp.avatar_url || sharerAvatar;
-                        sharerEmail = sp.user_email || sharerEmail;
-                    }
-                } catch (e) {
-                    // ignore profile lookup failure — fall back to auth data
-                }
-            }
-
-            // Try to enrich original author's avatar/name from user_profiles
-            let originalAuthorAvatar = originalPost.author_avatar_url || null;
-            let originalAuthorName = originalPost.author_name || null;
-            if (originalPost.author_email) {
-                try {
-                    const { data: op, error: opErr } = await window.supabaseClient
-                        .from('user_profiles')
-                        .select('full_name, avatar_url')
-                        .eq('user_email', originalPost.author_email)
-                        .maybeSingle();
-
-                    if (!opErr && op) {
-                        originalAuthorAvatar = op.avatar_url || originalAuthorAvatar;
-                        originalAuthorName = op.full_name || originalAuthorName;
-                    }
-                } catch (e) {
-                    // ignore
-                }
-            }
-
-            const payload = {
-                topic_id: originalPost.topic_id || null,
-                // new post is authored by the sharer when available
-                author_id: isSharer ? sharedById : originalPost.author_id,
-                author_name: isSharer ? sharerName : originalPost.author_name,
-                author_email: isSharer ? sharerEmail : originalPost.author_email,
-                author_avatar_url: isSharer ? sharerAvatar : originalPost.author_avatar_url,
-
-                // keep original post data for nested rendering
-                original_post_id: postId,
-                original_author_id: originalPost.author_id,
-                original_author_name: originalAuthorName,
-                original_author_email: originalPost.author_email,
-                original_author_avatar_url: originalAuthorAvatar,
-                original_content: originalPost.content,
-                image_url: originalPost.image_url,
-                video_url: originalPost.video_url,
-                poll_data: originalPost.poll_data,
-
-                // metadata about the share
-                shared_by_name: sharerName,
-                share_note: null,
-
-                likes_count: 0,
-                comments_count: 0,
-                shares_count: 0
-            };
-
-            // If your DB enforces FK on `author_id` or other fields, ensure the sharer exists there.
-            if (isSharer && payload.author_id) {
-                try {
-                    const { data: userRow, error: userErr } = await window.supabaseClient
-                        .from('users')
-                        .select('id')
-                        .eq('id', payload.author_id)
-                        .maybeSingle();
-
-                    if (userErr || !userRow) {
-                        // If there is no FK target for the sharer, fall back to anonymous author (avoid FK violation)
-                        delete payload.author_id;
-                    }
-                } catch (e) {
-                    console.warn('Unexpected error checking users table for author_id:', e);
-                    delete payload.author_id;
-                }
-            }
-
-            // Prevent duplicate shares by the same logged-in user
-            let didInsert = false;
-            if (sharedById) {
-                try {
-                    // Prefer checking an explicit original_post_id if your schema has it
-                    const { data: already1, error: a1Err } = await window.supabaseClient
-                        .from('posts')
-                        .select('id')
-                        .eq('author_id', sharedById)
-                        .eq('original_post_id', postId)
-                        .maybeSingle();
-
-                    if (a1Err === null && already1) {
-                        this.showNotification('You already shared this post', 'info');
-                        return;
-                    }
-                } catch (e) {
-                    // ignore — maybe column doesn't exist
-                }
-
-                try {
-                    // Fallback: check by author_id + same content
-                    const { data: already2, error: a2Err } = await window.supabaseClient
-                        .from('posts')
-                        .select('id')
-                        .eq('author_id', sharedById)
-                        .eq('original_content', originalPost.content)
-                        .maybeSingle();
-
-                    if (a2Err === null && already2) {
-                        this.showNotification('You already shared this post', 'info');
-                        return;
-                    }
-                } catch (e) {
-                    // ignore
-                }
-            }
-
-            // Insert the shared post row with retry that strips unknown columns (PostgREST PGRST204)
-            let insertPayload = Object.assign({}, payload);
-            let newPost = null;
-            let insertErr = null;
-
-            while (true) {
-                try {
-                    const res = await window.supabaseClient
-                        .from('posts')
-                        .insert([insertPayload])
-                        .select()
-                        .single();
-
-                    newPost = res.data;
-                    insertErr = res.error;
-
-                    if (!insertErr) break; // success
-
-                    // If PostgREST reports missing column in schema cache, remove it from payload and retry
-                    if (insertErr.code === 'PGRST204' && insertErr.message) {
-                        const m = String(insertErr.message).match(/Could not find the '([^']+)' column/);
-                        if (m && m[1]) {
-                            const col = m[1];
-                            if (col in insertPayload) {
-                                console.warn(`Removing unknown column from payload and retrying: ${col}`);
-                                delete insertPayload[col];
-                                // loop will retry
-                                continue;
-                            }
-                        }
-                    }
-
-                    // If FK error (23503), try removing offending FK fields (fallback)
-                    if (insertErr.code === '23503' && insertErr.details) {
-                        const fkMatch = String(insertErr.details).match(/Key \(([^)]+)\)=\(([^)]+)\) is not present/);
-                        if (fkMatch && fkMatch[1]) {
-                            const fkCol = fkMatch[1];
-                            if (fkCol in insertPayload) {
-                                console.warn(`Removing FK column from payload due to missing target: ${fkCol}`);
-                                delete insertPayload[fkCol];
-                                continue;
-                            }
-                        }
-                    }
-
-                    break; // unhandled error, exit loop
-                } catch (e) {
-                    console.error('Unexpected error during insert attempt:', e);
-                    insertErr = e;
-                    break;
-                }
-            }
-
-            if (insertErr) {
-                console.error('Error inserting shared post:', insertErr);
-                try {
-                    console.error('insertErr details:', insertErr.details, 'hint:', insertErr.hint, 'code:', insertErr.code, 'status:', insertErr.status);
-                } catch (ee) {
-                    console.error('Error logging insertErr fields', ee);
-                }
-                this.showNotification('Failed to share post: ' + (insertErr.message || insertErr.details || 'Server error'), 'error');
-                return;
-            } else {
-                didInsert = true;
-                console.log('Inserted share row (raw):', newPost);
-
-                // If the inserted row is missing expected author/display fields (some DB triggers or policies may strip them), attempt a best-effort update
-                const updatePayload = {};
-                if (!newPost.author_name && sharerName) updatePayload.author_name = sharerName;
-                if (!newPost.author_avatar_url && sharerAvatar) updatePayload.author_avatar_url = sharerAvatar;
-                if (!newPost.original_post_id) updatePayload.original_post_id = postId;
-                if (!newPost.original_author_name && originalAuthorName) updatePayload.original_author_name = originalAuthorName;
-                if (!newPost.original_author_avatar_url && originalAuthorAvatar) updatePayload.original_author_avatar_url = originalAuthorAvatar;
-                if (!newPost.original_content && originalPost.content) updatePayload.original_content = originalPost.content;
-
-                if (Object.keys(updatePayload).length > 0 && newPost.id) {
-                    try {
-                        const { data: updated, error: updErr } = await window.supabaseClient
-                            .from('posts')
-                            .update(updatePayload)
-                            .eq('id', newPost.id)
-                            .select()
-                            .single();
-
-                        if (updErr) {
-                            console.warn('Failed to patch inserted share row:', updErr);
-                        } else {
-                            console.log('Patched share row:', updated);
-                            // prefer the updated row for popup/display
-                            newPost = updated;
-                        }
-                    } catch (e) {
-                        console.warn('Unexpected error patching share row:', e);
-                    }
-                }
-
-                // Show a transient popup announcing the share
-                try {
-                    const sharer = {
-                        id: sharedById,
-                        name: sharerName,
-                        avatar: sharerAvatar
-                    };
-                    this.showSharePopup(newPost, sharer);
-                } catch (showErr) {
-                    console.warn('Failed to show share popup:', showErr);
-                }
-            }
-
-            // Increment the original post's shares_count only if we inserted a new shared row
-            if (didInsert) {
-                try {
-                    const { data: postForCount, error: pErr } = await window.supabaseClient
-                        .from('posts')
-                        .select('shares_count')
-                        .eq('id', postId)
-                        .single();
-
-                    const newCount = (postForCount?.shares_count || originalPost?.shares_count || 0) + 1;
-                    const { error: updErr } = await window.supabaseClient
-                        .from('posts')
-                        .update({ shares_count: newCount })
-                        .eq('id', postId);
-
-                    if (updErr) console.error('Failed to increment shares_count:', updErr);
-                } catch (countErr) {
-                    console.warn('Error updating shares_count:', countErr);
-                }
-            }
-
-            // Reload the feed so the shared post appears
-            try {
-                await this.loadPostsFromDatabase();
-            } catch (reloadErr) {
-                console.warn('Failed to reload posts after share:', reloadErr);
-            }
-        } catch (err) {
-            console.error('Failed to add share:', err);
-        }
+    async addShareToDatabase(postId) {
+        // Sharing logic removed. Function intentionally left as a no-op.
+        return;
     }
 
     showSharePopup(post, sharer) {
@@ -2280,24 +2156,15 @@ class CourseInterface {
                 // Fetch the latest profile data from database
                 (async () => {
                     try {
-                        const { data: profileData, error } = await window.supabaseClient
-                            .from('user_profiles')
-                            .select('avatar_url')
-                            .eq('user_email', this.currentUser.email)
-                            .single();
-
-                        if (!error && profileData && profileData.avatar_url) {
-                            userAvatar.src = profileData.avatar_url;
+                        const prof = await this.fetchUserProfileByIdOrEmail(this.currentUser.id || this.currentUser.email);
+                        if (prof && prof.avatar_url) {
+                            userAvatar.src = prof.avatar_url;
                         } else {
-                            // Fallback to user metadata or default avatar
-                            userAvatar.src = this.currentUser?.user_metadata?.avatar_url || 
-                                           `https://i.pravatar.cc/32?u=${this.currentUser?.id || 'default'}`;
+                            userAvatar.src = this.currentUser?.user_metadata?.avatar_url || `https://i.pravatar.cc/32?u=${this.currentUser?.id || 'default'}`;
                         }
                     } catch (err) {
                         console.warn('Failed to load user avatar from database:', err);
-                        // Fallback to user metadata or default avatar
-                        userAvatar.src = this.currentUser?.user_metadata?.avatar_url || 
-                                       `https://i.pravatar.cc/32?u=${this.currentUser?.id || 'default'}`;
+                        userAvatar.src = this.currentUser?.user_metadata?.avatar_url || `https://i.pravatar.cc/32?u=${this.currentUser?.id || 'default'}`;
                     }
                 })();
             }
@@ -2398,26 +2265,17 @@ class CourseInterface {
         const isCurrentUserComment = comment.author_id === this.currentUser.id;
         (async () => {
             try {
-                const { data: profileData, error } = await window.supabaseClient
-                    .from('user_profiles')
-                    .select('full_name, avatar_url')
-                    .eq('user_email', comment.author_email)
-                    .single();
-                
-                if (!error && profileData) {
-                    commentAuthorName = profileData.full_name;
-                    if (profileData.avatar_url) {
-                        authorAvatar = profileData.avatar_url;
+                const prof = await this.fetchUserProfileByIdOrEmail(comment.author_id || comment.author_email);
+                if (prof) {
+                    commentAuthorName = (comment.author_name && String(comment.author_name).trim()) ? comment.author_name : (prof.full_name || commentAuthorName);
+                    if (prof.avatar_url) {
+                        authorAvatar = prof.avatar_url;
                     }
                     const nameEl = commentDiv.querySelector('.comment-header strong');
-                    if (nameEl) {
-                        nameEl.textContent = profileData.full_name;
-                    }
-                    if (profileData.avatar_url) {
+                    if (nameEl) nameEl.textContent = (comment.author_name && String(comment.author_name).trim()) ? comment.author_name : (prof.full_name || nameEl.textContent);
+                    if (prof.avatar_url) {
                         const avatarImg = commentDiv.querySelector('.comment-avatar');
-                        if (avatarImg) {
-                            avatarImg.src = profileData.avatar_url;
-                        }
+                        if (avatarImg) avatarImg.src = prof.avatar_url;
                     }
                 }
             } catch (err) {
@@ -3656,3 +3514,7 @@ function initializeHeroWelcomeBanner() {
         if (!isEducationalPage) {
             checkAuth();
         }
+    
+
+    // Removed duplicate setupEventListeners() definition outside the class.
+

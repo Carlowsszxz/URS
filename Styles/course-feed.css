@@ -3639,6 +3639,11 @@ body.user-is-keyboard-navigating .special-design-badge:focus {
     justify-content: center;
     overflow: hidden;
 }
+.action-btn.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: default;
+}
 
 /* Ripple effect background */
 .action-btn::after {
